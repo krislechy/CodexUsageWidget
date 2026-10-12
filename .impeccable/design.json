@@ -1,26 +1,479 @@
 {
-  "schemaVersion": 1,
-  "platform": "windows-wpf",
-  "authority": "user-approved-comp",
-  "reference": "docs/design/mockup-01.png",
-  "tokensSource": "src/CodexUsageWidget/App.xaml",
-  "colors": {
-    "surface": "#141619", "text": "#F6F6F7", "muted": "#ABB0BA",
-    "fiveHour": "#FF397E", "weekly": "#9BEF29", "warning": "#F1B859"
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-12T16:18:23.596Z",
+  "title": "Design System: Codex Usage Widget",
+  "extensions": {
+    "platform": {
+      "name": "windows-wpf",
+      "authority": "user-approved-comp",
+      "reference": "docs/design/mockup-01.png",
+      "sourceOfTruth": [
+        "src/CodexUsageWidget/App.xaml",
+        "src/CodexUsageWidget/MainWindow.xaml",
+        "src/CodexUsageWidget/MainWindow.xaml.cs",
+        "src/CodexUsageWidget/SettingsWindow.xaml",
+        "src/CodexUsageWidget/Controls/RingGauge.cs"
+      ],
+      "units": "WPF device-independent pixels; portable px tokens map to DIP"
+    },
+    "colorMeta": {
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "tonalRamp": [
+          "oklch(15.00% 0.0068 258.37)",
+          "oklch(26.43% 0.0068 258.37)",
+          "oklch(37.86% 0.0068 258.37)",
+          "oklch(49.29% 0.0068 258.37)",
+          "oklch(60.71% 0.0068 258.37)",
+          "oklch(72.14% 0.0068 258.37)",
+          "oklch(83.57% 0.0068 258.37)",
+          "oklch(95.00% 0.0068 258.37)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Text",
+        "tonalRamp": [
+          "oklch(15.00% 0.0013 286.38)",
+          "oklch(26.43% 0.0013 286.38)",
+          "oklch(37.86% 0.0013 286.38)",
+          "oklch(49.29% 0.0013 286.38)",
+          "oklch(60.71% 0.0013 286.38)",
+          "oklch(72.14% 0.0013 286.38)",
+          "oklch(83.57% 0.0013 286.38)",
+          "oklch(95.00% 0.0013 286.38)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "tonalRamp": [
+          "oklch(15.00% 0.0153 264.48)",
+          "oklch(26.43% 0.0153 264.48)",
+          "oklch(37.86% 0.0153 264.48)",
+          "oklch(49.29% 0.0153 264.48)",
+          "oklch(60.71% 0.0153 264.48)",
+          "oklch(72.14% 0.0153 264.48)",
+          "oklch(83.57% 0.0153 264.48)",
+          "oklch(95.00% 0.0153 264.48)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "five-hour": {
+        "role": "primary",
+        "displayName": "Five Hour",
+        "tonalRamp": [
+          "oklch(15.00% 0.2335 5.99)",
+          "oklch(26.43% 0.2335 5.99)",
+          "oklch(37.86% 0.2335 5.99)",
+          "oklch(49.29% 0.2335 5.99)",
+          "oklch(60.71% 0.2335 5.99)",
+          "oklch(72.14% 0.2335 5.99)",
+          "oklch(83.57% 0.2335 5.99)",
+          "oklch(95.00% 0.2335 5.99)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "weekly": {
+        "role": "secondary",
+        "displayName": "Weekly",
+        "tonalRamp": [
+          "oklch(15.00% 0.2265 131.25)",
+          "oklch(26.43% 0.2265 131.25)",
+          "oklch(37.86% 0.2265 131.25)",
+          "oklch(49.29% 0.2265 131.25)",
+          "oklch(60.71% 0.2265 131.25)",
+          "oklch(72.14% 0.2265 131.25)",
+          "oklch(83.57% 0.2265 131.25)",
+          "oklch(95.00% 0.2265 131.25)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "five-hour-track": {
+        "role": "neutral",
+        "displayName": "Five Hour Track",
+        "tonalRamp": [
+          "oklch(15.00% 0.0516 354.33)",
+          "oklch(26.43% 0.0516 354.33)",
+          "oklch(37.86% 0.0516 354.33)",
+          "oklch(49.29% 0.0516 354.33)",
+          "oklch(60.71% 0.0516 354.33)",
+          "oklch(72.14% 0.0516 354.33)",
+          "oklch(83.57% 0.0516 354.33)",
+          "oklch(95.00% 0.0516 354.33)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "weekly-track": {
+        "role": "neutral",
+        "displayName": "Weekly Track",
+        "tonalRamp": [
+          "oklch(15.00% 0.0547 132.95)",
+          "oklch(26.43% 0.0547 132.95)",
+          "oklch(37.86% 0.0547 132.95)",
+          "oklch(49.29% 0.0547 132.95)",
+          "oklch(60.71% 0.0547 132.95)",
+          "oklch(72.14% 0.0547 132.95)",
+          "oklch(83.57% 0.0547 132.95)",
+          "oklch(95.00% 0.0547 132.95)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "outline": {
+        "role": "neutral",
+        "displayName": "Outline",
+        "tonalRamp": [
+          "oklch(15.00% 0.0134 261.73)",
+          "oklch(26.43% 0.0134 261.73)",
+          "oklch(37.86% 0.0134 261.73)",
+          "oklch(49.29% 0.0134 261.73)",
+          "oklch(60.71% 0.0134 261.73)",
+          "oklch(72.14% 0.0134 261.73)",
+          "oklch(83.57% 0.0134 261.73)",
+          "oklch(95.00% 0.0134 261.73)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "separator": {
+        "role": "neutral",
+        "displayName": "Separator",
+        "tonalRamp": [
+          "oklch(15.00% 0.0117 264.38)",
+          "oklch(26.43% 0.0117 264.38)",
+          "oklch(37.86% 0.0117 264.38)",
+          "oklch(49.29% 0.0117 264.38)",
+          "oklch(60.71% 0.0117 264.38)",
+          "oklch(72.14% 0.0117 264.38)",
+          "oklch(83.57% 0.0117 264.38)",
+          "oklch(95.00% 0.0117 264.38)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "warning": {
+        "role": "semantic",
+        "displayName": "Warning",
+        "tonalRamp": [
+          "oklch(15.00% 0.1295 77.94)",
+          "oklch(26.43% 0.1295 77.94)",
+          "oklch(37.86% 0.1295 77.94)",
+          "oklch(49.29% 0.1295 77.94)",
+          "oklch(60.71% 0.1295 77.94)",
+          "oklch(72.14% 0.1295 77.94)",
+          "oklch(83.57% 0.1295 77.94)",
+          "oklch(95.00% 0.1295 77.94)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "current": {
+        "role": "semantic",
+        "displayName": "Current",
+        "tonalRamp": [
+          "oklch(15.00% 0.1605 145.04)",
+          "oklch(26.43% 0.1605 145.04)",
+          "oklch(37.86% 0.1605 145.04)",
+          "oklch(49.29% 0.1605 145.04)",
+          "oklch(60.71% 0.1605 145.04)",
+          "oklch(72.14% 0.1605 145.04)",
+          "oklch(83.57% 0.1605 145.04)",
+          "oklch(95.00% 0.1605 145.04)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "control-hover": {
+        "role": "neutral",
+        "displayName": "Control Hover",
+        "tonalRamp": [
+          "oklch(15.00% 0.0118 264.37)",
+          "oklch(26.43% 0.0118 264.37)",
+          "oklch(37.86% 0.0118 264.37)",
+          "oklch(49.29% 0.0118 264.37)",
+          "oklch(60.71% 0.0118 264.37)",
+          "oklch(72.14% 0.0118 264.37)",
+          "oklch(83.57% 0.0118 264.37)",
+          "oklch(95.00% 0.0118 264.37)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "control-pressed": {
+        "role": "neutral",
+        "displayName": "Control Pressed",
+        "tonalRamp": [
+          "oklch(15.00% 0.0167 266.45)",
+          "oklch(26.43% 0.0167 266.45)",
+          "oklch(37.86% 0.0167 266.45)",
+          "oklch(49.29% 0.0167 266.45)",
+          "oklch(60.71% 0.0167 266.45)",
+          "oklch(72.14% 0.0167 266.45)",
+          "oklch(83.57% 0.0167 266.45)",
+          "oklch(95.00% 0.0167 266.45)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "control-hover-text": {
+        "role": "neutral",
+        "displayName": "Control Hover Text",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 89.88)",
+          "oklch(26.43% 0.0000 89.88)",
+          "oklch(37.86% 0.0000 89.88)",
+          "oklch(49.29% 0.0000 89.88)",
+          "oklch(60.71% 0.0000 89.88)",
+          "oklch(72.14% 0.0000 89.88)",
+          "oklch(83.57% 0.0000 89.88)",
+          "oklch(95.00% 0.0000 89.88)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "action": {
+        "role": "neutral",
+        "displayName": "Action",
+        "tonalRamp": [
+          "oklch(15.00% 0.0129 253.01)",
+          "oklch(26.43% 0.0129 253.01)",
+          "oklch(37.86% 0.0129 253.01)",
+          "oklch(49.29% 0.0129 253.01)",
+          "oklch(60.71% 0.0129 253.01)",
+          "oklch(72.14% 0.0129 253.01)",
+          "oklch(83.57% 0.0129 253.01)",
+          "oklch(95.00% 0.0129 253.01)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "action-hover": {
+        "role": "neutral",
+        "displayName": "Action Hover",
+        "tonalRamp": [
+          "oklch(15.00% 0.0195 257.26)",
+          "oklch(26.43% 0.0195 257.26)",
+          "oklch(37.86% 0.0195 257.26)",
+          "oklch(49.29% 0.0195 257.26)",
+          "oklch(60.71% 0.0195 257.26)",
+          "oklch(72.14% 0.0195 257.26)",
+          "oklch(83.57% 0.0195 257.26)",
+          "oklch(95.00% 0.0195 257.26)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "action-outline": {
+        "role": "neutral",
+        "displayName": "Action Outline",
+        "tonalRamp": [
+          "oklch(15.00% 0.0203 256.35)",
+          "oklch(26.43% 0.0203 256.35)",
+          "oklch(37.86% 0.0203 256.35)",
+          "oklch(49.29% 0.0203 256.35)",
+          "oklch(60.71% 0.0203 256.35)",
+          "oklch(72.14% 0.0203 256.35)",
+          "oklch(83.57% 0.0203 256.35)",
+          "oklch(95.00% 0.0203 256.35)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Field",
+        "tonalRamp": [
+          "oklch(15.00% 0.0141 261.69)",
+          "oklch(26.43% 0.0141 261.69)",
+          "oklch(37.86% 0.0141 261.69)",
+          "oklch(49.29% 0.0141 261.69)",
+          "oklch(60.71% 0.0141 261.69)",
+          "oklch(72.14% 0.0141 261.69)",
+          "oklch(83.57% 0.0141 261.69)",
+          "oklch(95.00% 0.0141 261.69)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "field-outline": {
+        "role": "neutral",
+        "displayName": "Field Outline",
+        "tonalRamp": [
+          "oklch(15.00% 0.0213 258.37)",
+          "oklch(26.43% 0.0213 258.37)",
+          "oklch(37.86% 0.0213 258.37)",
+          "oklch(49.29% 0.0213 258.37)",
+          "oklch(60.71% 0.0213 258.37)",
+          "oklch(72.14% 0.0213 258.37)",
+          "oklch(83.57% 0.0213 258.37)",
+          "oklch(95.00% 0.0213 258.37)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      },
+      "option-highlight": {
+        "role": "neutral",
+        "displayName": "Option Highlight",
+        "tonalRamp": [
+          "oklch(15.00% 0.0219 253.53)",
+          "oklch(26.43% 0.0219 253.53)",
+          "oklch(37.86% 0.0219 253.53)",
+          "oklch(49.29% 0.0219 253.53)",
+          "oklch(60.71% 0.0219 253.53)",
+          "oklch(72.14% 0.0219 253.53)",
+          "oklch(83.57% 0.0219 253.53)",
+          "oklch(95.00% 0.0219 253.53)"
+        ],
+        "tonalRampPurpose": "Synthesized panel swatches; not implemented application state colors."
+      }
+    },
+    "typographyMeta": {
+      "title": {
+        "displayName": "Widget title",
+        "purpose": "Native semibold header."
+      },
+      "percentage": {
+        "displayName": "Remaining quota",
+        "purpose": "Bold remaining quota in full rows."
+      },
+      "label": {
+        "displayName": "Quota label",
+        "purpose": "Semibold window names."
+      },
+      "detail": {
+        "displayName": "Reset details",
+        "purpose": "Muted local reset dates."
+      },
+      "compact-percentage": {
+        "displayName": "Compact remaining quota",
+        "purpose": "Bold quota numbers in compact mode."
+      },
+      "settings-body": {
+        "displayName": "Settings body",
+        "purpose": "Native dialog text."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ring-update",
+        "value": "550ms exponential ease-out, exponent 5",
+        "purpose": "Animate from current visible value; interruptible; disabled when Windows ClientAreaAnimation is false."
+      }
+    ],
+    "breakpoints": [],
+    "rings": {
+      "semantics": "consumed percentage",
+      "startDegrees": -90,
+      "direction": "clockwise",
+      "strokeCaps": "round",
+      "outerDiameter": 220,
+      "innerDiameter": 170,
+      "strokeWidth": 18,
+      "compactOuterDiameter": 48,
+      "compactInnerDiameter": 33,
+      "compactStrokeWidth": 5
+    },
+    "focus": {
+      "icon": "One-pixel lime border when IsKeyboardFocused.",
+      "action": "One-pixel lime border when IsKeyboardFocused.",
+      "select": "One-pixel lime border when IsKeyboardFocusWithin.",
+      "textField": "Native WPF text-entry focus behavior; lime caret."
+    },
+    "accessibility": {
+      "ringControlType": "ProgressBar",
+      "rangeValue": {
+        "minimum": 0,
+        "maximum": 100,
+        "isReadOnly": true
+      },
+      "ringName": "Quota window, remaining quota and reset details, followed by consumed percentage.",
+      "statusLiveSetting": "Polite",
+      "iconDisabledOpacity": 0.35,
+      "actionDisabledOpacity": 0.4
+    },
+    "captures": [
+      "docs/screenshots/main.png",
+      "docs/screenshots/compact.png",
+      "docs/screenshots/stale.png",
+      "docs/screenshots/settings.png",
+      "docs/screenshots/settings-focused.png"
+    ],
+    "preview": {
+      "purpose": "Self-contained HTML/CSS translations for the design panel. The shipped application is native WPF; previews are not application code.",
+      "language": "English documentation examples."
+    }
   },
-  "rings": {
-    "semantics": "consumed percentage", "startDegrees": -90,
-    "direction": "clockwise", "strokeCaps": "round",
-    "outerDiameter": 220, "innerDiameter": 170, "strokeWidth": 18,
-    "compactOuterDiameter": 48, "compactInnerDiameter": 33, "compactStrokeWidth": 5
-  },
-  "motion": {
-    "durationMs": 550, "ease": "exponential-out", "exponent": 5,
-    "interruptible": true, "respectsWindowsAnimationPreference": true
-  },
-  "controls": {
-    "hoverBackground": "#282B31", "pressedBackground": "#353942",
-    "focusOutline": "#9BEF29", "iconTarget": 30
-  },
-  "sourceOfTruth": "WPF XAML resources and RingGauge; documentation records these values"
+  "components": [
+    {
+      "name": "Widget surface",
+      "kind": "card",
+      "refersTo": "widget",
+      "description": "Matte floating surface; transparent desktop corners.",
+      "html": "<div class=\"ds-widget\">Codex Usage</div>",
+      "css": ".ds-widget{background:#141619;color:#F6F6F7;border:1px solid #353940;border-radius:26px;padding:19px;font:600 21px \"Segoe UI Variable\",\"Segoe UI\",sans-serif;}"
+    },
+    {
+      "name": "Icon button",
+      "kind": "button",
+      "refersTo": "icon-button",
+      "description": "Refresh action with hover, pressed and lime keyboard focus.",
+      "html": "<button class=\"ds-icon\" aria-label=\"Refresh limits\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 18 18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"><path d=\"M15 7A6 6 0 0 0 4 5M4 1v4h4M3 11a6 6 0 0 0 11 2M14 17v-4h-4\"/></svg></button>",
+      "css": ".ds-icon{width:30px;height:30px;background:transparent;color:#ABB0BA;border:1px solid transparent;border-radius:7px;display:inline-grid;place-items:center;cursor:pointer}.ds-icon:hover{background:#282B31;color:#FFFFFF}.ds-icon:active{background:#353942}.ds-icon:focus-visible{border-color:#9BEF29;outline:none}.ds-icon:disabled{opacity:.35}"
+    },
+    {
+      "name": "Action button",
+      "kind": "button",
+      "refersTo": "action-button",
+      "description": "Settings save or cancel action.",
+      "html": "<button class=\"ds-action\">Save</button>",
+      "css": ".ds-action{height:36px;padding:0 14px;background:#2B3036;color:#F6F6F7;border:1px solid #59616C;border-radius:8px;font:13px \"Segoe UI\",sans-serif;cursor:pointer}.ds-action:hover{background:#3B424C}.ds-action:focus-visible{border-color:#9BEF29;outline:none}.ds-action:disabled{opacity:.4}"
+    },
+    {
+      "name": "CLI text field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "Native settings text entry translated for the panel.",
+      "html": "<input class=\"ds-field\" aria-label=\"Codex CLI path\" />",
+      "css": ".ds-field{padding:9px;background:#252930;color:#F6F6F7;border:1px solid #626A76;caret-color:#9BEF29;font:13px \"Segoe UI\",sans-serif}.ds-field:focus-visible{outline:auto}"
+    },
+    {
+      "name": "Refresh interval select",
+      "kind": "input",
+      "refersTo": "select",
+      "description": "Custom WPF selection surface with lime keyboard focus.",
+      "html": "<select class=\"ds-select\" aria-label=\"Refresh interval\"><option>1 minute</option><option>2 minutes</option></select>",
+      "css": ".ds-select{height:30px;padding:0 9px;background:#252930;color:#F6F6F7;border:1px solid #626A76;border-radius:6px;font:13px \"Segoe UI\",sans-serif}.ds-select:focus-visible{border-color:#9BEF29;outline:none}.ds-select option{padding:6px 9px;background:#252930;color:#F6F6F7}.ds-select option:checked{background:#414A55}"
+    },
+    {
+      "name": "Consumed quota rings",
+      "kind": "custom",
+      "description": "Concentric vector tracks with consumed arcs and explicit remaining descriptions.",
+      "html": "<svg class=\"ds-rings\" viewBox=\"0 0 220 220\" role=\"img\" aria-label=\"Five-hour quota: 34 percent consumed, 66 percent remaining. Weekly quota: 19 percent consumed, 81 percent remaining.\"><circle cx=\"110\" cy=\"110\" r=\"101\" stroke=\"#3D1E2B\"/><circle cx=\"110\" cy=\"110\" r=\"76\" stroke=\"#263719\"/><circle cx=\"110\" cy=\"110\" r=\"101\" stroke=\"#FF397E\" pathLength=\"100\" stroke-dasharray=\"34 100\" transform=\"rotate(-90 110 110)\"/><circle cx=\"110\" cy=\"110\" r=\"76\" stroke=\"#9BEF29\" pathLength=\"100\" stroke-dasharray=\"19 100\" transform=\"rotate(-90 110 110)\"/></svg>",
+      "css": ".ds-rings{width:220px;height:220px}.ds-rings circle{fill:none;stroke-width:18;stroke-linecap:round}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Activity-style quota rings",
+    "overview": "The user approved an Apple Watch Activity-inspired concept: concentric pink and lime rings on a near-black, rounded floating window. The interface is a glanceable utility. Exact quota semantics matter more than decorative effects. This identity uses native Windows WPF typography, controls and vector rendering.",
+    "keyCharacteristics": [
+      "Matte dark surface with stable pink and lime window identities.",
+      "Consumed quota rings paired with explicit remaining numbers.",
+      "Separate full and compact compositions with local reset details.",
+      "Native Windows keyboard interaction and accessible quota semantics."
+    ],
+    "rules": [
+      {
+        "name": "The Quota Identity Rule",
+        "body": "Pink identifies five-hour quota and lime identifies weekly quota in both modes; warning states retain those identities.",
+        "section": "colors"
+      },
+      {
+        "name": "The Consumed Ring Rule",
+        "body": "Arcs encode consumed quota; prominent row and compact numbers encode remaining quota, with explicit labels and accessible names.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do preserve the approved concentric-ring identity across both modes.",
+      "Do label absent windows as unavailable; do not invent a zero remaining value.",
+      "Do keep dates close to the quota they describe.",
+      "Do keep real quota data out of committed preview images.",
+      "Do retain visible keyboard focus and read-only accessible quota semantics."
+    ],
+    "donts": [
+      "Don't add an Apple logo, watch hardware frame, extra activity ring or decorative metrics."
+    ]
+  }
 }

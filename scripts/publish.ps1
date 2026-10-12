@@ -8,6 +8,7 @@ dotnet publish (Join-Path $projectRoot 'src/CodexUsageWidget/CodexUsageWidget.cs
 if ($LASTEXITCODE -ne 0) { throw 'Publish failed.' }
 Copy-Item -LiteralPath (Join-Path $projectRoot 'README.md') -Destination $portable
 Copy-Item -LiteralPath (Join-Path $projectRoot 'LICENSE') -Destination $portable
+Copy-Item -LiteralPath (Join-Path $projectRoot 'CHANGELOG.md') -Destination $portable
 Copy-Item -LiteralPath (Join-Path $projectRoot 'docs') -Destination $portable -Recurse -Force
 Copy-Item -LiteralPath (Join-Path $projectRoot 'DESIGN.md') -Destination $portable
 $archive = Join-Path $outputRoot 'CodexUsageWidget-win-x64.zip'
