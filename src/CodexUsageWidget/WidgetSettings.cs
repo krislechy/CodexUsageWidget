@@ -11,9 +11,11 @@ public sealed class WidgetSettings
     public int RefreshSeconds { get; set; } = 60;
     public bool Topmost { get; set; } = true;
     public bool Compact { get; set; }
+    public string Language { get; set; } = "en";
     public double? Left { get; set; }
     public double? Top { get; set; }
     public static string SettingsPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodexUsageWidget", "settings.json");
+    public static string PendingResetPath => Path.Combine(Path.GetDirectoryName(SettingsPath)!, "pending-reset.json");
 
     public static WidgetSettings Load()
     {
@@ -22,6 +24,7 @@ public sealed class WidgetSettings
             if (!File.Exists(SettingsPath)) return new();
             var settings = JsonSerializer.Deserialize<WidgetSettings>(File.ReadAllText(SettingsPath)) ?? new();
             if (settings.RefreshSeconds is not (30 or 60 or 120 or 300)) settings.RefreshSeconds = 60;
+            if (!System.Linq.Enumerable.Any(CodexUsageWidget.Core.Localization.Languages, item => item.Code == settings.Language)) settings.Language = "en";
             if (settings.Left is { } left && !double.IsFinite(left)) settings.Left = null;
             if (settings.Top is { } top && !double.IsFinite(top)) settings.Top = null;
             return settings;

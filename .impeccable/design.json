@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-12T16:18:23.596Z",
+  "generatedAt": "2026-10-12T16:56:16.4201189Z",
   "title": "Design System: Codex Usage Widget",
   "extensions": {
     "platform": {
@@ -12,7 +12,13 @@
         "src/CodexUsageWidget/MainWindow.xaml",
         "src/CodexUsageWidget/MainWindow.xaml.cs",
         "src/CodexUsageWidget/SettingsWindow.xaml",
-        "src/CodexUsageWidget/Controls/RingGauge.cs"
+        "src/CodexUsageWidget/Controls/RingGauge.cs",
+        "src/CodexUsageWidget/SettingsWindow.xaml.cs",
+        "src/CodexUsageWidget/ResetConfirmationWindow.xaml",
+        "src/CodexUsageWidget/ResetConfirmationWindow.xaml.cs",
+        "src/CodexUsageWidget/WidgetViewModel.cs",
+        "src/CodexUsageWidget.Core/Localization.cs",
+        "src/CodexUsageWidget.Core/ResetCredits.cs"
       ],
       "units": "WPF device-independent pixels; portable px tokens map to DIP"
     },
@@ -388,11 +394,161 @@
       "docs/screenshots/compact.png",
       "docs/screenshots/stale.png",
       "docs/screenshots/settings.png",
-      "docs/screenshots/settings-focused.png"
+      "docs/screenshots/settings-focused.png",
+      "docs/screenshots/reset-confirmation.png",
+      "docs/screenshots/reset-empty.png",
+      "docs/screenshots/reset-pending.png",
+      "docs/screenshots/locales/en/main.png",
+      "docs/screenshots/locales/en/compact.png",
+      "docs/screenshots/locales/en/stale.png",
+      "docs/screenshots/locales/en/settings.png",
+      "docs/screenshots/locales/en/settings-focused.png",
+      "docs/screenshots/locales/en/reset-confirmation.png",
+      "docs/screenshots/locales/en/reset-empty.png",
+      "docs/screenshots/locales/en/reset-pending.png",
+      "docs/screenshots/locales/ru/main.png",
+      "docs/screenshots/locales/ru/compact.png",
+      "docs/screenshots/locales/ru/stale.png",
+      "docs/screenshots/locales/ru/settings.png",
+      "docs/screenshots/locales/ru/settings-focused.png",
+      "docs/screenshots/locales/ru/reset-confirmation.png",
+      "docs/screenshots/locales/ru/reset-empty.png",
+      "docs/screenshots/locales/ru/reset-pending.png",
+      "docs/screenshots/locales/uk/main.png",
+      "docs/screenshots/locales/uk/compact.png",
+      "docs/screenshots/locales/uk/stale.png",
+      "docs/screenshots/locales/uk/settings.png",
+      "docs/screenshots/locales/uk/settings-focused.png",
+      "docs/screenshots/locales/uk/reset-confirmation.png",
+      "docs/screenshots/locales/uk/reset-empty.png",
+      "docs/screenshots/locales/uk/reset-pending.png",
+      "docs/screenshots/locales/sr/main.png",
+      "docs/screenshots/locales/sr/compact.png",
+      "docs/screenshots/locales/sr/stale.png",
+      "docs/screenshots/locales/sr/settings.png",
+      "docs/screenshots/locales/sr/settings-focused.png",
+      "docs/screenshots/locales/sr/reset-confirmation.png",
+      "docs/screenshots/locales/sr/reset-empty.png",
+      "docs/screenshots/locales/sr/reset-pending.png",
+      "docs/screenshots/locales/fr/main.png",
+      "docs/screenshots/locales/fr/compact.png",
+      "docs/screenshots/locales/fr/stale.png",
+      "docs/screenshots/locales/fr/settings.png",
+      "docs/screenshots/locales/fr/settings-focused.png",
+      "docs/screenshots/locales/fr/reset-confirmation.png",
+      "docs/screenshots/locales/fr/reset-empty.png",
+      "docs/screenshots/locales/fr/reset-pending.png",
+      "docs/screenshots/locales/de/main.png",
+      "docs/screenshots/locales/de/compact.png",
+      "docs/screenshots/locales/de/stale.png",
+      "docs/screenshots/locales/de/settings.png",
+      "docs/screenshots/locales/de/settings-focused.png",
+      "docs/screenshots/locales/de/reset-confirmation.png",
+      "docs/screenshots/locales/de/reset-empty.png",
+      "docs/screenshots/locales/de/reset-pending.png",
+      "docs/screenshots/locales/zh-CN/main.png",
+      "docs/screenshots/locales/zh-CN/compact.png",
+      "docs/screenshots/locales/zh-CN/stale.png",
+      "docs/screenshots/locales/zh-CN/settings.png",
+      "docs/screenshots/locales/zh-CN/settings-focused.png",
+      "docs/screenshots/locales/zh-CN/reset-confirmation.png",
+      "docs/screenshots/locales/zh-CN/reset-empty.png",
+      "docs/screenshots/locales/zh-CN/reset-pending.png",
+      "docs/screenshots/locales/ja/main.png",
+      "docs/screenshots/locales/ja/compact.png",
+      "docs/screenshots/locales/ja/stale.png",
+      "docs/screenshots/locales/ja/settings.png",
+      "docs/screenshots/locales/ja/settings-focused.png",
+      "docs/screenshots/locales/ja/reset-confirmation.png",
+      "docs/screenshots/locales/ja/reset-empty.png",
+      "docs/screenshots/locales/ja/reset-pending.png"
     ],
     "preview": {
       "purpose": "Self-contained HTML/CSS translations for the design panel. The shipped application is native WPF; previews are not application code.",
-      "language": "English documentation examples."
+      "language": "English documentation examples.",
+      "states": "Synthetic component examples; actual WPF evidence includes available, empty, stale, uncertain retry, confirmation and Settings focus states across all eight locales."
+    },
+    "geometry": {
+      "main": {
+        "outerMargin": 8,
+        "width": 386,
+        "rowHeights": [
+          34,
+          244,
+          74,
+          74,
+          94,
+          32
+        ],
+        "height": 598,
+        "contentInset": "19,14,19,12"
+      },
+      "settings": {
+        "languageSelectHeight": 32,
+        "width": 510,
+        "intervalSelectHeight": 30,
+        "height": 570,
+        "inset": 24
+      },
+      "compact": {
+        "width": 285,
+        "height": 94
+      },
+      "resetConfirmation": {
+        "placement": "center owner",
+        "width": 470,
+        "height": "size to content",
+        "inset": 24
+      }
+    },
+    "localization": {
+      "default": "en",
+      "languages": [
+        "en",
+        "ru",
+        "uk",
+        "sr",
+        "fr",
+        "de",
+        "zh-CN",
+        "ja"
+      ],
+      "scripts": {
+        "sr": "Cyrillic",
+        "zh-CN": "Simplified Chinese"
+      },
+      "selection": "Native names in Settings; changes preview immediately.",
+      "save": "Persists selected language.",
+      "cancel": "Cancel or closing Settings restores the original language.",
+      "coverage": [
+        "widget",
+        "settings",
+        "confirmation",
+        "tray",
+        "tooltips",
+        "errors",
+        "accessibility names",
+        "local dates",
+        "numbers"
+      ],
+      "timeZone": "User local time zone."
+    },
+    "earnedResets": {
+      "placement": "Below both quota rows in full view; details in compact tooltip.",
+      "completeExpiry": "Earliest expiry.",
+      "partialExpiry": "Earliest known expiry with incomplete-details tooltip.",
+      "unknownExpiry": "Explicit unavailable expiry; empty count has no expiry line.",
+      "freshnessMinutes": 6,
+      "newSpendDisabled": [
+        "operation in progress",
+        "empty or unknown credits",
+        "stale or failed quota data",
+        "no usable credit",
+        "blocked pending-record recovery"
+      ],
+      "confirmation": "Spend one reset; repeat availability and expiry; Cancel is default and escape action.",
+      "uncertain": "Retry reset confirms and reuses the persisted attempt and credit identity, including after restart; may recover with stale data.",
+      "blockedRecovery": "Disable action until the pending record can be recovered."
     }
   },
   "components": [
@@ -416,7 +572,7 @@
       "name": "Action button",
       "kind": "button",
       "refersTo": "action-button",
-      "description": "Settings save or cancel action.",
+      "description": "Shared Settings, earned-reset and confirmation action; tonal hover, lime focus and disabled opacity.",
       "html": "<button class=\"ds-action\">Save</button>",
       "css": ".ds-action{height:36px;padding:0 14px;background:#2B3036;color:#F6F6F7;border:1px solid #59616C;border-radius:8px;font:13px \"Segoe UI\",sans-serif;cursor:pointer}.ds-action:hover{background:#3B424C}.ds-action:focus-visible{border-color:#9BEF29;outline:none}.ds-action:disabled{opacity:.4}"
     },
@@ -442,6 +598,28 @@
       "description": "Concentric vector tracks with consumed arcs and explicit remaining descriptions.",
       "html": "<svg class=\"ds-rings\" viewBox=\"0 0 220 220\" role=\"img\" aria-label=\"Five-hour quota: 34 percent consumed, 66 percent remaining. Weekly quota: 19 percent consumed, 81 percent remaining.\"><circle cx=\"110\" cy=\"110\" r=\"101\" stroke=\"#3D1E2B\"/><circle cx=\"110\" cy=\"110\" r=\"76\" stroke=\"#263719\"/><circle cx=\"110\" cy=\"110\" r=\"101\" stroke=\"#FF397E\" pathLength=\"100\" stroke-dasharray=\"34 100\" transform=\"rotate(-90 110 110)\"/><circle cx=\"110\" cy=\"110\" r=\"76\" stroke=\"#9BEF29\" pathLength=\"100\" stroke-dasharray=\"19 100\" transform=\"rotate(-90 110 110)\"/></svg>",
       "css": ".ds-rings{width:220px;height:220px}.ds-rings circle{fill:none;stroke-width:18;stroke-linecap:round}"
+    },
+    {
+      "name": "Language select",
+      "kind": "input",
+      "refersTo": "select",
+      "description": "Eight choices in Settings; immediate preview, Save persists and Cancel restores. English labels here describe the native-name options.",
+      "html": "<select class=\"ds-language\" aria-label=\"Language\"><option>English</option><option>Russian</option><option>Ukrainian</option><option>Serbian (Cyrillic)</option><option>French</option><option>German</option><option>Simplified Chinese</option><option>Japanese</option></select>",
+      "css": ".ds-language{width:200px;height:32px;padding:0 9px;background:#252930;color:#F6F6F7;border:1px solid #626A76;border-radius:6px;font:13px \"Segoe UI\",sans-serif}.ds-language:focus-visible{border-color:#9BEF29;outline:none}.ds-language option{padding:6px 9px;background:#252930;color:#F6F6F7}.ds-language option:checked{background:#414A55}"
+    },
+    {
+      "name": "Earned-reset section",
+      "kind": "custom",
+      "description": "Available count and earliest expiry below quota rows; incomplete metadata reads earliest known expiry. Empty or stale states disable a new spend; uncertain results offer a same-attempt retry.",
+      "html": "<section class=\"ds-resets\"><div class=\"ds-reset-head\"><div><strong>Earned resets</strong><p>3 available</p></div><button class=\"ds-reset-action\">Reset limits</button></div><p class=\"ds-reset-expiry\">First expires: Oct 14, 2026, 18:00</p></section>",
+      "css": ".ds-resets{width:330px;background:#141619;color:#F6F6F7;border-bottom:1px solid #2A2D33;padding:11px 0 8px;font:12px \"Segoe UI\",sans-serif}.ds-reset-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.ds-resets strong{font-size:14px;font-weight:600}.ds-resets p{color:#ABB0BA;margin:5px 0}.ds-reset-expiry{font-size:11px}.ds-reset-action{height:36px;padding:0 11px;background:#2B3036;color:#F6F6F7;border:1px solid #59616C;border-radius:8px;font:12px \"Segoe UI\",sans-serif;cursor:pointer}.ds-reset-action:hover{background:#3B424C}.ds-reset-action:focus-visible{border-color:#9BEF29;outline:none}.ds-reset-action:disabled{opacity:.4}"
+    },
+    {
+      "name": "Reset confirmation",
+      "kind": "custom",
+      "description": "Owner-centered native dialog, 470 DIP wide with height sized to content. Cancel is default; uncertain outcomes confirm retry of the persisted attempt.",
+      "html": "<section class=\"ds-confirm\" role=\"dialog\" aria-labelledby=\"ds-confirm-title\"><h2 id=\"ds-confirm-title\">Use an earned reset?</h2><p>This spends one earned reset to reset your Codex limits.</p><strong>3 available</strong><p class=\"ds-confirm-expiry\">First expires: Oct 14, 2026, 18:00</p><div class=\"ds-confirm-actions\"><button class=\"ds-confirm-button\" autofocus>Cancel</button><button class=\"ds-confirm-button\">Use reset</button></div></section>",
+      "css": ".ds-confirm{width:422px;padding:24px;background:#141619;color:#F6F6F7;font:13px \"Segoe UI\",sans-serif}.ds-confirm h2{font-size:21px;font-weight:600;margin:0 0 15px}.ds-confirm p{color:#ABB0BA;margin:0 0 15px}.ds-confirm .ds-confirm-expiry{font-size:12px;margin:5px 0 23px}.ds-confirm-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}.ds-confirm-button{height:36px;padding:0 14px;background:#2B3036;color:#F6F6F7;border:1px solid #59616C;border-radius:8px;font:13px \"Segoe UI\",sans-serif;cursor:pointer}.ds-confirm-button:hover{background:#3B424C}.ds-confirm-button:focus-visible{border-color:#9BEF29;outline:none}.ds-confirm-button:disabled{opacity:.4}"
     }
   ],
   "narrative": {
@@ -451,7 +629,9 @@
       "Matte dark surface with stable pink and lime window identities.",
       "Consumed quota rings paired with explicit remaining numbers.",
       "Separate full and compact compositions with local reset details.",
-      "Native Windows keyboard interaction and accessible quota semantics."
+      "Native Windows keyboard interaction and accessible quota semantics.",
+      "English-default, locale-aware copy with reversible live Settings preview.",
+      "Earned-reset availability with explicit spend confirmation and same-attempt recovery."
     ],
     "rules": [
       {
@@ -463,6 +643,11 @@
         "name": "The Consumed Ring Rule",
         "body": "Arcs encode consumed quota; prominent row and compact numbers encode remaining quota, with explicit labels and accessible names.",
         "section": "components"
+      },
+      {
+        "name": "The Explicit Reset Rule",
+        "body": "Spending a reset requires confirmation with Cancel as default; an uncertain outcome retries the same persisted attempt.",
+        "section": "components"
       }
     ],
     "dos": [
@@ -470,7 +655,10 @@
       "Do label absent windows as unavailable; do not invent a zero remaining value.",
       "Do keep dates close to the quota they describe.",
       "Do keep real quota data out of committed preview images.",
-      "Do retain visible keyboard focus and read-only accessible quota semantics."
+      "Do retain visible keyboard focus and read-only accessible quota semantics.",
+      "Do preview language changes immediately and restore the previous language on Cancel.",
+      "Do distinguish earliest known expiry from complete expiry metadata.",
+      "Do keep reset spending explicit and preserve the same attempt for uncertain retries."
     ],
     "donts": [
       "Don't add an Apple logo, watch hardware frame, extra activity ring or decorative metrics."

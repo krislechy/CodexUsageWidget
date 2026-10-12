@@ -26,6 +26,18 @@ Close, Escape and Alt+F4 hide it to the tray. Left-click the pink/lime ring icon
 
 The widget checks saved coordinates against connected monitors and moves an off-screen window back into the primary work area.
 
+## Reset button disabled / expiry unknown
+
+A new reset requires a current snapshot, a positive server-reported count and an eligible returned credit ID. Refresh if metadata is unavailable or stale. Codex can return only a count or a partial detail list; the widget does not invent expiry dates. A known date is not a guarantee that another undisclosed reset will not expire earlier.
+
+## Reset result unknown
+
+Use Retry reset to repeat the confirmed attempt. Its persisted idempotency key prevents a second reset being spent if the first request succeeded but its reply was lost. Do not delete `pending-reset.json` while an outcome is uncertain. A damaged or unwritable pending record blocks new resets; restore the record or folder access before retrying. The widget does not automatically consume resets.
+
+## Language
+
+Open Settings and choose a language. Changes preview immediately. Save keeps the choice; Cancel restores the previous language. English is the default for old or missing settings. OS-native file-picker chrome follows the Windows display language.
+
 ## Reset preferences / uninstall
 
 1. Disable Start with Windows in Settings.

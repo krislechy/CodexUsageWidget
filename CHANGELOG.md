@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — 2026-10-12
+
+- Earned reset availability and earliest known expiry, with clear labels for incomplete metadata.
+- Explicit reset action and localized confirmation, including a safe persisted retry after an uncertain response.
+- English-default interface and live language selection in Settings.
+- Russian, Ukrainian, Serbian (Cyrillic), French, German, Simplified Chinese and Japanese catalogs.
+- Localized dates, numbers, errors, tray controls and accessibility names.
+- Expanded native layouts and preview/state checks across all eight languages.
+- 22 dependency-free quota, protocol, reset and catalog regression tests.
+
 ## 0.1.0 — 2026-10-12
 
 - Initial Windows WPF application with Activity-inspired consumed-quota rings.

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
@@ -31,12 +32,17 @@ public partial class MainWindow : Window
     private Forms.NotifyIcon? _tray;
     private bool _exiting;
     private bool _changingSettings;
+    private bool _resetAction;
+    private readonly PendingResetStore _pendingResets = new(WidgetSettings.PendingResetPath);
 
     public MainWindow(bool preview, string[] arguments)
     {
         _preview = preview;
         _arguments = arguments;
         _settings = preview ? new WidgetSettings() : WidgetSettings.Load();
+        var languageIndex = Array.IndexOf(arguments, "--language");
+        Localization.Current.SetLanguage(languageIndex >= 0 && languageIndex + 1 < arguments.Length
+            ? arguments[languageIndex + 1] : _settings.Language);
         InitializeComponent();
         DataContext = _viewModel;
         _viewModel.IsCompact = arguments.Contains("--compact") || _settings.Compact;
@@ -49,6 +55,24 @@ public partial class MainWindow : Window
         EnsureVisible();
         _clock.Tick += (_, _) => _viewModel.Tick();
         _viewModel.PropertyChanged += (_, _) => UpdateTray();
+        Localization.Current.PropertyChanged += LanguageChanged;
+        if (!_preview) LoadPendingReset();
+    }
+
+    private void LanguageChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        UpdatePin();
+        UpdateTray();
+    }
+
+    private void LoadPendingReset()
+    {
+        try { _viewModel.SetPendingReset(_pendingResets.Load() is not null); }
+        catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException)
+        {
+            _viewModel.SetPendingReset(true, blocked: true);
+            _viewModel.SetNotice("PendingStoreError");
+        }
     }
 
     private void EnsureVisible()
@@ -81,7 +105,15 @@ public partial class MainWindow : Window
                 try
                 {
                     if (captureIndex + 1 >= _arguments.Length) throw new ArgumentException("--capture requires an output directory.");
-                    await CapturePreviewsAsync(Path.GetFullPath(_arguments[captureIndex + 1]));
+                    var output = Path.GetFullPath(_arguments[captureIndex + 1]);
+                    if (_arguments.Contains("--all-languages"))
+                        foreach (var language in Localization.Languages)
+                        {
+                            Localization.Current.SetLanguage(language.Code);
+                            await CapturePreviewsAsync(Path.Combine(output, "locales", language.Code));
+                        }
+                    Localization.Current.SetLanguage(_settings.Language);
+                    await CapturePreviewsAsync(output);
                     Application.Current.Shutdown(0);
                 }
                 catch (Exception exception)
@@ -115,8 +147,8 @@ public partial class MainWindow : Window
 
     private void ApplyLayout()
     {
-        Width = _viewModel.IsCompact ? 285 : 356;
-        Height = _viewModel.IsCompact ? 94 : 504;
+        Width = _viewModel.IsCompact ? 285 : 386;
+        Height = _viewModel.IsCompact ? 94 : 598;
         Surface.CornerRadius = new CornerRadius(_viewModel.IsCompact ? 22 : 26);
     }
 
@@ -160,7 +192,45 @@ public partial class MainWindow : Window
     private void UpdatePin()
     {
         PinButton.Foreground = (Brush)FindResource(Topmost ? "Lime" : "Muted");
-        PinButton.ToolTip = Topmost ? "Закреплён поверх окон" : "Закрепить поверх окон";
+        PinButton.ToolTip = Localization.Current[Topmost ? "PinOn" : "PinOff"];
+    }
+
+    private async void Reset_Click(object sender, RoutedEventArgs e)
+    {
+        if (_resetAction || !_viewModel.CanReset) return;
+        _resetAction = true;
+        var sent = false;
+        try
+        {
+            var dialog = new ResetConfirmationWindow(_viewModel) { Owner = this, Topmost = Topmost };
+            if (dialog.ShowDialog() != true) return;
+            if (!_viewModel.CanReset) { _viewModel.SetNotice("RefreshToReset"); return; }
+            if (_preview) { _viewModel.SetNotice("ResetSuccess"); return; }
+            if (_monitor is null || _exiting) return;
+            _viewModel.SetResetBusy(true);
+            var request = _pendingResets.Load() ?? _pendingResets.Begin(_viewModel.NextResetCredit?.Id
+                ?? throw new IOException("Reset details are not available."));
+            _viewModel.SetPendingReset(true);
+            sent = true;
+            var outcome = await _monitor.ConsumeResetAsync(request);
+            _pendingResets.Complete();
+            _viewModel.SetPendingReset(false);
+            _viewModel.SetNotice(outcome switch
+            {
+                ResetOutcome.Reset => "ResetSuccess", ResetOutcome.AlreadyRedeemed => "ResetAlreadyApplied",
+                ResetOutcome.NothingToReset => "NothingToReset", _ => "NoCredit"
+            });
+        }
+        catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException or
+            UsageUnavailableException or TimeoutException or OperationCanceledException or System.ComponentModel.Win32Exception)
+        {
+            if (!_exiting)
+            {
+                LoadPendingReset();
+                _viewModel.SetError(sent ? "ResetUncertain" : "PendingStoreError");
+            }
+        }
+        finally { _resetAction = false; _viewModel.SetResetBusy(false); }
     }
 
     private async void Refresh_Click(object sender, RoutedEventArgs e)
@@ -171,7 +241,7 @@ public partial class MainWindow : Window
 
     private async void Settings_Click(object sender, RoutedEventArgs e)
     {
-        if (_changingSettings) return;
+        if (_changingSettings || _resetAction) return;
         _changingSettings = true;
         try
         {
@@ -214,24 +284,33 @@ public partial class MainWindow : Window
     {
         _tray = new Forms.NotifyIcon { Icon = CreateIcon(), Visible = true, Text = "Codex Usage Widget" };
         var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add("Показать виджет", null, (_, _) => Dispatcher.Invoke(ShowWidget));
-        menu.Items.Add("Компактный вид / развернуть", null, (_, _) => Dispatcher.Invoke(() => Compact_Click(this, new RoutedEventArgs())));
-        menu.Items.Add("Обновить сейчас", null, (_, _) => Dispatcher.Invoke(() => Refresh_Click(this, new RoutedEventArgs())));
-        menu.Items.Add("Настройки", null, (_, _) => Dispatcher.Invoke(() => { ShowWidget(); Settings_Click(this, new RoutedEventArgs()); }));
+        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(ShowWidget)).Tag = "MenuShow";
+        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(() => Compact_Click(this, new RoutedEventArgs()))).Tag = "MenuMode";
+        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(() => Refresh_Click(this, new RoutedEventArgs()))).Tag = "RefreshShort";
+        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(() => { ShowWidget(); Settings_Click(this, new RoutedEventArgs()); })).Tag = "Settings";
+        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(() => { ShowWidget(); Reset_Click(this, new RoutedEventArgs()); })).Tag = "ResetAction";
         menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add("Выйти", null, (_, _) => Dispatcher.Invoke(ExitAsync));
+        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(ExitAsync)).Tag = "MenuExit";
         _tray.ContextMenuStrip = menu;
         _tray.MouseClick += (_, e) => { if (e.Button == Forms.MouseButtons.Left) Dispatcher.Invoke(ShowWidget); };
+        UpdateTray();
     }
 
     private void ShowWidget() { EnsureVisible(); Show(); Activate(); }
 
     private void UpdateTray()
     {
-        if (_tray is null) return;
-        var text = $"Codex · 5 ч {_viewModel.FiveHourRemaining} · 7 д {_viewModel.WeeklyRemaining}";
-        if (_viewModel.HasError) text += " · устарело";
+        if (_exiting || _tray is null) return;
+        var text = $"Codex · {Localization.Current["FiveHours"]} {_viewModel.FiveHourRemaining} · {Localization.Current["Weekly"]} {_viewModel.WeeklyRemaining}";
+        if (_viewModel.HasError) text += " · !";
         _tray.Text = text.Length > 63 ? text[..63] : text;
+        if (_tray.ContextMenuStrip is { } menu)
+            foreach (var item in menu.Items.OfType<Forms.ToolStripMenuItem>())
+                if (item.Tag is string key)
+                {
+                    item.Text = key == "ResetAction" ? $"{_viewModel.ResetButtonText} · {_viewModel.ResetAvailability}" : Localization.Current[key];
+                    if (key == "ResetAction") item.Enabled = _viewModel.CanReset;
+                }
     }
 
     private void SaveSettings()
@@ -259,6 +338,8 @@ public partial class MainWindow : Window
             _tray.Dispose();
         }
         if (_monitor is not null) await _monitor.DisposeAsync();
+        Localization.Current.PropertyChanged -= LanguageChanged;
+        _viewModel.Dispose();
         Application.Current.Shutdown();
     }
 
@@ -283,16 +364,21 @@ public partial class MainWindow : Window
     private void SetDemoSnapshot()
     {
         var now = DateTimeOffset.UtcNow;
-        _viewModel.SetSnapshot(new UsageSnapshot(new QuotaWindow(73, 300, now.AddHours(3)), new QuotaWindow(11, 10080, now.AddDays(6)), now));
+        _viewModel.SetSnapshot(new UsageSnapshot(new QuotaWindow(73, 300, now.AddHours(3)), new QuotaWindow(11, 10080, now.AddDays(6)), now,
+            new ResetCredits(3, [new("demo-first", now.AddDays(2)), new("demo-second", now.AddDays(8)), new("demo-third", now.AddDays(14))]), true));
     }
 
     private async Task CapturePreviewsAsync(string directory)
     {
         Directory.CreateDirectory(directory);
+        SetDemoSnapshot();
+        _viewModel.SetPendingReset(false);
         _viewModel.IsCompact = false;
         ApplyLayout();
         await Task.Delay(650);
         VerifyRingAccessibility();
+        if (!_viewModel.CanReset || !_viewModel.ResetAvailability.Contains("3", StringComparison.Ordinal))
+            throw new InvalidOperationException("Available reset state verification failed.");
         Capture(Surface, Path.Combine(directory, "main.png"));
         _viewModel.IsCompact = true;
         ApplyLayout();
@@ -300,10 +386,26 @@ public partial class MainWindow : Window
         Capture(Surface, Path.Combine(directory, "compact.png"));
         _viewModel.IsCompact = false;
         ApplyLayout();
-        _viewModel.SetError("The network is unavailable. The next refresh will retry.");
+        _viewModel.SetError("ConnectionError");
         await Task.Delay(150);
+        if (_viewModel.CanReset) throw new InvalidOperationException("Stale reset action should be disabled.");
         Capture(Surface, Path.Combine(directory, "stale.png"));
-        var settings = new SettingsWindow(new WidgetSettings()) { Owner = this };
+        _viewModel.SetPendingReset(true);
+        if (!_viewModel.CanReset) throw new InvalidOperationException("A pending reset should permit an idempotent retry.");
+        Capture(Surface, Path.Combine(directory, "reset-pending.png"));
+        _viewModel.SetPendingReset(false);
+        SetDemoSnapshot();
+        var confirmation = new ResetConfirmationWindow(_viewModel) { Owner = this };
+        confirmation.Show();
+        await Task.Delay(100);
+        Capture((FrameworkElement)confirmation.Content, Path.Combine(directory, "reset-confirmation.png"));
+        confirmation.Close();
+        _viewModel.SetSnapshot(_viewModel.Snapshot! with { ObservedAt = DateTimeOffset.UtcNow, ResetCredits = new ResetCredits(0, []), ResetCreditsIncluded = true });
+        if (_viewModel.CanReset) throw new InvalidOperationException("Zero available resets should disable the action.");
+        await Task.Delay(100);
+        Capture(Surface, Path.Combine(directory, "reset-empty.png"));
+        SetDemoSnapshot();
+        var settings = new SettingsWindow(new WidgetSettings { Language = Localization.Current.Language }) { Owner = this };
         settings.Show();
         await Task.Delay(150);
         Capture((FrameworkElement)settings.Content, Path.Combine(directory, "settings.png"));
@@ -312,7 +414,14 @@ public partial class MainWindow : Window
         Keyboard.Focus(selector);
         await Task.Delay(100);
         Capture((FrameworkElement)settings.Content, Path.Combine(directory, "settings-focused.png"));
+        var originalLanguage = Localization.Current.Language;
+        var languageBox = (System.Windows.Controls.ComboBox)settings.FindName("LanguageBox");
+        languageBox.SelectedValue = originalLanguage == "de" ? "fr" : "de";
+        if (Localization.Current.Language == originalLanguage)
+            throw new InvalidOperationException("Language selection did not update the interface.");
         settings.Close();
+        if (Localization.Current.Language != originalLanguage)
+            throw new InvalidOperationException("Cancel did not restore the language.");
     }
 
     private void VerifyRingAccessibility()
@@ -322,8 +431,7 @@ public partial class MainWindow : Window
             var peer = UIElementAutomationPeer.CreatePeerForElement(ring) ?? throw new InvalidOperationException("Ring automation peer is missing.");
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
             if (provider is null || !provider.IsReadOnly || provider.Value != ring.Value ||
-                !peer.GetName().Contains("Израсходовано", StringComparison.Ordinal) ||
-                !peer.GetName().Contains("осталось", StringComparison.Ordinal))
+                !peer.GetName().Contains(Localization.Current.Format("ConsumedValue", ring.Value.ToString("0.#", Localization.Current.Culture)), StringComparison.Ordinal))
                 throw new InvalidOperationException("Ring accessibility verification failed.");
         }
     }

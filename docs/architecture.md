@@ -8,6 +8,9 @@ src/CodexUsageWidget.Core/
   CodexClient.cs      JSON-line stdio protocol, request correlation and reconnect
   UsageSnapshot.cs    General quota bucket selection and window normalization
   UsageMonitor.cs     Event subscription, periodic polling and refresh serialization
+  ResetCredits.cs     Earned reset metadata, outcomes and durable pending-request store
+  Localization.cs     Embedded catalogs, culture selection and observable text
+  Locales/*.json      Eight complete language catalogs
 src/CodexUsageWidget/
   App.xaml(.cs)      WPF resources, application lifetime and single instance
   MainWindow.xaml    Full and compact layouts
@@ -15,6 +18,8 @@ src/CodexUsageWidget/
   WidgetViewModel.cs Display state, date/percentage formatting, stale status
   WidgetSettings.cs  Local preferences and explicit startup registration
   SettingsWindow.*  Configuration UI
+  ResetConfirmationWindow.* Explicit spend/retry confirmation
+  TranslateExtension.cs Live XAML bindings to the selected catalog
   Controls/RingGauge.cs Animated, resolution-independent quota arcs
 tests/CodexUsageWidget.Tests/
   Program.cs         Dependency-free regressions and fake stdio app-server
@@ -29,7 +34,7 @@ tests/CodexUsageWidget.Tests/
 5. `UsageSnapshot` selects only the general `codex` bucket and matches 300/10080-minute windows. Unknown windows are absent, not zero.
 6. `WidgetViewModel` exposes display values. The rings represent consumed percentages and the prominent row values represent remaining percentages. Older snapshots cannot replace a newer snapshot.
 
-The transport has no dependency on WPF. The application uses code-behind for native window/tray actions and a small view model for display bindings. A DI container, database and event bus would add no useful capability here.
+The transport has no dependency on WPF. The application uses code-behind for native window/tray/reset actions and a small view model for display bindings. A DI container, database and event bus would add no useful capability here.
 
 ## Failure and refresh behavior
 
@@ -45,7 +50,21 @@ The transport has no dependency on WPF. The application uses code-behind for nat
 
 Preferences are in `%LOCALAPPDATA%\CodexUsageWidget\settings.json`, saved by a temporary-file replacement. Startup registration is the current user's `Run` entry and is changed only through the explicit checkbox.
 
-Authentication belongs to the official CLI. The widget does not read `auth.json`, use browser cookies, change Codex configuration, redeem reset credits or start inference. No raw protocol responses or stderr lines are persisted.
+Authentication belongs to the official CLI. The widget does not read `auth.json`, use browser cookies, change Codex configuration or start inference. No raw protocol responses or stderr lines are persisted.
+
+## Earned reset state machine
+
+The authoritative count comes from `rateLimitResetCredits.availableCount`; detail rows may be capped or null. Eligible rows must have an available status, the Codex reset type and an opaque ID. Expired rows are excluded from credit selection. Partial expiry information is labelled as a known date rather than a globally guaranteed earliest date.
+
+After confirmation, `PendingResetStore.Begin` writes one GUID idempotency key and the chosen credit ID to `%LOCALAPPDATA%\\CodexUsageWidget\\pending-reset.json` before any request is sent. New calls reuse an existing pending record. `UsageMonitor.ConsumeResetAsync` shares the polling semaphore so reads and mutations do not overlap. Definitive outcomes (`reset`, `alreadyRedeemed`, `nothingToReset`, `noCredit`) clear the pending record and trigger a quota read. If the quota read fails after a definitive consume outcome, the action still completes but the displayed data stays marked stale.
+
+Timeouts and transport errors keep the pending record. The UI offers a confirmed retry of that exact request, even after an application restart. No polling or startup path calls the consume method. Corrupt/unwritable pending state blocks a new reset rather than replacing its identity.
+
+## Localization
+
+`Localization` loads embedded JSON catalogs, defaults to English and notifies live XAML bindings and the view model when the selection changes. All catalogs must have the same keys and compatible formatting placeholders. The selected culture formats numbers and dates; WPF `Language` bindings use an explicit conversion culture to avoid a circular language conversion.
+
+Settings preview a selection immediately. Cancel restores the original locale; Save persists it with the other preferences. Tray text and accessibility names also update. Serbian uses Cyrillic; Chinese uses the simplified catalog. Runtime catalogs are marked `WithCulture=false` so they stay in the core assembly rather than being split into satellite assemblies.
 
 ## Verification
 

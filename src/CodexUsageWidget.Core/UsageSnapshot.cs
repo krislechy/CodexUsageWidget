@@ -7,7 +7,8 @@ public sealed record QuotaWindow(double UsedPercent, int DurationMinutes, DateTi
     public double RemainingPercent => Math.Clamp(100 - UsedPercent, 0, 100);
 }
 
-public sealed record UsageSnapshot(QuotaWindow? FiveHour, QuotaWindow? Weekly, DateTimeOffset ObservedAt)
+public sealed record UsageSnapshot(QuotaWindow? FiveHour, QuotaWindow? Weekly, DateTimeOffset ObservedAt,
+    ResetCredits? ResetCredits = null, bool ResetCreditsIncluded = false)
 {
     public static UsageSnapshot Parse(JsonElement payload, DateTimeOffset? observedAt = null)
     {
@@ -34,7 +35,8 @@ public sealed record UsageSnapshot(QuotaWindow? FiveHour, QuotaWindow? Weekly, D
         var weekly = windows.FirstOrDefault(window => window?.DurationMinutes == 10080);
         if (fiveHour is null && weekly is null)
             throw new UsageUnavailableException("Codex did not return a five-hour or weekly quota window.");
-        return new(fiveHour, weekly, observedAt ?? DateTimeOffset.UtcNow);
+        return new(fiveHour, weekly, observedAt ?? DateTimeOffset.UtcNow, global::CodexUsageWidget.Core.ResetCredits.Parse(payload),
+            payload.TryGetProperty("rateLimitResetCredits", out _));
     }
 
     private static QuotaWindow? ReadWindow(JsonElement limits, string key)

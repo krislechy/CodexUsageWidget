@@ -107,7 +107,7 @@ components:
 
 The user approved an Apple Watch Activity-inspired concept: concentric pink and lime rings on a near-black, rounded floating window. The interface is a glanceable utility. Exact quota semantics matter more than decorative effects. This identity uses native Windows WPF typography, controls and vector rendering.
 
-The approved reference is [mockup-01.png](docs/design/mockup-01.png). Actual WPF renders are in [docs/screenshots](docs/screenshots). All screenshot values are synthetic.
+The approved reference is [mockup-01.png](docs/design/mockup-01.png). Actual WPF renders are in [docs/screenshots](docs/screenshots): eight states at the root and the same eight in each of the eight locale directories. All screenshot values are synthetic.
 
 **Key Characteristics:**
 
@@ -115,6 +115,8 @@ The approved reference is [mockup-01.png](docs/design/mockup-01.png). Actual WPF
 - Consumed quota rings paired with explicit remaining numbers.
 - Separate full and compact compositions with local reset details.
 - Native Windows keyboard interaction and accessible quota semantics.
+- English-default, locale-aware copy with reversible live Settings preview.
+- Earned-reset availability with explicit spend confirmation and same-attempt recovery.
 
 ## Colors
 
@@ -128,15 +130,15 @@ The current-status dot uses soft green. Controls use darker gray fields and tona
 
 ## Typography
 
-Use the native Segoe UI Variable / Segoe UI family for the approved Windows system typography. Titles are semibold; percentages are bold. Dates use the user's local time zone with Russian display formatting. Keep English project documentation separate from Russian interface copy.
+Use the native Segoe UI Variable / Segoe UI family for the approved Windows system typography. Titles are semibold; percentages are bold. Dates use the user's local time zone and selected locale; percentages and available-reset counts use the same culture. The UI defaults to English and supports English (en), Russian (ru), Ukrainian (uk), Serbian Cyrillic (sr), French (fr), German (de), Simplified Chinese (zh-CN) and Japanese (ja). Keep project documentation and design-panel examples in English.
 
 The remaining-value role is the frontmatter's percentage token. The ring center uses a bold consumed value (30 device-independent pixels) and semibold weekly value (18). Compact remaining values use the compact-percentage role. Settings inherit Segoe UI at 13 and use a semibold heading at 24. WPF sizes recorded as `px` in portable tokens mean device-independent pixels, not physical display pixels. No explicit line-height or tracking scale is set.
 
 ## Layout
 
-Main window: 356 × 504 device-independent pixels, including transparent margins. Header, 220-pixel ring assembly, two quota rows, then the status/control footer. Full rows include remaining percentage and reset date. Compact window: 285 × 94 pixels, a 48-pixel ring assembly and two remaining-percentage columns. Details are available through hover and the expand action.
+Main window: 386 × 598 device-independent pixels, including transparent margins. Header, 220-pixel ring assembly, two quota rows, earned-reset section, then the status/control footer. The expanded grid allocates 34, 244, 74, 74, 94 and 32 pixels to those rows; its inset is 19 horizontally, 14 above and 12 below within the eight-pixel outer margin. Full rows include remaining percentage and reset date. Compact window: 285 × 94 pixels, a 48-pixel ring assembly and two remaining-percentage columns. Details are available through hover and the expand action.
 
-The full and compact layouts are separate compositions, not a scaled screenshot. WPF vector rendering handles display scaling. Settings use a separate native dialog (430 × 480) with a 24-pixel inset. Keep every control reachable by keyboard and give icon controls accessible names. These are explicit desktop modes; there are no web breakpoints.
+The full and compact layouts are separate compositions, not a scaled screenshot. WPF vector rendering handles display scaling. Settings use a separate native dialog (510 × 570) with a 24-pixel inset. The language selector is 32 pixels high; the refresh selector remains 30 pixels high. Earned-reset confirmation is a 470-pixel-wide owner-centered dialog that sizes its height to wrapped content, with a 24-pixel inset. Keep every control reachable by keyboard and give icon controls accessible names. These are explicit desktop modes; there are no web breakpoints.
 
 ## Elevation & Depth
 
@@ -149,10 +151,10 @@ Concentric clockwise arcs start at twelve o'clock and have round caps. Outer: 22
 ## Components
 
 - `RingGauge`: consumed percentage only. Never silently switch to remaining percentage.
-- Quota row: label, prominent remaining value, explicit `осталось`, local reset date.
+- Quota row: localized label, prominent remaining value, explicit remaining label and local reset date.
 - Icon button: consistent stroked vector geometry, 30-pixel target, visible hover/pressed/focus states.
 - Status: updating, current or stale. Errors retain the last good snapshot and expose recovery detail in a tooltip.
-- Compact view: show remaining numbers, retain reset/status details in the tooltip and a direct expand control.
+- Compact view: show remaining numbers; retain quota reset dates, earned-reset availability/expiry and status details in the tooltip, with a direct expand control.
 
 ### Buttons
 
@@ -170,6 +172,22 @@ Ring changes animate for 550 ms with exponential ease-out, from the current visi
 
 **The Consumed Ring Rule.** Arcs encode consumed quota; prominent row and compact numbers encode remaining quota, with explicit labels and accessible names.
 
+### Language Selection
+
+Settings shows the eight language choices by native name. Selecting a language previews copy immediately across the widget, Settings, tray labels, tooltips, errors and accessibility names. Dates and numbers follow the selected culture without changing the local time zone. Save persists the selection; Cancel or closing Settings restores the language active when the dialog opened. Preserve layout and quota color identities across locales; wrap explanatory dialog text and expose complete truncated details in tooltips.
+
+### Earned Resets
+
+The full window places earned resets below both quota rows. A semibold heading (14 device-independent pixels), muted availability count (12) and expiry detail (11) accompany an explicit gray action button. This section uses existing surface, separator, action and focus tokens; it adds no ring or quota color.
+
+When expiry metadata is complete, label the earliest expiry. When details are capped or incomplete, label only the earliest known expiry and explain incompleteness in the tooltip. If no future expiry is known, say so; zero available resets has no expiry line. Preserve the last known metadata when an update omits it.
+
+A new spend is disabled while updating, with empty or unknown credits, stale or failed quota data, no usable credit, or blocked pending-record recovery. Fresh data becomes stale after six minutes. The confirmation dialog explains spending one earned reset, repeats availability and expiry, and offers Cancel as the default and escape action. Confirmation is required before spending.
+
+An uncertain outcome changes the action to Retry reset and explains that the earlier result is unknown. The retry uses the persisted attempt and credit identity; it can remain available with stale data to recover that attempt, but stays disabled during an operation or when the pending record cannot be recovered. Retry also opens confirmation. Clear the pending identity only after a definitive outcome.
+
+**The Explicit Reset Rule.** Spending a reset requires confirmation with Cancel as default; an uncertain outcome retries the same persisted attempt.
+
 ## Do's and Don'ts
 
 - Do preserve the approved concentric-ring identity across both modes.
@@ -177,4 +195,7 @@ Ring changes animate for 550 ms with exponential ease-out, from the current visi
 - Do keep dates close to the quota they describe.
 - Do keep real quota data out of committed preview images.
 - Do retain visible keyboard focus and read-only accessible quota semantics.
+- Do preview language changes immediately and restore the previous language on Cancel.
+- Do distinguish earliest known expiry from complete expiry metadata.
+- Do keep reset spending explicit and preserve the same attempt for uncertain retries.
 - Don't add an Apple logo, watch hardware frame, extra activity ring or decorative metrics.

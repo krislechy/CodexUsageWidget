@@ -5,6 +5,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using CodexUsageWidget.Core;
 
 namespace CodexUsageWidget.Controls;
 
@@ -84,7 +85,7 @@ public sealed class RingGaugeAutomationPeer(RingGauge owner) : FrameworkElementA
 {
     protected override string GetClassNameCore() => nameof(RingGauge);
     protected override AutomationControlType GetAutomationControlTypeCore() => AutomationControlType.ProgressBar;
-    protected override string GetNameCore() => $"{base.GetNameCore()} Израсходовано {owner.Value:0.#}%.";
+    protected override string GetNameCore() => $"{base.GetNameCore()} {Localization.Current.Format("ConsumedValue", owner.Value.ToString("0.#", Localization.Current.Culture))}";
     public override object? GetPattern(PatternInterface patternInterface) => patternInterface == PatternInterface.RangeValue ? this : base.GetPattern(patternInterface);
     public bool IsReadOnly => true;
     public double LargeChange => 0;

@@ -72,6 +72,32 @@ public sealed class UsageMonitor : IAsyncDisposable
         }
     }
 
+    public async Task<ResetOutcome> ConsumeResetAsync(ResetRequest request)
+    {
+        await _refreshGate.WaitAsync(_lifetime.Token).ConfigureAwait(false);
+        try
+        {
+            BusyChanged?.Invoke(true);
+            var outcome = await _client.ConsumeResetAsync(request, _lifetime.Token).ConfigureAwait(false);
+            try
+            {
+                var snapshot = await _client.ReadLimitsAsync(_lifetime.Token).ConfigureAwait(false);
+                SnapshotReceived?.Invoke(snapshot);
+                StatusChanged?.Invoke(null);
+            }
+            catch (Exception exception) when (exception is UsageUnavailableException or IOException or TimeoutException)
+            {
+                StatusChanged?.Invoke(exception.Message);
+            }
+            return outcome;
+        }
+        finally
+        {
+            BusyChanged?.Invoke(false);
+            _refreshGate.Release();
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_disposed) return;

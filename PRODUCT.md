@@ -8,7 +8,7 @@ Windows desktop.
 
 ## Stack
 
-C# / .NET 10 / WPF. A framework-independent core owns the read-only Codex protocol and quota model.
+C# / .NET 10 / WPF. A framework-independent core owns the quota protocol, reset metadata and localization catalogs.
 
 ## Users and Purpose
 
@@ -20,8 +20,10 @@ A Codex user wants to see the remaining subscription quota and reset dates at a 
 - Subscribe to limit notifications and refresh every minute as a fallback. Notifications on our connection are not assumed to observe all other Codex clients.
 - Show five-hour and weekly remaining percentages and local reset dates; absent quota windows stay unavailable rather than becoming zero.
 - Offer draggable full and compact always-on-top windows, local preferences and a tray menu.
-- English project documentation; Russian interface matching the approved concept.
-- No account credentials are read or stored by the widget. No prompts, turns, credit redemption or account changes.
+- English project documentation and English-default UI. Settings offer English, Russian, Ukrainian, Serbian (Cyrillic), French, German, Simplified Chinese and Japanese.
+- Show available earned resets and their earliest known expiry; distinguish complete from partial expiry metadata.
+- Consume one earned reset only after explicit in-app confirmation. Persist a retry identity before sending; uncertainty never creates a fresh reset attempt.
+- No account credentials are read or stored. No prompts, turns, token purchases or automatic resets.
 
 ## Brand Commitments
 

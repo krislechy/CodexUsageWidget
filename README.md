@@ -15,8 +15,9 @@ A small Windows desktop companion that keeps your Codex subscription limits visi
 - Remembers window position, layout, CLI path and refresh interval.
 - Optional start with Windows, enabled only when you check it in Settings.
 - Retains the last successful snapshot during an outage and marks it as stale.
-- Russian interface; English documentation.
-- Read-only integration: no prompts, model requests, token purchases or quota resets.
+- Available earned resets and the earliest known expiry date, with an explicit reset action and confirmation.
+- English by default, with Russian, Ukrainian, Serbian (Cyrillic), French, German, Simplified Chinese and Japanese in Settings.
+- Monitoring does not start prompts or model requests. A reset is spent only after you confirm the reset action.
 
 ![Compact widget](docs/screenshots/compact.png)
 
@@ -42,6 +43,7 @@ If the widget cannot find Codex, open the gear button and select `codex.exe` or 
 | Drag the window background | Move the widget |
 | Pin | Toggle always-on-top |
 | Gear | Open Settings |
+| Reset limits / tray reset action | Confirm spending one earned reset |
 | Chevron / Ctrl+M | Switch between full and compact views |
 | Double-click compact background | Expand the widget |
 | Refresh / Ctrl+R | Refresh immediately |
@@ -49,7 +51,17 @@ If the widget cannot find Codex, open the gear button and select `codex.exe` or 
 | Left-click tray icon | Show the widget |
 | Tray → Exit | Stop the widget and its child app-server |
 
-Hover the compact widget for reset dates and update status. A second launch does not create a duplicate widget; use the tray icon to show the existing instance.
+Hover the compact widget for quota reset dates, earned reset availability/expiry and update status. Its tray menu also offers the reset action. A second launch does not create a duplicate widget; use the tray icon to show the existing instance.
+
+### Earned resets
+
+The reset section uses Codex's authoritative `availableCount`. When Codex supplies all expiry dates it shows the earliest expiry; if the detail list is capped or incomplete, it explicitly labels the earliest **known** date. Missing metadata stays unknown. Resetting requires a usable returned credit ID and current quota data; a stale snapshot cannot start a new reset.
+
+The confirmation explains that one earned reset will be spent. The widget selects the soonest-expiring usable returned credit, persists the request before sending it, then calls `account/rateLimitResetCredit/consume` with that credit ID and an idempotency key. If the answer is lost, **Retry reset** repeats the same request, including after restarting the application, rather than spending a second reset. Polling never triggers a reset. The widget re-reads authoritative limits after any definitive outcome.
+
+### Languages
+
+Choose the interface language in Settings. The whole interface previews the selection immediately; Save persists it and Cancel restores the previous language. Existing settings without a language field migrate to English. Numbers, dates, errors, tray labels, confirmations and accessibility descriptions follow the selection. Windows system file-picker buttons follow Windows itself.
 
 ## How updates work
 
@@ -69,7 +81,7 @@ dotnet run --project tests/CodexUsageWidget.Tests -c Release
 dotnet run --project src/CodexUsageWidget -c Release
 ```
 
-Tests are an executable regression suite, not an adapter-based `dotnet test` project. They launch a fake stdio server to exercise handshakes, events, request correlation, timeouts, cancellation, process exit and polling. They also cover quota parsing and missing/invalid fields. They require no login or network access.
+Tests are an executable regression suite, not an adapter-based `dotnet test` project. They launch a fake stdio server to exercise handshakes, events, request correlation, timeouts, cancellation, process exit, polling and reset outcomes. They also cover quota/reset metadata, a lost reset response, durable retry identity and the completeness/placeholder consistency of all language catalogs. They require no login or network access and never spend a real reset.
 
 Optional read-only smoke test with your signed-in Codex CLI:
 
@@ -88,6 +100,7 @@ Preview with synthetic values, or capture the actual WPF UI without connecting t
 ```powershell
 dotnet run --project src/CodexUsageWidget -c Release -- --demo
 dotnet run --project src/CodexUsageWidget -c Release -- --capture artifacts/screenshots
+dotnet run --project src/CodexUsageWidget -c Release -- --capture artifacts/screenshots --all-languages
 ```
 
 See [architecture](docs/architecture.md), [design system](DESIGN.md), [privacy](docs/privacy.md) and [troubleshooting](docs/troubleshooting.md).

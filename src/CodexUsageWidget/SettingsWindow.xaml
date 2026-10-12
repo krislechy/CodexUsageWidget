@@ -1,7 +1,10 @@
 <Window x:Class="CodexUsageWidget.SettingsWindow"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- Title="Настройки · Codex Usage" Width="430" Height="480" ResizeMode="NoResize"
+ xmlns:loc="clr-namespace:CodexUsageWidget"
+ xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
+ Title="{loc:Tr Settings}" Width="510" Height="570" ResizeMode="NoResize"
+ Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
  Background="{StaticResource Surface}" Foreground="{StaticResource Text}"
  WindowStartupLocation="CenterOwner" FontFamily="Segoe UI" FontSize="13">
  <Window.Resources>
@@ -27,7 +30,7 @@
        </Border>
       </ControlTemplate></ToggleButton.Template>
      </ToggleButton>
-     <ContentPresenter Content="{TemplateBinding SelectionBoxItem}" Margin="9,0,26,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
+     <ContentPresenter Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="9,0,26,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
      <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True" Focusable="False">
       <Border Background="#252930" BorderBrush="#626A76" BorderThickness="1" CornerRadius="6" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
        <ScrollViewer><ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/></ScrollViewer>
@@ -41,28 +44,32 @@
  <Grid Margin="24">
   <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
   <StackPanel>
-   <TextBlock Text="Настройки" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,22"/>
+   <TextBlock Text="{loc:Tr Settings}" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,22"/>
+   <Grid Margin="0,0,0,20"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="200"/></Grid.ColumnDefinitions>
+    <TextBlock Text="{loc:Tr Language}" VerticalAlignment="Center"/>
+    <ComboBox x:Name="LanguageBox" Grid.Column="1" Height="32" DisplayMemberPath="NativeName" SelectedValuePath="Code" SelectionChanged="Language_Changed" AutomationProperties.Name="{loc:Tr Language}"/>
+   </Grid>
    <TextBlock Text="Codex CLI" FontWeight="SemiBold" Margin="0,0,0,7"/>
    <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="42"/></Grid.ColumnDefinitions>
-    <TextBox x:Name="CodexPathBox" ToolTip="Пустое поле: поиск codex.exe или codex.cmd в PATH" AutomationProperties.Name="Путь к Codex CLI"/>
-    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Margin="7,0,0,0" Padding="0" Click="Browse_Click" AutomationProperties.Name="Выбрать Codex CLI" Content="…"/>
+    <TextBox x:Name="CodexPathBox" ToolTip="{loc:Tr CliAutoHint}" AutomationProperties.Name="{loc:Tr CliPath}"/>
+    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Margin="7,0,0,0" Padding="0" Click="Browse_Click" AutomationProperties.Name="{loc:Tr BrowseCli}" Content="…"/>
    </Grid>
-   <TextBlock Text="Оставьте пустым для автоматического поиска." Foreground="{StaticResource Muted}" FontSize="11" Margin="0,6,0,18"/>
-   <Grid Margin="0,0,0,20"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="135"/></Grid.ColumnDefinitions>
-    <TextBlock Text="Автообновление" VerticalAlignment="Center"/>
-    <ComboBox x:Name="IntervalBox" Grid.Column="1" Height="30" AutomationProperties.Name="Интервал автообновления">
-     <ComboBoxItem Content="30 секунд" Tag="30"/><ComboBoxItem Content="1 минута" Tag="60"/>
-     <ComboBoxItem Content="2 минуты" Tag="120"/><ComboBoxItem Content="5 минут" Tag="300"/>
+   <TextBlock Text="{loc:Tr CliAutoHint}" Foreground="{StaticResource Muted}" FontSize="11" Margin="0,6,0,18" TextWrapping="Wrap"/>
+   <Grid Margin="0,0,0,20"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="200"/></Grid.ColumnDefinitions>
+    <TextBlock Text="{loc:Tr AutoRefresh}" VerticalAlignment="Center"/>
+    <ComboBox x:Name="IntervalBox" Grid.Column="1" Height="30" AutomationProperties.Name="{loc:Tr RefreshInterval}">
+     <ComboBoxItem Content="{loc:Tr Seconds30}" Tag="30"/><ComboBoxItem Content="{loc:Tr Minute1}" Tag="60"/>
+     <ComboBoxItem Content="{loc:Tr Minutes2}" Tag="120"/><ComboBoxItem Content="{loc:Tr Minutes5}" Tag="300"/>
     </ComboBox>
    </Grid>
-   <CheckBox x:Name="TopmostBox" Content="Поверх остальных окон"/>
-   <CheckBox x:Name="StartupBox" Content="Запускать при входе в Windows"/>
-   <TextBlock Text="Для лимитов подписки выполните codex login. Данные считываются автоматически; ручное обновление не требуется." Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap"/>
+   <CheckBox x:Name="TopmostBox" Content="{loc:Tr AboveWindows}"/>
+   <CheckBox x:Name="StartupBox" Content="{loc:Tr StartWindows}"/>
+   <TextBlock Text="{loc:Tr LoginHint}" Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap"/>
    <TextBlock x:Name="ErrorText" Foreground="#F1B859" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0"/>
   </StackPanel>
   <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-   <Button Content="Отмена" Style="{StaticResource ActionButton}" IsCancel="True" Margin="0,0,8,0"/>
-   <Button Content="Сохранить" Style="{StaticResource ActionButton}" IsDefault="True" Click="Save_Click"/>
+   <Button Content="{loc:Tr Cancel}" Style="{StaticResource ActionButton}" IsCancel="True" Margin="0,0,8,0"/>
+   <Button Content="{loc:Tr Save}" Style="{StaticResource ActionButton}" IsDefault="True" Click="Save_Click"/>
   </StackPanel>
  </Grid>
 </Window>

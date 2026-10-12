@@ -15,6 +15,7 @@ if (args.Contains("--live"))
     var snapshot = await client.ReadLimitsAsync();
     Console.WriteLine($"Live Codex connection OK. 5h remaining: {snapshot.FiveHour?.RemainingPercent}; weekly remaining: {snapshot.Weekly?.RemainingPercent}.");
     Console.WriteLine($"Reset dates present: 5h={snapshot.FiveHour?.ResetsAt is not null}, weekly={snapshot.Weekly?.ResetsAt is not null}.");
+    Console.WriteLine($"Reset availability: {snapshot.ResetCredits?.AvailableCount.ToString() ?? "unknown"}; expiry details complete: {snapshot.ResetCredits?.ExpiryDetailsComplete}.");
     return 0;
 }
 
@@ -112,6 +113,96 @@ var tests = new List<(string Name, Func<Task> Run)>
         var exception = await ThrowsAsync<UsageUnavailableException>(() => client.ReadLimitsAsync());
         True(!exception.Message.Contains("secret@example.com", StringComparison.Ordinal));
     }),
+    ("reset count is authoritative when details are capped", () => Check(() =>
+    {
+        var snapshot = Parse(WithResets(3, "[{\"id\":\"r1\",\"status\":\"available\",\"resetType\":\"codexRateLimits\",\"expiresAt\":1900000000}]"));
+        Equal(3, snapshot.ResetCredits!.AvailableCount);
+        True(!snapshot.ResetCredits.ExpiryDetailsComplete);
+        Equal(DateTimeOffset.FromUnixTimeSeconds(1900000000), snapshot.ResetCredits.EarliestKnownExpiry!.Value);
+    })),
+    ("earliest reset selection skips expired and spent credits", () => Check(() =>
+    {
+        var snapshot = Parse(WithResets(2, "[{\"id\":\"expired\",\"status\":\"available\",\"resetType\":\"codexRateLimits\",\"expiresAt\":1},{\"id\":\"later\",\"status\":\"available\",\"resetType\":\"codexRateLimits\",\"expiresAt\":1900500000},{\"id\":\"first\",\"status\":\"available\",\"resetType\":\"codexRateLimits\",\"expiresAt\":1900000000},{\"id\":\"spent\",\"status\":\"used\",\"resetType\":\"codexRateLimits\",\"expiresAt\":1800000000}]"));
+        Equal("first", snapshot.ResetCredits!.NextCredit(DateTimeOffset.UtcNow)!.Id);
+    })),
+    ("unknown reset metadata stays unknown", () => Check(() =>
+    {
+        True(Parse(Limits(73, 11)).ResetCredits is null);
+        var snapshot = Parse(WithResets(3, "null"));
+        Equal(3, snapshot.ResetCredits!.AvailableCount);
+        True(snapshot.ResetCredits.EarliestKnownExpiry is null);
+        True(snapshot.ResetCredits.NextCredit(DateTimeOffset.UtcNow) is null);
+        True(!snapshot.ResetCredits.ExpiryDetailsComplete);
+    })),
+    ("pending reset identity survives restart and is never replaced", () => Check(() =>
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "CodexUsageWidget-test-" + Guid.NewGuid());
+        var path = Path.Combine(directory, "pending.json");
+        try
+        {
+            var request = new PendingResetStore(path).Begin("first");
+            var reopened = new PendingResetStore(path);
+            Equal(request.IdempotencyKey, reopened.Begin("different").IdempotencyKey);
+            Equal("first", reopened.Load()!.CreditId);
+            reopened.Complete();
+            True(reopened.Load() is null);
+            File.WriteAllText(path, "{\"IdempotencyKey\":\"invalid\",\"CreditId\":\"first\"}");
+            Throws<IOException>(() => reopened.Begin("different"));
+        }
+        finally { if (Directory.Exists(directory)) Directory.Delete(directory, true); }
+    })),
+    ("all reset outcomes are parsed and quota is refreshed", async () =>
+    {
+        foreach (var (value, expected) in new[] { ("reset", ResetOutcome.Reset), ("alreadyRedeemed", ResetOutcome.AlreadyRedeemed), ("nothingToReset", ResetOutcome.NothingToReset), ("noCredit", ResetOutcome.NoCredit) })
+        {
+            await using var monitor = new UsageMonitor(FakeClient("reset:" + value), TimeSpan.FromMinutes(1));
+            var observed = false;
+            monitor.SnapshotReceived += _ => observed = true;
+            var outcome = await monitor.ConsumeResetAsync(new(Guid.NewGuid().ToString(), "test-credit"));
+            True(outcome == expected);
+            True(observed);
+        }
+    }),
+    ("lost reset response reuses the same durable attempt", async () =>
+    {
+        var ledger = Path.Combine(Path.GetTempPath(), "CodexUsageWidget-ledger-" + Guid.NewGuid() + ".json");
+        var starts = 0;
+        try
+        {
+            await using var client = new CodexClient(() =>
+            {
+                var info = StartInfo(Interlocked.Increment(ref starts) == 1 ? "reset-lost" : "reset:reset");
+                info.Environment["FAKE_RESET_LEDGER"] = ledger;
+                return info;
+            }, TimeSpan.FromSeconds(2));
+            var request = new ResetRequest(Guid.NewGuid().ToString(), "test-credit");
+            await ThrowsAsync<TimeoutException>(() => client.ConsumeResetAsync(request));
+            True(await client.ConsumeResetAsync(request) == ResetOutcome.AlreadyRedeemed);
+            Equal(1, JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(ledger))!.Count);
+        }
+        finally { if (File.Exists(ledger)) File.Delete(ledger); }
+    }),
+    ("every locale has the full catalog and valid placeholders", () => Check(() =>
+    {
+        var localizer = new Localization();
+        Equal("en", localizer.Language);
+        var english = localizer.Catalog("en");
+        foreach (var language in Localization.Languages)
+        {
+            var catalog = localizer.Catalog(language.Code);
+            True(catalog.Keys.Order().SequenceEqual(english.Keys.Order()));
+            localizer.SetLanguage(language.Code);
+            foreach (var (key, value) in catalog)
+            {
+                True(!string.IsNullOrWhiteSpace(value));
+                var arguments = System.Text.CompositeFormat.Parse(value).MinimumArgumentCount;
+                Equal(System.Text.CompositeFormat.Parse(english[key]).MinimumArgumentCount, arguments);
+                _ = localizer.Format(key, Enumerable.Repeat<object?>("42", arguments).ToArray());
+            }
+        }
+        localizer.SetLanguage("unsupported");
+        Equal("en", localizer.Language);
+    })),
     ("monitor polls automatically and shuts down cleanly", async () =>
     {
         await using var monitor = new UsageMonitor(FakeClient("plain"), TimeSpan.FromMilliseconds(100));
@@ -148,6 +239,7 @@ static string Bucket(double fiveHour, double weekly) => JsonSerializer.Serialize
     secondary = new { usedPercent = weekly, windowDurationMins = 10080, resetsAt = 1900500000 }
 });
 static string Limits(double fiveHour, double weekly) => "{\"rateLimits\":" + Bucket(fiveHour, weekly) + "}";
+static string WithResets(int count, string credits) => "{\"rateLimits\":" + Bucket(73, 11) + ",\"rateLimitResetCredits\":{\"availableCount\":" + count + ",\"credits\":" + credits + "}}";
 static CodexClient FakeClient(string mode) => new(() => StartInfo(mode), TimeSpan.FromSeconds(5));
 static ProcessStartInfo StartInfo(string mode)
 {
@@ -174,6 +266,25 @@ static async Task FakeServerAsync(string mode)
         if (method.GetString() == "initialize")
         { initialized = true; Console.WriteLine(JsonSerializer.Serialize(new { id, result = new { userAgent = "test" } })); continue; }
         if (!initialized || !acknowledged) throw new InvalidOperationException("Handshake missing.");
+        if (method.GetString() == "account/rateLimitResetCredit/consume")
+        {
+            var parameters = request.GetProperty("params");
+            var key = parameters.GetProperty("idempotencyKey").GetString()!;
+            if (!Guid.TryParse(key, out _) || parameters.GetProperty("creditId").GetString() != "test-credit")
+                throw new InvalidOperationException("Invalid reset request.");
+            var ledgerPath = Environment.GetEnvironmentVariable("FAKE_RESET_LEDGER");
+            var ledger = ledgerPath is not null && File.Exists(ledgerPath)
+                ? JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(ledgerPath))! : new Dictionary<string, string>();
+            var outcome = ledger.ContainsKey(key) ? "alreadyRedeemed" : mode.StartsWith("reset:") ? mode[6..] : "reset";
+            if (outcome == "reset")
+            {
+                ledger[key] = "test-credit";
+                if (ledgerPath is not null) File.WriteAllText(ledgerPath, JsonSerializer.Serialize(ledger));
+            }
+            if (mode == "reset-lost") continue;
+            Console.WriteLine(JsonSerializer.Serialize(new { id, result = new { outcome } }));
+            continue;
+        }
         if (mode == "exit") return;
         if (mode == "hang") continue;
         if (mode == "error")

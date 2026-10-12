@@ -18,6 +18,14 @@ jobs:
         run: dotnet build CodexUsageWidget.sln -c Release
       - name: Protocol and quota regressions
         run: dotnet run --project tests/CodexUsageWidget.Tests -c Release --no-build
+      - name: Native UI and locale state verification
+        shell: pwsh
+        run: |
+          $app = Join-Path (Get-Location) 'src/CodexUsageWidget/bin/Release/net10.0-windows/CodexUsageWidget.exe'
+          $output = Join-Path (Get-Location) 'artifacts/ui-smoke'
+          $process = Start-Process -FilePath $app -ArgumentList @('--capture', ('"' + $output + '"'), '--all-languages') -WindowStyle Hidden -PassThru
+          if (!$process.WaitForExit(60000)) { $process.Kill($true); throw 'Native UI verification timed out.' }
+          if ($process.ExitCode -ne 0) { throw 'Native UI verification failed.' }
       - name: Publish portable build
         shell: pwsh
         run: ./scripts/publish.ps1

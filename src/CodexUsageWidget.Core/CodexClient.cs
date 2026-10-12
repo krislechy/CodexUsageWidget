@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace CodexUsageWidget.Core;
 
-/// <summary>A read-only, reconnectable client of the local Codex stdio app-server.</summary>
+/// <summary>A reconnectable quota client. Reset consumption is a separate explicit operation.</summary>
 public sealed class CodexClient : IAsyncDisposable
 {
     private readonly Func<ProcessStartInfo> _startInfo;
@@ -41,6 +41,33 @@ public sealed class CodexClient : IAsyncDisposable
         }
     }
 
+    public async Task<ResetOutcome> ConsumeResetAsync(ResetRequest request, CancellationToken cancellationToken = default)
+    {
+        if (!Guid.TryParse(request.IdempotencyKey, out _) || string.IsNullOrWhiteSpace(request.CreditId))
+            throw new ArgumentException("A persisted reset request is required.", nameof(request));
+        var connection = await GetConnectionAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var payload = await connection.RequestAsync("account/rateLimitResetCredit/consume",
+                new { idempotencyKey = request.IdempotencyKey, creditId = request.CreditId }, cancellationToken).ConfigureAwait(false);
+            var value = payload.TryGetProperty("outcome", out var outcome) && outcome.ValueKind == JsonValueKind.String
+                ? outcome.GetString() : null;
+            return value switch
+            {
+                "reset" => ResetOutcome.Reset,
+                "alreadyRedeemed" => ResetOutcome.AlreadyRedeemed,
+                "nothingToReset" => ResetOutcome.NothingToReset,
+                "noCredit" => ResetOutcome.NoCredit,
+                _ => throw new UsageUnavailableException("Codex did not return a definitive reset outcome.")
+            };
+        }
+        catch (TimeoutException)
+        {
+            connection.Abort();
+            throw;
+        }
+    }
+
     private async Task<Connection> GetConnectionAsync(CancellationToken token)
     {
         await _connectionGate.WaitAsync(token).ConfigureAwait(false);
@@ -54,7 +81,7 @@ public sealed class CodexClient : IAsyncDisposable
             {
                 await _connection.RequestAsync("initialize", new
                 {
-                    clientInfo = new { name = "codex_usage_widget", title = "Codex Usage Widget", version = "0.1.0" }
+                    clientInfo = new { name = "codex_usage_widget", title = "Codex Usage Widget", version = "0.2.0" }
                 }, token).ConfigureAwait(false);
                 await _connection.NotifyAsync("initialized", new { }, token).ConfigureAwait(false);
                 return _connection;

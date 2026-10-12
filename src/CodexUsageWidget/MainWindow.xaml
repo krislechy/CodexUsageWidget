@@ -2,7 +2,10 @@
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:controls="clr-namespace:CodexUsageWidget.Controls"
- Title="Codex Usage Widget" Width="356" Height="496" WindowStyle="None"
+ xmlns:loc="clr-namespace:CodexUsageWidget"
+ xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
+ Title="Codex Usage Widget" Width="386" Height="598" WindowStyle="None"
+ Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
  AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
  ShowInTaskbar="False" Topmost="True" FontFamily="Segoe UI Variable, Segoe UI"
  KeyDown="Window_KeyDown" Loaded="Window_Loaded" Closing="Window_Closing">
@@ -18,19 +21,19 @@
   <Grid>
    <Grid x:Name="ExpandedPanel" Margin="19,14,19,12" Visibility="{Binding IsExpanded, Converter={StaticResource BoolVisibility}}">
     <Grid.RowDefinitions>
-     <RowDefinition Height="34"/><RowDefinition Height="244"/><RowDefinition Height="74"/><RowDefinition Height="74"/><RowDefinition Height="32"/>
+     <RowDefinition Height="34"/><RowDefinition Height="244"/><RowDefinition Height="74"/><RowDefinition Height="74"/><RowDefinition Height="94"/><RowDefinition Height="32"/>
     </Grid.RowDefinitions>
     <Grid>
      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="90"/></Grid.ColumnDefinitions>
      <TextBlock Text="Codex Usage" FontSize="21" FontWeight="SemiBold" VerticalAlignment="Center"/>
      <StackPanel Grid.Column="1" Orientation="Horizontal">
-      <Button x:Name="PinButton" Style="{StaticResource IconButton}" Click="Pin_Click" ToolTip="Поверх остальных окон" AutomationProperties.Name="Переключить закрепление поверх окон">
+      <Button x:Name="PinButton" Style="{StaticResource IconButton}" Click="Pin_Click" ToolTip="{loc:Tr AboveWindows}" AutomationProperties.Name="{loc:Tr AboveWindows}">
        <Path Data="{StaticResource PinIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="15" Height="16" Stretch="Uniform"/>
       </Button>
-      <Button Style="{StaticResource IconButton}" Click="Settings_Click" ToolTip="Настройки" AutomationProperties.Name="Настройки">
+      <Button Style="{StaticResource IconButton}" Click="Settings_Click" ToolTip="{loc:Tr Settings}" AutomationProperties.Name="{loc:Tr Settings}">
        <Path Data="{StaticResource SettingsIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.4" Width="17" Height="17" Stretch="Uniform"/>
       </Button>
-      <Button Style="{StaticResource IconButton}" Click="Hide_Click" ToolTip="Скрыть в трей" AutomationProperties.Name="Скрыть в трей">
+      <Button Style="{StaticResource IconButton}" Click="Hide_Click" ToolTip="{loc:Tr HideToTray}" AutomationProperties.Name="{loc:Tr HideToTray}">
        <Path Data="{StaticResource CloseIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="15" Height="15" Stretch="Uniform"/>
       </Button>
      </StackPanel>
@@ -39,7 +42,7 @@
      <controls:RingGauge Value="{Binding FiveHourUsed}" RingBrush="{StaticResource Pink}" TrackBrush="#3D1E2B" StrokeWidth="18" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
      <controls:RingGauge Width="170" Height="170" Value="{Binding WeeklyUsed}" RingBrush="{StaticResource Lime}" TrackBrush="#263719" StrokeWidth="18" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-      <TextBlock Text="РАСХОД" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+      <TextBlock Text="{loc:Tr Used}" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
       <TextBlock Text="{Binding FiveHourUsedLabel}" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"/>
       <TextBlock Text="{Binding WeeklyUsedLabel}" Foreground="{StaticResource Lime}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,1,0,0"/>
      </StackPanel>
@@ -48,10 +51,10 @@
      <Grid.ColumnDefinitions><ColumnDefinition Width="21"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
      <Grid.RowDefinitions><RowDefinition Height="35"/><RowDefinition/><RowDefinition Height="1"/></Grid.RowDefinitions>
      <Ellipse Width="12" Height="12" Fill="{StaticResource Pink}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-     <TextBlock Grid.Column="1" Text="5 часов" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"/>
+     <TextBlock Grid.Column="1" Text="{loc:Tr FiveHours}" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"/>
      <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
       <TextBlock Text="{Binding FiveHourRemaining}" FontSize="29" FontWeight="Bold"/>
-      <TextBlock Text="осталось" FontSize="10" Foreground="{StaticResource Muted}" VerticalAlignment="Center" Margin="7,4,0,0"/>
+      <TextBlock Text="{loc:Tr Remaining}" FontSize="10" Foreground="{StaticResource Muted}" VerticalAlignment="Center" Margin="7,4,0,0"/>
      </StackPanel>
      <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding FiveHourReset}" FontSize="11" Foreground="{StaticResource Muted}" TextTrimming="CharacterEllipsis" ToolTip="{Binding FiveHourReset}"/>
      <Border Grid.Row="2" Grid.ColumnSpan="3" Background="#2A2D33"/>
@@ -60,24 +63,33 @@
      <Grid.ColumnDefinitions><ColumnDefinition Width="21"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
      <Grid.RowDefinitions><RowDefinition Height="35"/><RowDefinition/><RowDefinition Height="1"/></Grid.RowDefinitions>
      <Ellipse Width="12" Height="12" Fill="{StaticResource Lime}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-     <TextBlock Grid.Column="1" Text="Неделя" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"/>
+     <TextBlock Grid.Column="1" Text="{loc:Tr Weekly}" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"/>
      <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
       <TextBlock Text="{Binding WeeklyRemaining}" FontSize="29" FontWeight="Bold"/>
-      <TextBlock Text="осталось" FontSize="10" Foreground="{StaticResource Muted}" VerticalAlignment="Center" Margin="7,4,0,0"/>
+      <TextBlock Text="{loc:Tr Remaining}" FontSize="10" Foreground="{StaticResource Muted}" VerticalAlignment="Center" Margin="7,4,0,0"/>
      </StackPanel>
      <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding WeeklyReset}" FontSize="11" Foreground="{StaticResource Muted}" TextTrimming="CharacterEllipsis" ToolTip="{Binding WeeklyReset}"/>
      <Border Grid.Row="2" Grid.ColumnSpan="3" Background="#2A2D33"/>
     </Grid>
-    <Grid Grid.Row="4" Margin="0,3,0,0">
+    <Grid Grid.Row="4" Margin="0,11,0,0" ToolTip="{Binding ResetDetails}">
+     <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+     <Grid.RowDefinitions><RowDefinition Height="25"/><RowDefinition Height="22"/><RowDefinition/><RowDefinition Height="1"/></Grid.RowDefinitions>
+     <TextBlock Text="{loc:Tr ResetsHeading}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+     <Button Grid.Column="1" Grid.RowSpan="2" x:Name="ResetButton" Content="{Binding ResetButtonText}" IsEnabled="{Binding CanReset}" Style="{StaticResource ActionButton}" FontSize="12" Padding="11,0" VerticalAlignment="Center" Click="Reset_Click" AutomationProperties.Name="{loc:Tr ResetAction}"/>
+     <TextBlock Grid.Row="1" Text="{Binding ResetAvailability}" Foreground="{StaticResource Muted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0" TextTrimming="CharacterEllipsis"/>
+     <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding ResetExpiry}" FontSize="11" Foreground="{StaticResource Muted}" TextTrimming="CharacterEllipsis" ToolTip="{Binding ResetDetails}" VerticalAlignment="Center"/>
+     <Border Grid.Row="3" Grid.ColumnSpan="2" Background="#2A2D33"/>
+    </Grid>
+    <Grid Grid.Row="5" Margin="0,3,0,0">
      <Grid.ColumnDefinitions><ColumnDefinition Width="15"/><ColumnDefinition/><ColumnDefinition Width="30"/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>
      <Ellipse Width="6" Height="6" HorizontalAlignment="Left" VerticalAlignment="Center">
       <Ellipse.Style><Style TargetType="Ellipse"><Setter Property="Fill" Value="#83E788"/><Style.Triggers><DataTrigger Binding="{Binding HasError}" Value="True"><Setter Property="Fill" Value="#F1B859"/></DataTrigger></Style.Triggers></Style></Ellipse.Style>
      </Ellipse>
      <TextBlock Grid.Column="1" Text="{Binding StatusText}" Foreground="{StaticResource Muted}" FontSize="10" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding StatusDetails}" AutomationProperties.LiveSetting="Polite"/>
-     <Button Grid.Column="2" Style="{StaticResource IconButton}" Click="Compact_Click" ToolTip="Компактный вид" AutomationProperties.Name="Компактный вид">
+     <Button Grid.Column="2" Style="{StaticResource IconButton}" Click="Compact_Click" ToolTip="{loc:Tr CompactView}" AutomationProperties.Name="{loc:Tr CompactView}">
       <Path Data="{StaticResource CompactIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="13" Height="8" Stretch="Uniform"/>
      </Button>
-     <Button Grid.Column="3" Style="{StaticResource IconButton}" Click="Refresh_Click" IsEnabled="{Binding CanRefresh}" ToolTip="Обновить сейчас · Ctrl+R" AutomationProperties.Name="Обновить лимиты">
+     <Button Grid.Column="3" Style="{StaticResource IconButton}" Click="Refresh_Click" IsEnabled="{Binding CanRefresh}" ToolTip="{loc:Tr RefreshNow}" AutomationProperties.Name="{loc:Tr RefreshLimits}">
       <Path Data="{StaticResource RefreshIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="15" Height="16" Stretch="Uniform"/>
      </Button>
     </Grid>
@@ -89,12 +101,12 @@
      <controls:RingGauge Width="33" Height="33" Value="{Binding WeeklyUsed}" StrokeWidth="5" RingBrush="{StaticResource Lime}" TrackBrush="#263719" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
     </Grid>
     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0,0,0" AutomationProperties.Name="{Binding FiveHourAccessible}">
-     <TextBlock Text="5 часов" FontSize="10" Foreground="{StaticResource Pink}"/><TextBlock Text="{Binding FiveHourRemaining}" FontSize="22" FontWeight="Bold"/>
+     <TextBlock Text="{loc:Tr FiveHours}" FontSize="10" Foreground="{StaticResource Pink}"/><TextBlock Text="{Binding FiveHourRemaining}" FontSize="22" FontWeight="Bold"/>
     </StackPanel>
     <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="8,0,0,0" AutomationProperties.Name="{Binding WeeklyAccessible}">
-     <TextBlock Text="Неделя" FontSize="10" Foreground="{StaticResource Lime}"/><TextBlock Text="{Binding WeeklyRemaining}" FontSize="22" FontWeight="Bold"/>
+     <TextBlock Text="{loc:Tr Weekly}" FontSize="10" Foreground="{StaticResource Lime}"/><TextBlock Text="{Binding WeeklyRemaining}" FontSize="22" FontWeight="Bold"/>
     </StackPanel>
-    <Button Grid.Column="3" Width="22" Style="{StaticResource IconButton}" Click="Compact_Click" ToolTip="Развернуть" AutomationProperties.Name="Развернуть виджет">
+    <Button Grid.Column="3" Width="22" Style="{StaticResource IconButton}" Click="Compact_Click" ToolTip="{loc:Tr ExpandView}" AutomationProperties.Name="{loc:Tr ExpandView}">
      <Path Data="{StaticResource CompactIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="10" Height="6" Stretch="Uniform" RenderTransformOrigin="0.5,0.5"><Path.RenderTransform><RotateTransform Angle="180"/></Path.RenderTransform></Path>
     </Button>
    </Grid>
