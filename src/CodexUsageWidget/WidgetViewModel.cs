@@ -26,6 +26,13 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
     public string FiveHourRemaining => Percent(_snapshot?.FiveHour?.RemainingPercent);
     public string WeeklyRemaining => Percent(_snapshot?.Weekly?.RemainingPercent);
     public string FiveHourReset => Reset(_snapshot?.FiveHour);
+    public string FiveHourCountdown => _snapshot?.FiveHour?.ResetsAt is { } reset
+        ? FormatCountdown(reset, DateTimeOffset.UtcNow) : "--:--:--";
+    internal static string FormatCountdown(DateTimeOffset reset, DateTimeOffset now)
+    {
+        var seconds = (long)Math.Ceiling(Math.Max(0, (reset - now).TotalSeconds));
+        return string.Create(CultureInfo.InvariantCulture, $"{seconds / 3600:00}:{seconds / 60 % 60:00}:{seconds % 60:00}");
+    }
     public string WeeklyReset => Reset(_snapshot?.Weekly);
     public bool CanRefresh => !_busy && !_resetBusy;
     private bool SnapshotExpired => _snapshot is not null && DateTimeOffset.UtcNow - _snapshot.ObservedAt > TimeSpan.FromMinutes(6);
@@ -72,7 +79,11 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
     public void SetBusy(bool busy) { _busy = busy; NotifyAll(); }
     public void SetResetBusy(bool busy) { _resetBusy = busy; NotifyAll(); }
     public void SetPendingReset(bool pending, bool blocked = false) { _pendingReset = pending; _resetRecoveryBlocked = blocked; NotifyAll(); }
-    public void Tick() => NotifyAll();
+    public void Tick()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FiveHourCountdown)));
+        if (DateTimeOffset.UtcNow.Second % 15 == 0) NotifyAll();
+    }
     private void NotifyAll() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
     public void Dispose() => _text.PropertyChanged -= OnLanguageChanged;
 

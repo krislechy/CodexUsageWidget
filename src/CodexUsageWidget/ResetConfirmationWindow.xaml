@@ -4,7 +4,7 @@
  xmlns:loc="clr-namespace:CodexUsageWidget"
  xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
  Icon="Assets/app.ico" Title="{loc:Tr ResetConfirmTitle}" Width="470" SizeToContent="Height" ResizeMode="NoResize"
-  Background="Transparent" FontFamily="Segoe UI Variable, Segoe UI" FontSize="13"
+ WindowStartupLocation="CenterOwner" Background="Transparent" FontFamily="Segoe UI Variable, Segoe UI" FontSize="13"
  Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}">
  <Border Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="26" Margin="8"><StackPanel Margin="23">
     <Grid Margin="0,0,0,15" MouseLeftButtonDown="DialogHeader_MouseLeftButtonDown">

@@ -11,8 +11,9 @@ A small Windows desktop companion that keeps your Codex subscription limits visi
 - Five-hour and weekly Codex quota windows, remaining percentages and local reset dates.
 - Automatic polling every minute by default, plus app-server rate-limit notifications.
 - Pink and lime vector rings with short, interruptible animations; Windows animation preferences are respected.
-- Full and rings-only compact layouts, draggable windows, optional always-on-top and a matching dark system tray menu.
-- Shared rounded dark Settings and reset confirmation windows, centered on the widget and kept within the screen.
+- Full and compact ring layouts, with a live five-hour reset countdown in HH:mm:ss format at their centers.
+- Draggable windows, optional always-on-top, matching dark tooltips and a system tray menu.
+- Shared rounded dark Settings and reset confirmation windows, using native XAML CenterOwner placement.
 - A two-ring application icon, supplied in multiple resolutions for Windows and the tray.
 - Remembers window position, layout, CLI path and refresh interval.
 - Optional start with Windows, enabled only when you check it in Settings.
@@ -34,7 +35,7 @@ A small Windows desktop companion that keeps your Codex subscription limits visi
    codex login
    ```
 
-The portable package includes the .NET runtime and uses compression. The `-lite` package requires the **Microsoft .NET 10 Desktop Runtime (Windows x64)**, available from [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet/10.0). Neither package includes Codex CLI. Builds are currently unsigned. See [package size](docs/package-size.md) for the size breakdown and tradeoffs. Version 0.3.0 is a local build until explicitly published; a local build never updates GitHub.
+The portable package includes the .NET runtime and uses compression. The `-lite` package requires the **Microsoft .NET 10 Desktop Runtime (Windows x64)**, available from [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet/10.0). Neither package includes Codex CLI. Builds are currently unsigned. See [package size](docs/package-size.md) for the size breakdown and tradeoffs. A local build never updates GitHub; publication requires an explicitly authorized command.
 
 If the widget cannot find Codex, open the gear button and select `codex.exe` or `codex.cmd`. An empty path searches `PATH`, preferring a native executable. You can also set `CODEX_USAGE_WIDGET_CODEX_PATH`.
 
@@ -45,7 +46,7 @@ If the widget cannot find Codex, open the gear button and select `codex.exe` or 
 | Drag the window background | Move the widget |
 | Pin | Toggle always-on-top |
 | Gear | Open Settings |
-| Reset limits / tray reset action | Confirm spending one earned reset |
+| Reset limits in the expanded widget | Confirm spending one earned reset |
 | Chevron / Ctrl+M | Switch between full and compact views |
 | Double-click compact background | Expand the widget |
 | Refresh / Ctrl+R | Refresh immediately |
@@ -53,7 +54,7 @@ If the widget cannot find Codex, open the gear button and select `codex.exe` or 
 | Left-click tray icon | Show the widget |
 | Tray → Exit | Stop the widget and its child app-server |
 
-Hover the compact widget for quota reset dates, earned reset availability/expiry and update status. Its tray menu also offers the reset action. A second launch does not create a duplicate widget; use the tray icon to show the existing instance.
+Hover the compact widget for quota reset dates, earned reset availability/expiry and update status. Its center shows the five-hour reset countdown, refreshed every second. Unknown reset time shows `--:--:--`; elapsed time stays at `00:00:00` until fresh server data arrives. The tray menu contains Show, Full/compact, Settings and Exit. A second launch does not create a duplicate widget; use the tray icon to show the existing instance.
 
 ### Earned resets
 
@@ -83,7 +84,7 @@ dotnet run --project tests/CodexUsageWidget.Tests -c Release
 dotnet run --project src/CodexUsageWidget -c Release
 ```
 
-Tests are an executable regression suite, not an adapter-based `dotnet test` project. They launch a fake stdio server to exercise handshakes, events, request correlation, timeouts, cancellation, process exit, polling and reset outcomes. They also cover quota/reset metadata, a lost reset response, durable retry identity and the completeness/placeholder consistency of all language catalogs. They require no login or network access and never spend a real reset.
+Tests are an executable regression suite, not an adapter-based `dotnet test` project. They launch a fake stdio server to exercise handshakes, events, request correlation, timeouts, cancellation, process exit, polling and reset outcomes. They also cover quota/reset metadata, a lost reset response and durable retry identity. Routine verification runs the suite once and captures only English UI. Locale-wide catalog checks are opt-in with `--check-locales`, only when requested. Tests require no login or network access and never spend a real reset.
 
 Optional read-only smoke test with your signed-in Codex CLI:
 
@@ -91,11 +92,12 @@ Optional read-only smoke test with your signed-in Codex CLI:
 dotnet run --project tests/CodexUsageWidget.Tests -c Release -- --live
 ```
 
-Create the portable build, or both Portable and Lite:
+Prepare both Portable and Lite with tests, English screenshots and checksums:
 
 ```powershell
-./scripts/publish.ps1
-./scripts/publish.ps1 -Package Both
+./scripts/release.ps1
+# Only after explicit publication authorization:
+./scripts/release.ps1 -Commit -Publish
 ```
 
 Preview with synthetic values, or capture the actual WPF UI without connecting to Codex:
@@ -103,10 +105,9 @@ Preview with synthetic values, or capture the actual WPF UI without connecting t
 ```powershell
 dotnet run --project src/CodexUsageWidget -c Release -- --demo
 dotnet run --project src/CodexUsageWidget -c Release -- --capture artifacts/screenshots
-dotnet run --project src/CodexUsageWidget -c Release -- --capture artifacts/screenshots --all-languages
 ```
 
-See [architecture](docs/architecture.md), [design system](DESIGN.md), [privacy](docs/privacy.md) and [troubleshooting](docs/troubleshooting.md).
+See [release workflow](docs/releasing.md), [architecture](docs/architecture.md), [design system](DESIGN.md), [privacy](docs/privacy.md) and [troubleshooting](docs/troubleshooting.md).
 
 ## License
 

@@ -6,7 +6,7 @@
  Icon="Assets/app.ico" Title="{loc:Tr Settings}" Width="510" Height="570" ResizeMode="NoResize"
  Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
  Background="Transparent" Foreground="{StaticResource Text}"
-  FontFamily="Segoe UI Variable, Segoe UI" FontSize="13">
+ WindowStartupLocation="CenterOwner" FontFamily="Segoe UI Variable, Segoe UI" FontSize="13">
  <loc:WidgetDialogWindow.Resources>
   <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}"><Setter Property="Margin" Value="0,0,0,15"/></Style>
   <Style TargetType="TextBox"><Setter Property="Background" Value="#252930"/><Setter Property="Foreground" Value="{StaticResource Text}"/><Setter Property="BorderBrush" Value="#626A76"/><Setter Property="Padding" Value="9"/><Setter Property="CaretBrush" Value="{StaticResource Lime}"/></Style>

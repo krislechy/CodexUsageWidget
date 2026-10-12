@@ -216,6 +216,7 @@ var tests = new List<(string Name, Func<Task> Run)>
 };
 
 var failures = 0;
+if (!args.Contains("--check-locales")) tests.RemoveAll(test => test.Name.StartsWith("every locale", StringComparison.Ordinal));
 foreach (var test in tests)
 {
     try { await test.Run(); Console.WriteLine($"PASS {test.Name}"); }

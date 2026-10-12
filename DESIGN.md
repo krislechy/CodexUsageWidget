@@ -51,6 +51,7 @@ rounded:
   select: "6px"
   checkbox: "5px"
   tray: "14px"
+  tooltip: "12px"
 spacing:
   outer: "8px"
   content: "19px"
@@ -105,7 +106,7 @@ components:
 
 The user approved an Apple Watch Activity-inspired concept: concentric pink and lime rings on a near-black, rounded floating window. The interface is a glanceable utility. Exact quota semantics matter more than decorative effects. This identity uses native Windows WPF typography, controls and vector rendering.
 
-The approved reference is [mockup-01.png](docs/design/mockup-01.png). Current actual WPF renders are in [artifacts/preview-030-final](artifacts/preview-030-final), including all eight locales, ring boundaries and the tray menu. [docs/screenshots](docs/screenshots) holds the current English and localized captures. All screenshot values are synthetic.
+The approved reference is [mockup-01.png](docs/design/mockup-01.png). Current English WPF renders are in [docs/screenshots](docs/screenshots), including countdown, ring boundaries, dialogs, tooltip and tray menu. Localized captures under its locales directory are historical v0.3 references; routine verification does not render every language. All screenshot values are synthetic.
 
 **Key Characteristics:**
 
@@ -130,13 +131,13 @@ The current-status dot uses soft green. Controls use darker gray fields and tona
 
 Use the native Segoe UI Variable / Segoe UI family for the approved Windows system typography. Titles are semibold; percentages are bold. Dates use the user's local time zone and selected locale; percentages and available-reset counts use the same culture. The UI defaults to English and supports English (en), Russian (ru), Ukrainian (uk), Serbian Cyrillic (sr), French (fr), German (de), Simplified Chinese (zh-CN) and Japanese (ja). Keep project documentation and design-panel examples in English.
 
-The remaining-value role is the frontmatter's percentage token. The full ring center uses a bold five-hour remaining value (30 device-independent pixels) and semibold weekly remaining value (18). Compact mode contains no text. Settings inherit the same Segoe UI family at 13 and use a semibold heading at 24. WPF sizes recorded as `px` in portable tokens mean device-independent pixels, not physical display pixels. No explicit line-height or tracking scale is set.
+The remaining-value role is the frontmatter's percentage token. The full ring center uses a bold five-hour remaining value (30 device-independent pixels), semibold weekly remaining value (18), and muted reset countdown (14). Compact shows only the countdown (9.5, semibold) inside the rings, with no percentages. Countdown numerals are lining/tabular. Settings inherit the same Segoe UI family at 13 and use a semibold heading at 24. WPF sizes recorded as `px` in portable tokens mean device-independent pixels, not physical display pixels. No explicit line-height or tracking scale is set.
 
 ## Layout
 
-Main window: 386 × 598 device-independent pixels, including transparent margins. Header, 220-pixel ring assembly, two quota rows, earned-reset section, then the status/control footer. The expanded grid allocates 34, 244, 74, 74, 94 and 32 pixels to those rows; its inset is 19 horizontally, 14 above and 12 below within the eight-pixel outer margin. Full rows include remaining percentage and reset date. Compact window: 104 × 104 pixels with only concentric 68- and 48-pixel rings; no percentages, status text or inline buttons. Hover reveals quota values, local reset dates, earned resets and status. Double-click the rings, press Ctrl+M or use the tray mode action to expand; drag the surface to reposition.
+Main window: 386 × 598 device-independent pixels, including transparent margins. Header, 220-pixel ring assembly, two quota rows, earned-reset section, then the status/control footer. The expanded grid allocates 34, 244, 74, 74, 94 and 32 pixels to those rows; its inset is 19 horizontally, 14 above and 12 below within the eight-pixel outer margin. Full rows include remaining percentage and reset date. Compact window: 104 × 104 pixels with concentric 68- and 48-pixel rings and the live five-hour countdown; no percentages, status text or inline buttons. Hover reveals quota values, local reset dates, earned resets and status. Double-click the rings, press Ctrl+M or use the tray mode action to expand; drag the surface to reposition.
 
-The full and compact layouts are separate compositions, not a scaled screenshot. WPF vector rendering handles display scaling. Settings use the shared frameless dark rounded dialog shell (510 × 570), with an eight-pixel transparent outer margin, one-pixel outline and 23-pixel content inset. The language selector is 32 pixels high; the refresh selector remains 30 pixels high. Earned-reset confirmation is a 470-pixel-wide owner-centered dialog that sizes its height to wrapped content, with the same shell and inset. Both dialogs center on the owner after rendering and clamp their initial position to that monitor's working area; their headers are draggable and their close controls cancel. The duplicate-launch notice shares this shell and centers on screen when no owner exists. Keep every control reachable by keyboard and give icon controls accessible names. These are explicit desktop modes; there are no web breakpoints.
+The full and compact layouts are separate compositions, not a scaled screenshot. WPF vector rendering handles display scaling. Settings use the shared frameless dark rounded dialog shell (510 × 570), with an eight-pixel transparent outer margin, one-pixel outline and 23-pixel content inset. The language selector is 32 pixels high; the refresh selector remains 30 pixels high. Earned-reset confirmation is a 470-pixel-wide owner-centered dialog that sizes its height to wrapped content, with the same shell and inset. Both dialogs declare WindowStartupLocation="CenterOwner" in XAML; their headers are draggable and their close controls cancel. The duplicate-launch notice shares this shell and centers on screen when no owner exists. Keep every control reachable by keyboard and give icon controls accessible names. These are explicit desktop modes; there are no web breakpoints.
 
 ## Elevation & Depth
 
@@ -152,7 +153,7 @@ Concentric clockwise arcs start at twelve o'clock and have round caps. Outer: 22
 - Quota row: localized label, prominent remaining value, explicit remaining label and local reset date.
 - Icon button: consistent stroked vector geometry, 30-pixel target, visible hover/pressed/focus states.
 - Status: updating, current or stale. Errors retain the last good snapshot and expose recovery detail in a tooltip.
-- Compact view: rings only; retain remaining numbers, quota reset dates, earned-reset availability/expiry and status details in the tooltip. Expansion uses double-click, Ctrl+M or the tray.
+- Compact view: rings and countdown only; retain remaining numbers, quota reset dates, earned-reset availability/expiry and status details in the tooltip. Expansion uses double-click, Ctrl+M or the tray.
 
 ### Buttons
 
@@ -172,7 +173,11 @@ Ring changes animate for 550 ms with exponential ease-out, from the current visi
 
 ### Tray and App Icon
 
-The tray uses a WPF dark rounded context menu with the shared Segoe UI family, muted dark separators, tonal hover and lime keyboard focus. It exposes show, mode, refresh, Settings, reset and exit actions. The brand icon is a near-black rounded square with only pink and lime round-capped arcs; `Assets/app.svg`, `Assets/app.png` and `Assets/app.ico` share this two-ring identity. The ICO is used by the application windows and tray.
+The tray uses a WPF dark rounded context menu with the shared Segoe UI family, tonal hover and lime keyboard focus. It exposes only Show, Full/compact, Settings and Exit. Reset and refresh belong to the expanded widget. The brand icon is a near-black rounded square with only pink and lime round-capped arcs; `Assets/app.svg`, `Assets/app.png` and `Assets/app.ico` share this two-ring identity. The ICO is used by the application windows and tray.
+
+### Countdown and Tooltips
+
+The five-hour reset countdown updates every second in both ring centers, formatted as total hours, minutes and seconds (`HH:mm:ss`). Unknown time uses `--:--:--`; elapsed time clamps to `00:00:00` until authoritative data arrives. Tooltips share the dark surface, text and outline tokens, use 12-pixel corners, 12-pixel Segoe typography, a 12-by-9-pixel inset, and wrap within a 360-pixel maximum width.
 
 ### Language Selection
 

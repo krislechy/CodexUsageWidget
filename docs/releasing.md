@@ -1,0 +1,38 @@
+# Release workflow
+
+Run from the repository with PowerShell 7, Git, .NET 10 SDK and (for publication) GitHub CLI.
+
+1. Decide the next version and update its English changelog entry.
+2. Pass `-Version X.Y.Z` to update the shared project version automatically. Client handshake version follows the assembly. Missing release notes are generated from the changelog; an existing notes file is preserved.
+3. Prepare both packages locally:
+
+   ```powershell
+   ./scripts/release.ps1
+   ```
+
+4. When explicitly authorized, prepare and publish the version:
+
+   ```powershell
+   ./scripts/release.ps1 -Version 0.4.0 -Commit -Publish
+   ```
+
+The command builds the solution, runs the core suite once, captures only the English WPF interface, updates English README images, packages Portable and Lite, runs each packaged executable's preview/state checks, verifies SHA-256, and writes `release-report.json`. `-Commit` stages project source/docs/configuration; review your working tree before invoking it. Without `-Publish` it makes no GitHub calls, remote reads or pushes. With `-Publish` it requires `main`, a matching repository remote and a clean committed tree, creates an immutable version tag, pushes source/tag and publishes both ZIPs and checksums with the English notes. Existing tags are never moved; existing release assets are verified, never replaced.
+
+Focused commands:
+
+If publication is interrupted after the packages and commit are prepared, resume without rebuilding or repeating tests:
+
+```powershell
+./scripts/release.ps1 -Publish -Resume
+```
+
+Resume validates the saved version, commit and archive hashes before publishing. Changed source or archives require a fresh preparation/version.
+
+```powershell
+./scripts/verify.ps1                           # One core run and English UI capture
+./scripts/verify.ps1 -UpdateScreenshots        # Also refresh English documentation images
+./scripts/publish.ps1                          # Package both variants without testing or GitHub
+./scripts/generate-icon.ps1                    # Recreate the multi-resolution Windows icon
+```
+
+Routine checks do not loop through language UIs. The optional catalog-wide test `--check-locales` is only for an explicit localization audit request. Native UI captures never consume a real reset. GitHub Actions uses the same verification and packaging scripts, producing both archives as build artifacts; the workflow does not create GitHub releases automatically.

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 — 2026-10-12
+
+- Live five-hour reset countdown in both ring centers, updated every second in HH:mm:ss format.
+- Dark rounded tooltip theme shared across the app.
+- Native XAML CenterOwner/CenterScreen placement replaces manual dialog positioning.
+- Double-click anywhere on the compact tile expands it; tray refresh/reset actions removed.
+- Reusable verification/release scripts build and publish both Portable and Lite with checksums and English screenshots.
+- English-only routine UI verification; no per-language capture loop.
+
 ## 0.3.0 — 2026-10-12 (local build)
 
 - Rings and their accessibility values now show available quota: full at 100%, empty at 0%.

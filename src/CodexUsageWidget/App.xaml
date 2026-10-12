@@ -9,6 +9,17 @@
   <SolidColorBrush x:Key="Pink" Color="#FF397E"/>
   <SolidColorBrush x:Key="Lime" Color="#9BEF29"/>
   <BooleanToVisibilityConverter x:Key="BoolVisibility"/>
+  <Style TargetType="ToolTip">
+   <Setter Property="Foreground" Value="{StaticResource Text}"/>
+   <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI"/>
+   <Setter Property="FontSize" Value="12"/>
+   <Setter Property="MaxWidth" Value="360"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ToolTip">
+    <Border Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="12" Padding="12,9">
+     <ContentPresenter><ContentPresenter.ContentTemplate><DataTemplate><TextBlock Text="{Binding}" TextWrapping="Wrap"/></DataTemplate></ContentPresenter.ContentTemplate></ContentPresenter>
+    </Border>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
   <Style TargetType="TextBlock">
    <Setter Property="Foreground" Value="{StaticResource Text}"/>
    <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI"/>

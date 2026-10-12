@@ -17,7 +17,7 @@ src/CodexUsageWidget/
   MainWindow.xaml.cs Window actions, tray, monitor binding and preview capture
   WidgetViewModel.cs Display state, date/percentage formatting, stale status
   WidgetSettings.cs  Local preferences and explicit startup registration
-  WidgetDialogWindow.cs Shared frameless dialogs, owner centering and screen clamp
+  WidgetDialogWindow.cs Shared frameless dialogs, shared drag/close behavior; placement is in XAML
   Assets/app.*       Two-ring SVG/PNG/ICO brand assets
   SettingsWindow.*  Configuration UI
   ResetConfirmationWindow.* Explicit spend/retry confirmation
@@ -71,8 +71,8 @@ Settings preview a selection immediately. Cancel restores the original locale; S
 
 ## Native dialog behavior
 
-Settings and reset confirmation inherit `WidgetDialogWindow`, sharing transparent frameless windows and rounded dark XAML surfaces. After content rendering, the base class centers the measured dialog on its owner, converts the selected monitor working area to device-independent coordinates using owner DPI, and clamps the initial position into that area. The duplicate-launch NoticeWindow uses the same shell and centers on screen without an owner. Header dragging excludes buttons. The close control preserves Cancel behavior, including reverting a Settings language preview.
+Settings and reset confirmation inherit `WidgetDialogWindow`, sharing transparent frameless windows and rounded dark XAML surfaces. Settings and reset confirmation declare WindowStartupLocation="CenterOwner" in XAML; no positioning callback is used. The duplicate-launch NoticeWindow uses the same shell and centers on screen without an owner. Header dragging excludes buttons. The close control preserves Cancel behavior, including reverting a Settings language preview.
 
 ## Verification
 
-The executable test suite uses a real child process with synthetic JSON-line responses. `--live` checks the official local server without starting a model turn. `--capture` renders the actual WPF visuals into PNGs for full/compact/stale/settings review. Final visual evidence in `artifacts/preview-030-final` also includes earned-reset states, all eight locales, ring boundaries and the WPF tray menu.
+The executable test suite uses a real child process with synthetic JSON-line responses. `--live` checks the official local server without starting a model turn. `--capture` renders the actual WPF visuals into PNGs for full/compact/stale/settings review. Final visual evidence in `artifacts/preview-040` also includes earned-reset states, English UI, ring boundaries, countdown, tooltip and the WPF tray menu.

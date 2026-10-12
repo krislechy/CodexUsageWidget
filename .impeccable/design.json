@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-12T20:30:02.5550563Z",
+  "generatedAt": "2026-10-12T20:40:00.2528335Z",
   "title": "Design System: Codex Usage Widget",
   "extensions": {
     "platform": {
@@ -390,101 +390,23 @@
       "actionDisabledOpacity": 0.4
     },
     "captures": [
-      "artifacts/preview-030-final/compact.png",
-      "artifacts/preview-030-final/main.png",
-      "artifacts/preview-030-final/reset-confirmation.png",
-      "artifacts/preview-030-final/reset-empty.png",
-      "artifacts/preview-030-final/reset-pending.png",
-      "artifacts/preview-030-final/ring-boundaries.png",
-      "artifacts/preview-030-final/settings-focused.png",
-      "artifacts/preview-030-final/settings.png",
-      "artifacts/preview-030-final/stale.png",
-      "artifacts/preview-030-final/tray-menu.png",
-      "artifacts/preview-030-final/locales/de/compact.png",
-      "artifacts/preview-030-final/locales/de/main.png",
-      "artifacts/preview-030-final/locales/de/reset-confirmation.png",
-      "artifacts/preview-030-final/locales/de/reset-empty.png",
-      "artifacts/preview-030-final/locales/de/reset-pending.png",
-      "artifacts/preview-030-final/locales/de/ring-boundaries.png",
-      "artifacts/preview-030-final/locales/de/settings-focused.png",
-      "artifacts/preview-030-final/locales/de/settings.png",
-      "artifacts/preview-030-final/locales/de/stale.png",
-      "artifacts/preview-030-final/locales/de/tray-menu.png",
-      "artifacts/preview-030-final/locales/en/compact.png",
-      "artifacts/preview-030-final/locales/en/main.png",
-      "artifacts/preview-030-final/locales/en/reset-confirmation.png",
-      "artifacts/preview-030-final/locales/en/reset-empty.png",
-      "artifacts/preview-030-final/locales/en/reset-pending.png",
-      "artifacts/preview-030-final/locales/en/ring-boundaries.png",
-      "artifacts/preview-030-final/locales/en/settings-focused.png",
-      "artifacts/preview-030-final/locales/en/settings.png",
-      "artifacts/preview-030-final/locales/en/stale.png",
-      "artifacts/preview-030-final/locales/en/tray-menu.png",
-      "artifacts/preview-030-final/locales/fr/compact.png",
-      "artifacts/preview-030-final/locales/fr/main.png",
-      "artifacts/preview-030-final/locales/fr/reset-confirmation.png",
-      "artifacts/preview-030-final/locales/fr/reset-empty.png",
-      "artifacts/preview-030-final/locales/fr/reset-pending.png",
-      "artifacts/preview-030-final/locales/fr/ring-boundaries.png",
-      "artifacts/preview-030-final/locales/fr/settings-focused.png",
-      "artifacts/preview-030-final/locales/fr/settings.png",
-      "artifacts/preview-030-final/locales/fr/stale.png",
-      "artifacts/preview-030-final/locales/fr/tray-menu.png",
-      "artifacts/preview-030-final/locales/ja/compact.png",
-      "artifacts/preview-030-final/locales/ja/main.png",
-      "artifacts/preview-030-final/locales/ja/reset-confirmation.png",
-      "artifacts/preview-030-final/locales/ja/reset-empty.png",
-      "artifacts/preview-030-final/locales/ja/reset-pending.png",
-      "artifacts/preview-030-final/locales/ja/ring-boundaries.png",
-      "artifacts/preview-030-final/locales/ja/settings-focused.png",
-      "artifacts/preview-030-final/locales/ja/settings.png",
-      "artifacts/preview-030-final/locales/ja/stale.png",
-      "artifacts/preview-030-final/locales/ja/tray-menu.png",
-      "artifacts/preview-030-final/locales/ru/compact.png",
-      "artifacts/preview-030-final/locales/ru/main.png",
-      "artifacts/preview-030-final/locales/ru/reset-confirmation.png",
-      "artifacts/preview-030-final/locales/ru/reset-empty.png",
-      "artifacts/preview-030-final/locales/ru/reset-pending.png",
-      "artifacts/preview-030-final/locales/ru/ring-boundaries.png",
-      "artifacts/preview-030-final/locales/ru/settings-focused.png",
-      "artifacts/preview-030-final/locales/ru/settings.png",
-      "artifacts/preview-030-final/locales/ru/stale.png",
-      "artifacts/preview-030-final/locales/ru/tray-menu.png",
-      "artifacts/preview-030-final/locales/sr/compact.png",
-      "artifacts/preview-030-final/locales/sr/main.png",
-      "artifacts/preview-030-final/locales/sr/reset-confirmation.png",
-      "artifacts/preview-030-final/locales/sr/reset-empty.png",
-      "artifacts/preview-030-final/locales/sr/reset-pending.png",
-      "artifacts/preview-030-final/locales/sr/ring-boundaries.png",
-      "artifacts/preview-030-final/locales/sr/settings-focused.png",
-      "artifacts/preview-030-final/locales/sr/settings.png",
-      "artifacts/preview-030-final/locales/sr/stale.png",
-      "artifacts/preview-030-final/locales/sr/tray-menu.png",
-      "artifacts/preview-030-final/locales/uk/compact.png",
-      "artifacts/preview-030-final/locales/uk/main.png",
-      "artifacts/preview-030-final/locales/uk/reset-confirmation.png",
-      "artifacts/preview-030-final/locales/uk/reset-empty.png",
-      "artifacts/preview-030-final/locales/uk/reset-pending.png",
-      "artifacts/preview-030-final/locales/uk/ring-boundaries.png",
-      "artifacts/preview-030-final/locales/uk/settings-focused.png",
-      "artifacts/preview-030-final/locales/uk/settings.png",
-      "artifacts/preview-030-final/locales/uk/stale.png",
-      "artifacts/preview-030-final/locales/uk/tray-menu.png",
-      "artifacts/preview-030-final/locales/zh-CN/compact.png",
-      "artifacts/preview-030-final/locales/zh-CN/main.png",
-      "artifacts/preview-030-final/locales/zh-CN/reset-confirmation.png",
-      "artifacts/preview-030-final/locales/zh-CN/reset-empty.png",
-      "artifacts/preview-030-final/locales/zh-CN/reset-pending.png",
-      "artifacts/preview-030-final/locales/zh-CN/ring-boundaries.png",
-      "artifacts/preview-030-final/locales/zh-CN/settings-focused.png",
-      "artifacts/preview-030-final/locales/zh-CN/settings.png",
-      "artifacts/preview-030-final/locales/zh-CN/stale.png",
-      "artifacts/preview-030-final/locales/zh-CN/tray-menu.png"
+      "docs/screenshots/main.png",
+      "docs/screenshots/compact.png",
+      "docs/screenshots/settings.png",
+      "docs/screenshots/settings-focused.png",
+      "docs/screenshots/reset-confirmation.png",
+      "docs/screenshots/reset-empty.png",
+      "docs/screenshots/reset-pending.png",
+      "docs/screenshots/stale.png",
+      "docs/screenshots/ring-boundaries.png",
+      "docs/screenshots/tray-menu.png",
+      "docs/screenshots/already-running.png",
+      "docs/screenshots/tooltip.png"
     ],
     "preview": {
       "purpose": "Self-contained HTML/CSS translations for the design panel. The shipped application is native WPF; previews are not application code.",
       "language": "English documentation examples.",
-      "states": "Synthetic component examples; actual WPF preview-030 evidence includes all eight locales, available, empty, stale, uncertain retry, confirmation, Settings focus, ring boundaries and tray menu. Independent finish review: SHIP; no material issues."
+      "states": "English native WPF state verification includes countdown updates and boundaries, ring boundaries, compact expansion, tooltip, tray actions, dialogs and reset states. No per-language UI loop."
     },
     "geometry": {
       "main": {
@@ -511,10 +433,10 @@
       "compact": {
         "width": 104,
         "height": 104,
-        "contents": "Rings only; values and details in tooltip; expand by double-click, Ctrl+M or tray."
+        "contents": "Rings and HH:mm:ss countdown only; percentage values in tooltip; double-click anywhere, Ctrl+M or tray to expand."
       },
       "resetConfirmation": {
-        "placement": "center owner after rendering; clamp initial position to monitor working area",
+        "placement": "XAML WindowStartupLocation=CenterOwner",
         "width": 470,
         "height": "size to content",
         "inset": 23
@@ -526,7 +448,7 @@
         "outerMargin": 8,
         "borderThickness": 1,
         "contentInset": 23,
-        "placement": "center owner after rendering; clamp initial position to monitor working area",
+        "placement": "XAML WindowStartupLocation=CenterOwner; standalone notice uses CenterScreen",
         "header": "draggable except buttons",
         "close": "Cancel"
       },
@@ -543,6 +465,12 @@
         "placement": "CenterScreen when no owner",
         "purpose": "Duplicate application launch",
         "controls": "Close and OK"
+      },
+      "tooltip": {
+        "fontSize": 12,
+        "maxWidth": 360,
+        "cornerRadius": 12,
+        "padding": "12,9"
       }
     },
     "localization": {
@@ -602,6 +530,14 @@
       ],
       "appearance": "Near-black rounded square with pink and lime round-capped arcs only",
       "usage": "Application windows and notification icon use embedded ICO"
+    },
+    "countdown": {
+      "expired": "00:00:00",
+      "unknown": "--:--:--",
+      "compactFontSize": 9.5,
+      "intervalSeconds": 1,
+      "fullFontSize": 14,
+      "format": "HH:mm:ss"
     }
   },
   "components": [
@@ -678,7 +614,7 @@
       "name": "Dark tray menu",
       "kind": "nav",
       "description": "WPF tray actions with dark surface, tonal hover and lime keyboard focus.",
-      "html": "<nav class=\"ds-tray\" aria-label=\"Tray actions\"><button>Show widget</button><button>Full / compact view</button><button>Refresh</button><button>Settings</button><button>Reset limits</button><hr/><button>Exit</button></nav>",
+      "html": "<nav class=\"ds-tray\" aria-label=\"Tray actions\"><button>Show widget</button><button>Full / compact view</button><button>Settings</button><hr/><button>Exit</button></nav>",
       "css": ".ds-tray{width:180px;padding:6px;border:1px solid #353940;border-radius:14px;background:#141619;color:#F6F6F7;font:13px \"Segoe UI Variable\",\"Segoe UI\",sans-serif}.ds-tray button{display:block;width:100%;margin:1px;padding:9px 12px;text-align:left;border:1px solid transparent;border-radius:8px;background:transparent;color:inherit;font:inherit;cursor:pointer}.ds-tray button:hover{background:#282B31}.ds-tray button:focus-visible{border-color:#9BEF29;outline:none}.ds-tray button:disabled{opacity:.4}.ds-tray hr{border:0;height:1px;background:#353940;margin:5px 12px}"
     }
   ],

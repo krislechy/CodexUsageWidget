@@ -4,7 +4,7 @@
  xmlns:controls="clr-namespace:CodexUsageWidget.Controls"
  xmlns:loc="clr-namespace:CodexUsageWidget"
  xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
- Icon="Assets/app.ico" Title="Codex Usage Widget" Width="386" Height="598" WindowStyle="None"
+ Icon="Assets/app.ico" Title="Codex Usage Widget" Width="386" Height="598" WindowStyle="None" WindowStartupLocation="CenterScreen"
  Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
  AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
  ShowInTaskbar="False" Topmost="True" FontFamily="Segoe UI Variable, Segoe UI"
@@ -45,6 +45,7 @@
       <TextBlock Text="{loc:Tr Available}" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
       <TextBlock Text="{Binding FiveHourRemaining}" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"/>
       <TextBlock Text="{Binding WeeklyRemaining}" Foreground="{StaticResource Lime}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,1,0,0"/>
+      <TextBlock x:Name="FullCountdown" Text="{Binding FiveHourCountdown}" Foreground="{StaticResource Muted}" FontSize="14" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" HorizontalAlignment="Center" Margin="0,8,0,0" ToolTip="{Binding FiveHourReset}" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
      </StackPanel>
     </Grid>
     <Grid Grid.Row="2" Margin="0,6,0,0" AutomationProperties.Name="{Binding FiveHourAccessible}">
@@ -94,10 +95,11 @@
      </Button>
     </Grid>
    </Grid>
-   <Grid x:Name="CompactPanel" Margin="9" Visibility="{Binding IsCompact, Converter={StaticResource BoolVisibility}}" ToolTip="{Binding CompactTooltip}" MouseLeftButtonDown="Compact_MouseLeftButtonDown" AutomationProperties.Name="{loc:Tr ExpandView}">
+   <Grid x:Name="CompactPanel" Background="Transparent" Margin="9" Visibility="{Binding IsCompact, Converter={StaticResource BoolVisibility}}" ToolTip="{Binding CompactTooltip}" AutomationProperties.Name="{loc:Tr ExpandView}">
     <Grid Width="68" Height="68" HorizontalAlignment="Center" VerticalAlignment="Center">
      <controls:RingGauge Value="{Binding FiveHourAvailable}" StrokeWidth="6" RingBrush="{StaticResource Pink}" TrackBrush="#3D1E2B" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
      <controls:RingGauge Width="48" Height="48" Value="{Binding WeeklyAvailable}" StrokeWidth="6" RingBrush="{StaticResource Lime}" TrackBrush="#263719" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
+     <TextBlock x:Name="CompactCountdown" Text="{Binding FiveHourCountdown}" FontSize="9.5" FontWeight="SemiBold" Foreground="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
     </Grid>
    </Grid>
   </Grid>

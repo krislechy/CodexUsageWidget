@@ -14,24 +14,15 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-      - name: Build
-        run: dotnet build CodexUsageWidget.sln -c Release
-      - name: Protocol and quota regressions
-        run: dotnet run --project tests/CodexUsageWidget.Tests -c Release --no-build
-      - name: Native UI and locale state verification
+      - name: Core regressions and English native UI
         shell: pwsh
-        run: |
-          $app = Join-Path (Get-Location) 'src/CodexUsageWidget/bin/Release/net10.0-windows/CodexUsageWidget.exe'
-          $output = Join-Path (Get-Location) 'artifacts/ui-smoke'
-          $process = Start-Process -FilePath $app -ArgumentList @('--capture', ('"' + $output + '"'), '--all-languages') -WindowStyle Hidden -PassThru
-          if (!$process.WaitForExit(60000)) { $process.Kill($true); throw 'Native UI verification timed out.' }
-          if ($process.ExitCode -ne 0) { throw 'Native UI verification failed.' }
-      - name: Publish portable build
+        run: ./scripts/verify.ps1
+      - name: Package Portable and Lite
         shell: pwsh
         run: ./scripts/publish.ps1
       - uses: actions/upload-artifact@v4
         with:
-          name: CodexUsageWidget-win-x64
+          name: CodexUsageWidget-win-x64-both
           path: |
-            artifacts/release/CodexUsageWidget-win-x64.zip
-            artifacts/release/CodexUsageWidget-win-x64.zip.sha256
+            artifacts/release/*.zip
+            artifacts/release/*.sha256

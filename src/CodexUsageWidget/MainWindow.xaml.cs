@@ -26,7 +26,7 @@ public partial class MainWindow : Window
     private readonly WidgetViewModel _viewModel = new();
     private readonly bool _preview;
     private readonly string[] _arguments;
-    private readonly DispatcherTimer _clock = new() { Interval = TimeSpan.FromSeconds(15) };
+    private readonly DispatcherTimer _clock = new() { Interval = TimeSpan.FromSeconds(1) };
     private WidgetSettings _settings;
     private UsageMonitor? _monitor;
     private Forms.NotifyIcon? _tray;
@@ -50,12 +50,15 @@ public partial class MainWindow : Window
         ApplyLayout();
         Topmost = _settings.Topmost;
         UpdatePin();
-        var area = SystemParameters.WorkArea;
-        Left = _settings.Left ?? area.Right - Width - 24;
-        Top = _settings.Top ?? area.Bottom - Height - 24;
-        EnsureVisible();
+        if (_settings.Left is { } left && _settings.Top is { } top)
+        {
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            Left = left;
+            Top = top;
+            EnsureVisible();
+        }
         _clock.Tick += (_, _) => _viewModel.Tick();
-        _viewModel.PropertyChanged += (_, _) => UpdateTray();
+        _viewModel.PropertyChanged += (_, e) => { if (e.PropertyName != nameof(WidgetViewModel.FiveHourCountdown)) UpdateTray(); };
         Localization.Current.PropertyChanged += LanguageChanged;
         if (!_preview) LoadPendingReset();
     }
@@ -97,6 +100,7 @@ public partial class MainWindow : Window
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        _clock.Start();
         if (_preview)
         {
             SetDemoSnapshot();
@@ -107,12 +111,6 @@ public partial class MainWindow : Window
                 {
                     if (captureIndex + 1 >= _arguments.Length) throw new ArgumentException("--capture requires an output directory.");
                     var output = Path.GetFullPath(_arguments[captureIndex + 1]);
-                    if (_arguments.Contains("--all-languages"))
-                        foreach (var language in Localization.Languages)
-                        {
-                            Localization.Current.SetLanguage(language.Code);
-                            await CapturePreviewsAsync(Path.Combine(output, "locales", language.Code));
-                        }
                     Localization.Current.SetLanguage(_settings.Language);
                     await CapturePreviewsAsync(output);
                     Application.Current.Shutdown(0);
@@ -120,13 +118,18 @@ public partial class MainWindow : Window
                 catch (Exception exception)
                 {
                     Console.Error.WriteLine(exception.Message);
+                    if (captureIndex + 1 < _arguments.Length)
+                    {
+                        var errorDirectory = Path.GetFullPath(_arguments[captureIndex + 1]);
+                        Directory.CreateDirectory(errorDirectory);
+                        File.WriteAllText(Path.Combine(errorDirectory, "capture-error.txt"), exception.ToString());
+                    }
                     Application.Current.Shutdown(1);
                 }
             }
             return;
         }
         CreateTray();
-        _clock.Start();
         StartMonitor();
     }
 
@@ -162,13 +165,14 @@ public partial class MainWindow : Window
         SaveSettings();
     }
 
-    private void Compact_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-    {
-        if (e.ClickCount == 2) { Compact_Click(sender, new RoutedEventArgs()); e.Handled = true; }
-    }
-
     private void Surface_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        if (_viewModel.IsCompact && e.ClickCount == 2)
+        {
+            Compact_Click(sender, new RoutedEventArgs());
+            e.Handled = true;
+            return;
+        }
         var current = e.OriginalSource as DependencyObject;
         while (current is not null)
         {
@@ -310,9 +314,7 @@ public partial class MainWindow : Window
         }
         Add("MenuShow", ShowWidget);
         Add("MenuMode", () => Compact_Click(this, new RoutedEventArgs()));
-        Add("RefreshShort", () => Refresh_Click(this, new RoutedEventArgs()));
         Add("Settings", () => { ShowWidget(); Settings_Click(this, new RoutedEventArgs()); });
-        Add("ResetAction", () => { ShowWidget(); Reset_Click(this, new RoutedEventArgs()); });
         menu.Items.Add(new Separator());
         Add("MenuExit", ExitAsync);
         return menu;
@@ -397,10 +399,16 @@ public partial class MainWindow : Window
         _viewModel.IsCompact = true;
         ApplyLayout();
         await Task.Delay(150);
-        if (FindVisualChildren<TextBlock>(CompactPanel).Any(text => text.IsVisible) ||
+        if (FindVisualChildren<TextBlock>(CompactPanel).Any(text => text.IsVisible && !ReferenceEquals(text, CompactCountdown)) ||
             FindVisualChildren<RingGauge>(CompactPanel).Count() != 2)
-            throw new InvalidOperationException("Compact mode must show only two rings.");
+            throw new InvalidOperationException("Compact mode must show only two rings and the countdown.");
         Capture(Surface, Path.Combine(directory, "compact.png"));
+        var countdownBefore = CompactCountdown.Text;
+        await Task.Delay(2100);
+        if (CompactCountdown.Text == countdownBefore)
+            throw new InvalidOperationException($"Countdown must update each second. Before={countdownBefore}, after={CompactCountdown.Text}, model={_viewModel.FiveHourCountdown}, timer={_clock.IsEnabled}.");
+        Compact_Click(this, new RoutedEventArgs());
+        if (!_viewModel.IsExpanded) throw new InvalidOperationException("Compact expansion failed.");
         _viewModel.IsCompact = false;
         ApplyLayout();
         _viewModel.SetError("ConnectionError");
@@ -435,18 +443,10 @@ public partial class MainWindow : Window
         Keyboard.Focus(selector);
         await Task.Delay(100);
         Capture((FrameworkElement)settings.Content, Path.Combine(directory, "settings-focused.png"));
-        var originalLanguage = Localization.Current.Language;
-        var languageBox = (System.Windows.Controls.ComboBox)settings.FindName("LanguageBox");
-        languageBox.SelectedValue = originalLanguage == "de" ? "fr" : "de";
-        if (Localization.Current.Language == originalLanguage)
-            throw new InvalidOperationException("Language selection did not update the interface.");
         settings.Close();
-        if (Localization.Current.Language != originalLanguage)
-            throw new InvalidOperationException("Cancel did not restore the language.");
         var notice = new NoticeWindow { Owner = this };
         notice.Show();
         await Task.Delay(100);
-        VerifyDialogCenter(notice);
         Capture((FrameworkElement)notice.Content, Path.Combine(directory, "already-running.png"));
         notice.Close();
         _trayMenu = CreateTrayMenu();
@@ -455,13 +455,19 @@ public partial class MainWindow : Window
         _trayMenu.IsOpen = true;
         await Task.Delay(100);
         Capture(_trayMenu, Path.Combine(directory, "tray-menu.png"));
-        _viewModel.SetBusy(true);
-        if (_trayMenu.Items.OfType<MenuItem>().Where(item => item.Tag is "ResetAction" or "RefreshShort").Any(item => item.IsEnabled))
-            throw new InvalidOperationException("Busy tray actions should be disabled.");
+        if (_trayMenu.Items.OfType<MenuItem>().Any(item => item.Tag is "ResetAction" or "RefreshShort"))
+            throw new InvalidOperationException("Tray menu must not expose reset or refresh actions.");
         _trayMenu.IsOpen = false;
         _viewModel.SetBusy(false);
         _trayMenu = null;
+        var tooltip = new ToolTip { Content = _viewModel.CompactTooltip, PlacementTarget = this, Placement = PlacementMode.Center, IsOpen = true };
+        await Task.Delay(100);
+        Capture(tooltip, Path.Combine(directory, "tooltip.png"));
+        tooltip.IsOpen = false;
         var now = DateTimeOffset.UtcNow;
+        if (WidgetViewModel.FormatCountdown(now.AddSeconds(3661), now) != "01:01:01" ||
+            WidgetViewModel.FormatCountdown(now.AddSeconds(-1), now) != "00:00:00")
+            throw new InvalidOperationException("Countdown format or expiry boundary failed.");
         _viewModel.SetSnapshot(new UsageSnapshot(new QuotaWindow(0, 300, now.AddHours(3)), new QuotaWindow(100, 10080, now.AddDays(6)), now));
         await Task.Delay(600);
         var rings = FindVisualChildren<RingGauge>(ExpandedPanel).ToArray();

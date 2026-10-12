@@ -81,7 +81,7 @@ public sealed class CodexClient : IAsyncDisposable
             {
                 await _connection.RequestAsync("initialize", new
                 {
-                    clientInfo = new { name = "codex_usage_widget", title = "Codex Usage Widget", version = "0.3.0" }
+                    clientInfo = new { name = "codex_usage_widget", title = "Codex Usage Widget", version = typeof(CodexClient).Assembly.GetName().Version?.ToString(3) ?? "0.0.0" }
                 }, token).ConfigureAwait(false);
                 await _connection.NotifyAsync("initialized", new { }, token).ConfigureAwait(false);
                 return _connection;
