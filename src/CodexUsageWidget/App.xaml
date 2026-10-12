@@ -1,0 +1,52 @@
+<Application x:Class="CodexUsageWidget.App"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ ShutdownMode="OnExplicitShutdown">
+ <Application.Resources>
+  <SolidColorBrush x:Key="Surface" Color="#141619"/>
+  <SolidColorBrush x:Key="Text" Color="#F6F6F7"/>
+  <SolidColorBrush x:Key="Muted" Color="#ABB0BA"/>
+  <SolidColorBrush x:Key="Pink" Color="#FF397E"/>
+  <SolidColorBrush x:Key="Lime" Color="#9BEF29"/>
+  <BooleanToVisibilityConverter x:Key="BoolVisibility"/>
+  <Style TargetType="TextBlock">
+   <Setter Property="Foreground" Value="{StaticResource Text}"/>
+   <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI"/>
+  </Style>
+  <Style x:Key="IconButton" TargetType="Button">
+   <Setter Property="Width" Value="30"/><Setter Property="Height" Value="30"/>
+   <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+   <Setter Property="Background" Value="Transparent"/><Setter Property="BorderThickness" Value="0"/>
+   <Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="Template">
+    <Setter.Value><ControlTemplate TargetType="Button">
+     <Border x:Name="Chrome" Background="{TemplateBinding Background}" CornerRadius="7" BorderThickness="1" BorderBrush="Transparent">
+      <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Chrome" Property="Background" Value="#282B31"/><Setter Property="Foreground" Value="#FFFFFF"/></Trigger>
+      <Trigger Property="IsPressed" Value="True"><Setter TargetName="Chrome" Property="Background" Value="#353942"/></Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Chrome" Property="BorderBrush" Value="#9BEF29"/></Trigger>
+      <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.35"/></Trigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate></Setter.Value>
+   </Setter>
+  </Style>
+  <Style x:Key="ActionButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
+   <Setter Property="Width" Value="Auto"/><Setter Property="Height" Value="36"/>
+   <Setter Property="Padding" Value="14,0"/>
+   <Setter Property="Background" Value="#2B3036"/>
+   <Setter Property="Foreground" Value="{StaticResource Text}"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border x:Name="Chrome" Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="#59616C" BorderThickness="1" Padding="{TemplateBinding Padding}">
+     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Chrome" Property="Background" Value="#3B424C"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Chrome" Property="BorderBrush" Value="#9BEF29"/></Trigger>
+     <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+ </Application.Resources>
+</Application>

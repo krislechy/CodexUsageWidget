@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "platform": "windows-wpf",
+  "authority": "user-approved-comp",
+  "reference": "docs/design/mockup-01.png",
+  "tokensSource": "src/CodexUsageWidget/App.xaml",
+  "colors": {
+    "surface": "#141619", "text": "#F6F6F7", "muted": "#ABB0BA",
+    "fiveHour": "#FF397E", "weekly": "#9BEF29", "warning": "#F1B859"
+  },
+  "rings": {
+    "semantics": "consumed percentage", "startDegrees": -90,
+    "direction": "clockwise", "strokeCaps": "round",
+    "outerDiameter": 220, "innerDiameter": 170, "strokeWidth": 18,
+    "compactOuterDiameter": 48, "compactInnerDiameter": 33, "compactStrokeWidth": 5
+  },
+  "motion": {
+    "durationMs": 550, "ease": "exponential-out", "exponent": 5,
+    "interruptible": true, "respectsWindowsAnimationPreference": true
+  },
+  "controls": {
+    "hoverBackground": "#282B31", "pressedBackground": "#353942",
+    "focusOutline": "#9BEF29", "iconTarget": 30
+  },
+  "sourceOfTruth": "WPF XAML resources and RingGauge; documentation records these values"
+}

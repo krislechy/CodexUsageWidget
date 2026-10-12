@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+.vs/
+**/.serena/
+.impeccable/build/
+.impeccable/review/
+artifacts/
+*.user
+*.log
