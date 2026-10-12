@@ -606,7 +606,7 @@
     {
       "name": "Reset confirmation",
       "kind": "custom",
-      "description": "Shared frameless rounded dark shell; 470 DIP wide, content-sized height; owner-centered and screen-clamped. Cancel is default; retry preserves attempt identity.",
+      "description": "Shared frameless rounded dark shell; 470 DIP wide, content-sized height; owner-centered using XAML CenterOwner. Cancel is default; retry preserves attempt identity.",
       "html": "<section class=\"ds-confirm\" role=\"dialog\" aria-labelledby=\"ds-confirm-title\"><h2 id=\"ds-confirm-title\">Use an earned reset?</h2><p>This spends one earned reset to reset your Codex limits.</p><strong>3 available</strong><p class=\"ds-confirm-expiry\">First expires: Oct 14, 2026, 18:00</p><div class=\"ds-confirm-actions\"><button class=\"ds-confirm-button\" autofocus>Cancel</button><button class=\"ds-confirm-button\">Use reset</button></div></section>",
       "css": ".ds-confirm{width:406px;padding:23px;border:1px solid #353940;border-radius:26px;background:#141619;color:#F6F6F7;font:13px \"Segoe UI Variable\",\"Segoe UI\",sans-serif}.ds-confirm h2{font-size:21px;font-weight:600;margin:0 0 15px}.ds-confirm p{color:#ABB0BA;margin:0 0 15px}.ds-confirm .ds-confirm-expiry{font-size:12px;margin:5px 0 23px}.ds-confirm-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}.ds-confirm-button{height:36px;padding:0 14px;background:#2B3036;color:#F6F6F7;border:1px solid #59616C;border-radius:8px;font:13px \"Segoe UI Variable\",\"Segoe UI\",sans-serif;cursor:pointer}.ds-confirm-button:hover{background:#3B424C}.ds-confirm-button:focus-visible{border-color:#9BEF29;outline:none}.ds-confirm-button:disabled{opacity:.4}"
     },

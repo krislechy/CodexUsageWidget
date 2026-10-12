@@ -33,4 +33,4 @@ The user approved `docs/design/mockup-01.png`: Apple Watch Activity-inspired pin
 
 Project name: Codex Usage Widget. Local Git repository and public GitHub repository authorized by the user. Windows executable and English documentation.
 
-Current delivery policy: build and document locally. GitHub reads, pushes, releases and repository changes require an explicit user command; feature work does not authorize publishing. The 0.3.0 refinement is a local build.
+Current delivery policy: build and document locally. GitHub reads, pushes, releases and repository changes require an explicit user command; feature work does not authorize publishing. The user explicitly authorized publication of both Portable and Lite for 0.4.0; future publications still require a command. Routine verification uses English only.

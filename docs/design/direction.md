@@ -12,3 +12,5 @@
 The user pinned and approved the direction before implementation. A new visual-world interview or alternate concept tournament would reopen that decision and is intentionally not part of this build.
 
 - Final authorized refinement: full rings mean all quota remains and empty rings mean none. Compact is a 104 × 104 DIP ring surface with countdown with double-click, Ctrl+M and tray expansion. Shared frameless rounded dark Settings/reset dialogs use XAML CenterOwner. The WPF dark tray menu and two-ring app icon carry the same near-black, pink, lime and Segoe grammar. The independent finish review of actual WPF captures in `artifacts/preview-040` returned SHIP with no material issues.
+
+- Version 0.4.0 refinement: live HH:mm:ss five-hour countdown in both ring centers; dark themed tooltips; native XAML CenterOwner dialogs and CenterScreen standalone placement; only Show, Mode, Settings and Exit in the tray. Verification captures English only.
