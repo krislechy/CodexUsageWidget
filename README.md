@@ -1,6 +1,6 @@
 # Codex Usage Widget
 
-A small Windows desktop companion that keeps your Codex subscription limits visible. Two Activity-inspired rings show **usage consumed**, while the numbers below show **quota remaining** and the dates show the next reset in your local time zone.
+A small Windows desktop companion that keeps your Codex subscription limits visible. Two Activity-inspired rings show **quota remaining**: full means all quota is available, empty means none. The numbers show the same remaining percentage and the dates show the next reset in your local time zone.
 
 ![Main widget](docs/screenshots/main.png)
 
@@ -11,7 +11,9 @@ A small Windows desktop companion that keeps your Codex subscription limits visi
 - Five-hour and weekly Codex quota windows, remaining percentages and local reset dates.
 - Automatic polling every minute by default, plus app-server rate-limit notifications.
 - Pink and lime vector rings with short, interruptible animations; Windows animation preferences are respected.
-- Full and compact layouts, draggable windows, optional always-on-top and a system tray menu.
+- Full and rings-only compact layouts, draggable windows, optional always-on-top and a matching dark system tray menu.
+- Shared rounded dark Settings and reset confirmation windows, centered on the widget and kept within the screen.
+- A two-ring application icon, supplied in multiple resolutions for Windows and the tray.
 - Remembers window position, layout, CLI path and refresh interval.
 - Optional start with Windows, enabled only when you check it in Settings.
 - Retains the last successful snapshot during an outage and marks it as stale.
@@ -32,7 +34,7 @@ A small Windows desktop companion that keeps your Codex subscription limits visi
    codex login
    ```
 
-The portable release includes the .NET runtime. It does **not** include Codex CLI. Builds are currently unsigned.
+The portable package includes the .NET runtime and uses compression. The `-lite` package requires the **Microsoft .NET 10 Desktop Runtime (Windows x64)**, available from [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet/10.0). Neither package includes Codex CLI. Builds are currently unsigned. See [package size](docs/package-size.md) for the size breakdown and tradeoffs. Version 0.3.0 is a local build until explicitly published; a local build never updates GitHub.
 
 If the widget cannot find Codex, open the gear button and select `codex.exe` or `codex.cmd`. An empty path searches `PATH`, preferring a native executable. You can also set `CODEX_USAGE_WIDGET_CODEX_PATH`.
 
@@ -89,10 +91,11 @@ Optional read-only smoke test with your signed-in Codex CLI:
 dotnet run --project tests/CodexUsageWidget.Tests -c Release -- --live
 ```
 
-Create the portable build:
+Create the portable build, or both Portable and Lite:
 
 ```powershell
 ./scripts/publish.ps1
+./scripts/publish.ps1 -Package Both
 ```
 
 Preview with synthetic values, or capture the actual WPF UI without connecting to Codex:

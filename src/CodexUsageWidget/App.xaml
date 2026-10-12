@@ -48,5 +48,45 @@
     </ControlTemplate.Triggers>
    </ControlTemplate></Setter.Value></Setter>
   </Style>
+  <Style TargetType="CheckBox">
+   <Setter Property="Foreground" Value="{StaticResource Text}"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CheckBox">
+    <Grid Background="Transparent"><Grid.ColumnDefinitions><ColumnDefinition Width="24"/><ColumnDefinition/></Grid.ColumnDefinitions>
+     <Border x:Name="Box" Width="18" Height="18" CornerRadius="5" Background="#252930" BorderBrush="#626A76" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+      <Path x:Name="Tick" Data="M 2,7 L 6,11 L 12,3" Stroke="{StaticResource Lime}" StrokeThickness="2" Width="12" Height="12" Stretch="Uniform" Visibility="Collapsed"/>
+     </Border>
+     <ContentPresenter Grid.Column="1" VerticalAlignment="Center"/>
+    </Grid>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsChecked" Value="True"><Setter TargetName="Tick" Property="Visibility" Value="Visible"/></Trigger>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Box" Property="Background" Value="#353942"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Lime}"/></Trigger>
+     <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ContextMenu">
+   <Setter Property="Foreground" Value="{StaticResource Text}"/>
+   <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI"/>
+   <Setter Property="FontSize" Value="13"/>
+   <Setter Property="OverridesDefaultStyle" Value="True"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ContextMenu">
+    <Border Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="14" Padding="6"><StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/></Border>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="MenuItem">
+   <Setter Property="Foreground" Value="{StaticResource Text}"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="MenuItem">
+    <Border x:Name="MenuRow" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="1">
+     <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"/>
+    </Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="MenuRow" Property="Background" Value="#282B31"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="MenuRow" Property="BorderBrush" Value="{StaticResource Lime}"/></Trigger>
+     <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="Separator"><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Separator"><Border Height="1" Background="#353940" Margin="12,5"/></ControlTemplate></Setter.Value></Setter></Style>
  </Application.Resources>
 </Application>

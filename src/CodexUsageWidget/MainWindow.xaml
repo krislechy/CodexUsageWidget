@@ -4,7 +4,7 @@
  xmlns:controls="clr-namespace:CodexUsageWidget.Controls"
  xmlns:loc="clr-namespace:CodexUsageWidget"
  xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
- Title="Codex Usage Widget" Width="386" Height="598" WindowStyle="None"
+ Icon="Assets/app.ico" Title="Codex Usage Widget" Width="386" Height="598" WindowStyle="None"
  Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
  AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
  ShowInTaskbar="False" Topmost="True" FontFamily="Segoe UI Variable, Segoe UI"
@@ -39,12 +39,12 @@
      </StackPanel>
     </Grid>
     <Grid Grid.Row="1" Width="220" Height="220" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0">
-     <controls:RingGauge Value="{Binding FiveHourUsed}" RingBrush="{StaticResource Pink}" TrackBrush="#3D1E2B" StrokeWidth="18" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
-     <controls:RingGauge Width="170" Height="170" Value="{Binding WeeklyUsed}" RingBrush="{StaticResource Lime}" TrackBrush="#263719" StrokeWidth="18" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
+     <controls:RingGauge Value="{Binding FiveHourAvailable}" RingBrush="{StaticResource Pink}" TrackBrush="#3D1E2B" StrokeWidth="18" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
+     <controls:RingGauge Width="170" Height="170" Value="{Binding WeeklyAvailable}" RingBrush="{StaticResource Lime}" TrackBrush="#263719" StrokeWidth="18" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-      <TextBlock Text="{loc:Tr Used}" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
-      <TextBlock Text="{Binding FiveHourUsedLabel}" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"/>
-      <TextBlock Text="{Binding WeeklyUsedLabel}" Foreground="{StaticResource Lime}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,1,0,0"/>
+      <TextBlock Text="{loc:Tr Available}" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+      <TextBlock Text="{Binding FiveHourRemaining}" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"/>
+      <TextBlock Text="{Binding WeeklyRemaining}" Foreground="{StaticResource Lime}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,1,0,0"/>
      </StackPanel>
     </Grid>
     <Grid Grid.Row="2" Margin="0,6,0,0" AutomationProperties.Name="{Binding FiveHourAccessible}">
@@ -94,21 +94,11 @@
      </Button>
     </Grid>
    </Grid>
-   <Grid x:Name="CompactPanel" Margin="14,10" Visibility="{Binding IsCompact, Converter={StaticResource BoolVisibility}}" ToolTip="{Binding CompactTooltip}" MouseLeftButtonDown="Compact_MouseLeftButtonDown">
-    <Grid.ColumnDefinitions><ColumnDefinition Width="56"/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition Width="22"/></Grid.ColumnDefinitions>
-    <Grid Width="48" Height="48" HorizontalAlignment="Left" VerticalAlignment="Center">
-     <controls:RingGauge Value="{Binding FiveHourUsed}" StrokeWidth="5" RingBrush="{StaticResource Pink}" TrackBrush="#3D1E2B" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
-     <controls:RingGauge Width="33" Height="33" Value="{Binding WeeklyUsed}" StrokeWidth="5" RingBrush="{StaticResource Lime}" TrackBrush="#263719" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
+   <Grid x:Name="CompactPanel" Margin="9" Visibility="{Binding IsCompact, Converter={StaticResource BoolVisibility}}" ToolTip="{Binding CompactTooltip}" MouseLeftButtonDown="Compact_MouseLeftButtonDown" AutomationProperties.Name="{loc:Tr ExpandView}">
+    <Grid Width="68" Height="68" HorizontalAlignment="Center" VerticalAlignment="Center">
+     <controls:RingGauge Value="{Binding FiveHourAvailable}" StrokeWidth="6" RingBrush="{StaticResource Pink}" TrackBrush="#3D1E2B" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
+     <controls:RingGauge Width="48" Height="48" Value="{Binding WeeklyAvailable}" StrokeWidth="6" RingBrush="{StaticResource Lime}" TrackBrush="#263719" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
     </Grid>
-    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0,0,0" AutomationProperties.Name="{Binding FiveHourAccessible}">
-     <TextBlock Text="{loc:Tr FiveHours}" FontSize="10" Foreground="{StaticResource Pink}"/><TextBlock Text="{Binding FiveHourRemaining}" FontSize="22" FontWeight="Bold"/>
-    </StackPanel>
-    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="8,0,0,0" AutomationProperties.Name="{Binding WeeklyAccessible}">
-     <TextBlock Text="{loc:Tr Weekly}" FontSize="10" Foreground="{StaticResource Lime}"/><TextBlock Text="{Binding WeeklyRemaining}" FontSize="22" FontWeight="Bold"/>
-    </StackPanel>
-    <Button Grid.Column="3" Width="22" Style="{StaticResource IconButton}" Click="Compact_Click" ToolTip="{loc:Tr ExpandView}" AutomationProperties.Name="{loc:Tr ExpandView}">
-     <Path Data="{StaticResource CompactIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="10" Height="6" Stretch="Uniform" RenderTransformOrigin="0.5,0.5"><Path.RenderTransform><RotateTransform Angle="180"/></Path.RenderTransform></Path>
-    </Button>
    </Grid>
   </Grid>
  </Border>

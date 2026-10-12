@@ -22,7 +22,7 @@ public partial class App : Application
             _instance = new Mutex(true, @"Local\CodexUsageWidget", out _ownsMutex);
             if (!_ownsMutex)
             {
-                MessageBox.Show(Localization.Current["AlreadyRunning"], "Codex Usage Widget");
+                new NoticeWindow().ShowDialog();
                 Shutdown();
                 return;
             }

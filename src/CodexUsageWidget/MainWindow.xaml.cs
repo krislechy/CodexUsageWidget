@@ -3,13 +3,13 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -30,6 +30,7 @@ public partial class MainWindow : Window
     private WidgetSettings _settings;
     private UsageMonitor? _monitor;
     private Forms.NotifyIcon? _tray;
+    private ContextMenu? _trayMenu;
     private bool _exiting;
     private bool _changingSettings;
     private bool _resetAction;
@@ -147,8 +148,8 @@ public partial class MainWindow : Window
 
     private void ApplyLayout()
     {
-        Width = _viewModel.IsCompact ? 285 : 386;
-        Height = _viewModel.IsCompact ? 94 : 598;
+        Width = _viewModel.IsCompact ? 104 : 386;
+        Height = _viewModel.IsCompact ? 104 : 598;
         Surface.CornerRadius = new CornerRadius(_viewModel.IsCompact ? 22 : 26);
     }
 
@@ -283,33 +284,54 @@ public partial class MainWindow : Window
     private void CreateTray()
     {
         _tray = new Forms.NotifyIcon { Icon = CreateIcon(), Visible = true, Text = "Codex Usage Widget" };
-        var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(ShowWidget)).Tag = "MenuShow";
-        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(() => Compact_Click(this, new RoutedEventArgs()))).Tag = "MenuMode";
-        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(() => Refresh_Click(this, new RoutedEventArgs()))).Tag = "RefreshShort";
-        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(() => { ShowWidget(); Settings_Click(this, new RoutedEventArgs()); })).Tag = "Settings";
-        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(() => { ShowWidget(); Reset_Click(this, new RoutedEventArgs()); })).Tag = "ResetAction";
-        menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add("", null, (_, _) => Dispatcher.Invoke(ExitAsync)).Tag = "MenuExit";
-        _tray.ContextMenuStrip = menu;
-        _tray.MouseClick += (_, e) => { if (e.Button == Forms.MouseButtons.Left) Dispatcher.Invoke(ShowWidget); };
+        _trayMenu = CreateTrayMenu();
+        _tray.MouseClick += (_, e) => Dispatcher.Invoke(() =>
+        {
+            if (e.Button == Forms.MouseButtons.Left) ShowWidget();
+            if (e.Button == Forms.MouseButtons.Right)
+            {
+                UpdateTray();
+                _trayMenu.IsOpen = true;
+            }
+        });
         UpdateTray();
     }
 
     private void ShowWidget() { EnsureVisible(); Show(); Activate(); }
 
+    private ContextMenu CreateTrayMenu()
+    {
+        var menu = new ContextMenu { Placement = PlacementMode.MousePoint, PlacementTarget = this };
+        void Add(string key, Action action)
+        {
+            var item = new MenuItem { Tag = key, Header = Localization.Current[key] };
+            item.Click += (_, _) => action();
+            menu.Items.Add(item);
+        }
+        Add("MenuShow", ShowWidget);
+        Add("MenuMode", () => Compact_Click(this, new RoutedEventArgs()));
+        Add("RefreshShort", () => Refresh_Click(this, new RoutedEventArgs()));
+        Add("Settings", () => { ShowWidget(); Settings_Click(this, new RoutedEventArgs()); });
+        Add("ResetAction", () => { ShowWidget(); Reset_Click(this, new RoutedEventArgs()); });
+        menu.Items.Add(new Separator());
+        Add("MenuExit", ExitAsync);
+        return menu;
+    }
+
     private void UpdateTray()
     {
-        if (_exiting || _tray is null) return;
+        if (_exiting) return;
         var text = $"Codex · {Localization.Current["FiveHours"]} {_viewModel.FiveHourRemaining} · {Localization.Current["Weekly"]} {_viewModel.WeeklyRemaining}";
         if (_viewModel.HasError) text += " · !";
-        _tray.Text = text.Length > 63 ? text[..63] : text;
-        if (_tray.ContextMenuStrip is { } menu)
-            foreach (var item in menu.Items.OfType<Forms.ToolStripMenuItem>())
+        if (_tray is not null) _tray.Text = text.Length > 63 ? text[..63] : text;
+        if (_trayMenu is { } menu)
+            foreach (var item in menu.Items.OfType<MenuItem>())
                 if (item.Tag is string key)
                 {
-                    item.Text = key == "ResetAction" ? $"{_viewModel.ResetButtonText} · {_viewModel.ResetAvailability}" : Localization.Current[key];
-                    if (key == "ResetAction") item.Enabled = _viewModel.CanReset;
+                    item.Header = key == "ResetAction" ? $"{_viewModel.ResetButtonText} · {_viewModel.ResetAvailability}" :
+                        key == "MenuMode" ? Localization.Current[_viewModel.IsCompact ? "ExpandView" : "CompactView"] : Localization.Current[key];
+                    if (key == "ResetAction") item.IsEnabled = _viewModel.CanReset;
+                    if (key == "RefreshShort") item.IsEnabled = _viewModel.CanRefresh;
                 }
     }
 
@@ -334,9 +356,9 @@ public partial class MainWindow : Window
         {
             _tray.Visible = false;
             _tray.Icon?.Dispose();
-            _tray.ContextMenuStrip?.Dispose();
             _tray.Dispose();
         }
+        if (_trayMenu is not null) _trayMenu.IsOpen = false;
         if (_monitor is not null) await _monitor.DisposeAsync();
         Localization.Current.PropertyChanged -= LanguageChanged;
         _viewModel.Dispose();
@@ -345,21 +367,10 @@ public partial class MainWindow : Window
 
     private static Drawing.Icon CreateIcon()
     {
-        using var bitmap = new Drawing.Bitmap(32, 32);
-        using var graphics = Drawing.Graphics.FromImage(bitmap);
-        graphics.SmoothingMode = Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        using var outer = new Drawing.Pen(Drawing.Color.FromArgb(255, 57, 126), 4);
-        using var inner = new Drawing.Pen(Drawing.Color.FromArgb(155, 239, 41), 4);
-        graphics.DrawArc(outer, 3, 3, 26, 26, -90, 270);
-        graphics.DrawArc(inner, 10, 10, 12, 12, -90, 100);
-        var handle = bitmap.GetHicon();
-        try { return (Drawing.Icon)Drawing.Icon.FromHandle(handle).Clone(); }
-        finally { DestroyIcon(handle); }
+        using var stream = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/app.ico"))!.Stream;
+        using var icon = new Drawing.Icon(stream);
+        return (Drawing.Icon)icon.Clone();
     }
-
-    [DllImport("user32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool DestroyIcon(IntPtr handle);
 
     private void SetDemoSnapshot()
     {
@@ -375,6 +386,9 @@ public partial class MainWindow : Window
         _viewModel.SetPendingReset(false);
         _viewModel.IsCompact = false;
         ApplyLayout();
+        var workArea = SystemParameters.WorkArea;
+        Left = workArea.Left + (workArea.Width - Width) / 2;
+        Top = workArea.Top + (workArea.Height - Height) / 2;
         await Task.Delay(650);
         VerifyRingAccessibility();
         if (!_viewModel.CanReset || !_viewModel.ResetAvailability.Contains("3", StringComparison.Ordinal))
@@ -383,6 +397,9 @@ public partial class MainWindow : Window
         _viewModel.IsCompact = true;
         ApplyLayout();
         await Task.Delay(150);
+        if (FindVisualChildren<TextBlock>(CompactPanel).Any(text => text.IsVisible) ||
+            FindVisualChildren<RingGauge>(CompactPanel).Count() != 2)
+            throw new InvalidOperationException("Compact mode must show only two rings.");
         Capture(Surface, Path.Combine(directory, "compact.png"));
         _viewModel.IsCompact = false;
         ApplyLayout();
@@ -398,6 +415,9 @@ public partial class MainWindow : Window
         var confirmation = new ResetConfirmationWindow(_viewModel) { Owner = this };
         confirmation.Show();
         await Task.Delay(100);
+        VerifyDialogCenter(confirmation);
+        if (!FindVisualChildren<Button>(confirmation).Any(button => button.IsDefault && button.IsCancel))
+            throw new InvalidOperationException("Reset confirmation must default to cancel.");
         Capture((FrameworkElement)confirmation.Content, Path.Combine(directory, "reset-confirmation.png"));
         confirmation.Close();
         _viewModel.SetSnapshot(_viewModel.Snapshot! with { ObservedAt = DateTimeOffset.UtcNow, ResetCredits = new ResetCredits(0, []), ResetCreditsIncluded = true });
@@ -408,6 +428,7 @@ public partial class MainWindow : Window
         var settings = new SettingsWindow(new WidgetSettings { Language = Localization.Current.Language }) { Owner = this };
         settings.Show();
         await Task.Delay(150);
+        VerifyDialogCenter(settings);
         Capture((FrameworkElement)settings.Content, Path.Combine(directory, "settings.png"));
         var selector = (System.Windows.Controls.ComboBox)settings.FindName("IntervalBox");
         selector.Focus();
@@ -422,6 +443,38 @@ public partial class MainWindow : Window
         settings.Close();
         if (Localization.Current.Language != originalLanguage)
             throw new InvalidOperationException("Cancel did not restore the language.");
+        var notice = new NoticeWindow { Owner = this };
+        notice.Show();
+        await Task.Delay(100);
+        VerifyDialogCenter(notice);
+        Capture((FrameworkElement)notice.Content, Path.Combine(directory, "already-running.png"));
+        notice.Close();
+        _trayMenu = CreateTrayMenu();
+        UpdateTray();
+        _trayMenu.Placement = PlacementMode.Center;
+        _trayMenu.IsOpen = true;
+        await Task.Delay(100);
+        Capture(_trayMenu, Path.Combine(directory, "tray-menu.png"));
+        _viewModel.SetBusy(true);
+        if (_trayMenu.Items.OfType<MenuItem>().Where(item => item.Tag is "ResetAction" or "RefreshShort").Any(item => item.IsEnabled))
+            throw new InvalidOperationException("Busy tray actions should be disabled.");
+        _trayMenu.IsOpen = false;
+        _viewModel.SetBusy(false);
+        _trayMenu = null;
+        var now = DateTimeOffset.UtcNow;
+        _viewModel.SetSnapshot(new UsageSnapshot(new QuotaWindow(0, 300, now.AddHours(3)), new QuotaWindow(100, 10080, now.AddDays(6)), now));
+        await Task.Delay(600);
+        var rings = FindVisualChildren<RingGauge>(ExpandedPanel).ToArray();
+        if (rings.Length != 2 || rings[0].Value != 100 || rings[0].AnimatedValue != 100 || rings[1].Value != 0 || rings[1].AnimatedValue != 0)
+            throw new InvalidOperationException("Full and empty rings must represent remaining quota.");
+        Capture(Surface, Path.Combine(directory, "ring-boundaries.png"));
+    }
+
+    private void VerifyDialogCenter(Window dialog)
+    {
+        if (Math.Abs(dialog.Left + dialog.ActualWidth / 2 - Left - ActualWidth / 2) > 1 ||
+            Math.Abs(dialog.Top + dialog.ActualHeight / 2 - Top - ActualHeight / 2) > 1)
+            throw new InvalidOperationException("Dialog is not centered on its owner.");
     }
 
     private void VerifyRingAccessibility()
@@ -431,7 +484,7 @@ public partial class MainWindow : Window
             var peer = UIElementAutomationPeer.CreatePeerForElement(ring) ?? throw new InvalidOperationException("Ring automation peer is missing.");
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
             if (provider is null || !provider.IsReadOnly || provider.Value != ring.Value ||
-                !peer.GetName().Contains(Localization.Current.Format("ConsumedValue", ring.Value.ToString("0.#", Localization.Current.Culture)), StringComparison.Ordinal))
+                !peer.GetName().Contains(Localization.Current.Format("AvailableValue", ring.Value.ToString("0.#", Localization.Current.Culture)), StringComparison.Ordinal))
                 throw new InvalidOperationException("Ring accessibility verification failed.");
         }
     }

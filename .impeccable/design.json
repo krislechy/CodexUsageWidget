@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-12T16:56:16.4201189Z",
+  "generatedAt": "2026-10-12T20:30:02.5550563Z",
   "title": "Design System: Codex Usage Widget",
   "extensions": {
     "platform": {
@@ -18,7 +18,11 @@
         "src/CodexUsageWidget/ResetConfirmationWindow.xaml.cs",
         "src/CodexUsageWidget/WidgetViewModel.cs",
         "src/CodexUsageWidget.Core/Localization.cs",
-        "src/CodexUsageWidget.Core/ResetCredits.cs"
+        "src/CodexUsageWidget.Core/ResetCredits.cs",
+        "src/CodexUsageWidget/WidgetDialogWindow.cs",
+        "src/CodexUsageWidget/Assets/app.svg",
+        "src/CodexUsageWidget/Assets/app.png",
+        "src/CodexUsageWidget/Assets/app.ico"
       ],
       "units": "WPF device-independent pixels; portable px tokens map to DIP"
     },
@@ -341,10 +345,6 @@
         "displayName": "Reset details",
         "purpose": "Muted local reset dates."
       },
-      "compact-percentage": {
-        "displayName": "Compact remaining quota",
-        "purpose": "Bold quota numbers in compact mode."
-      },
       "settings-body": {
         "displayName": "Settings body",
         "purpose": "Native dialog text."
@@ -360,16 +360,16 @@
     ],
     "breakpoints": [],
     "rings": {
-      "semantics": "consumed percentage",
+      "semantics": "remaining percentage; full means all quota remains, empty means none",
       "startDegrees": -90,
       "direction": "clockwise",
       "strokeCaps": "round",
       "outerDiameter": 220,
       "innerDiameter": 170,
       "strokeWidth": 18,
-      "compactOuterDiameter": 48,
-      "compactInnerDiameter": 33,
-      "compactStrokeWidth": 5
+      "compactOuterDiameter": 68,
+      "compactInnerDiameter": 48,
+      "compactStrokeWidth": 6
     },
     "focus": {
       "icon": "One-pixel lime border when IsKeyboardFocused.",
@@ -384,89 +384,107 @@
         "maximum": 100,
         "isReadOnly": true
       },
-      "ringName": "Quota window, remaining quota and reset details, followed by consumed percentage.",
+      "ringName": "Quota window, remaining quota and reset details, followed by available percentage.",
       "statusLiveSetting": "Polite",
       "iconDisabledOpacity": 0.35,
       "actionDisabledOpacity": 0.4
     },
     "captures": [
-      "docs/screenshots/main.png",
-      "docs/screenshots/compact.png",
-      "docs/screenshots/stale.png",
-      "docs/screenshots/settings.png",
-      "docs/screenshots/settings-focused.png",
-      "docs/screenshots/reset-confirmation.png",
-      "docs/screenshots/reset-empty.png",
-      "docs/screenshots/reset-pending.png",
-      "docs/screenshots/locales/en/main.png",
-      "docs/screenshots/locales/en/compact.png",
-      "docs/screenshots/locales/en/stale.png",
-      "docs/screenshots/locales/en/settings.png",
-      "docs/screenshots/locales/en/settings-focused.png",
-      "docs/screenshots/locales/en/reset-confirmation.png",
-      "docs/screenshots/locales/en/reset-empty.png",
-      "docs/screenshots/locales/en/reset-pending.png",
-      "docs/screenshots/locales/ru/main.png",
-      "docs/screenshots/locales/ru/compact.png",
-      "docs/screenshots/locales/ru/stale.png",
-      "docs/screenshots/locales/ru/settings.png",
-      "docs/screenshots/locales/ru/settings-focused.png",
-      "docs/screenshots/locales/ru/reset-confirmation.png",
-      "docs/screenshots/locales/ru/reset-empty.png",
-      "docs/screenshots/locales/ru/reset-pending.png",
-      "docs/screenshots/locales/uk/main.png",
-      "docs/screenshots/locales/uk/compact.png",
-      "docs/screenshots/locales/uk/stale.png",
-      "docs/screenshots/locales/uk/settings.png",
-      "docs/screenshots/locales/uk/settings-focused.png",
-      "docs/screenshots/locales/uk/reset-confirmation.png",
-      "docs/screenshots/locales/uk/reset-empty.png",
-      "docs/screenshots/locales/uk/reset-pending.png",
-      "docs/screenshots/locales/sr/main.png",
-      "docs/screenshots/locales/sr/compact.png",
-      "docs/screenshots/locales/sr/stale.png",
-      "docs/screenshots/locales/sr/settings.png",
-      "docs/screenshots/locales/sr/settings-focused.png",
-      "docs/screenshots/locales/sr/reset-confirmation.png",
-      "docs/screenshots/locales/sr/reset-empty.png",
-      "docs/screenshots/locales/sr/reset-pending.png",
-      "docs/screenshots/locales/fr/main.png",
-      "docs/screenshots/locales/fr/compact.png",
-      "docs/screenshots/locales/fr/stale.png",
-      "docs/screenshots/locales/fr/settings.png",
-      "docs/screenshots/locales/fr/settings-focused.png",
-      "docs/screenshots/locales/fr/reset-confirmation.png",
-      "docs/screenshots/locales/fr/reset-empty.png",
-      "docs/screenshots/locales/fr/reset-pending.png",
-      "docs/screenshots/locales/de/main.png",
-      "docs/screenshots/locales/de/compact.png",
-      "docs/screenshots/locales/de/stale.png",
-      "docs/screenshots/locales/de/settings.png",
-      "docs/screenshots/locales/de/settings-focused.png",
-      "docs/screenshots/locales/de/reset-confirmation.png",
-      "docs/screenshots/locales/de/reset-empty.png",
-      "docs/screenshots/locales/de/reset-pending.png",
-      "docs/screenshots/locales/zh-CN/main.png",
-      "docs/screenshots/locales/zh-CN/compact.png",
-      "docs/screenshots/locales/zh-CN/stale.png",
-      "docs/screenshots/locales/zh-CN/settings.png",
-      "docs/screenshots/locales/zh-CN/settings-focused.png",
-      "docs/screenshots/locales/zh-CN/reset-confirmation.png",
-      "docs/screenshots/locales/zh-CN/reset-empty.png",
-      "docs/screenshots/locales/zh-CN/reset-pending.png",
-      "docs/screenshots/locales/ja/main.png",
-      "docs/screenshots/locales/ja/compact.png",
-      "docs/screenshots/locales/ja/stale.png",
-      "docs/screenshots/locales/ja/settings.png",
-      "docs/screenshots/locales/ja/settings-focused.png",
-      "docs/screenshots/locales/ja/reset-confirmation.png",
-      "docs/screenshots/locales/ja/reset-empty.png",
-      "docs/screenshots/locales/ja/reset-pending.png"
+      "artifacts/preview-030-final/compact.png",
+      "artifacts/preview-030-final/main.png",
+      "artifacts/preview-030-final/reset-confirmation.png",
+      "artifacts/preview-030-final/reset-empty.png",
+      "artifacts/preview-030-final/reset-pending.png",
+      "artifacts/preview-030-final/ring-boundaries.png",
+      "artifacts/preview-030-final/settings-focused.png",
+      "artifacts/preview-030-final/settings.png",
+      "artifacts/preview-030-final/stale.png",
+      "artifacts/preview-030-final/tray-menu.png",
+      "artifacts/preview-030-final/locales/de/compact.png",
+      "artifacts/preview-030-final/locales/de/main.png",
+      "artifacts/preview-030-final/locales/de/reset-confirmation.png",
+      "artifacts/preview-030-final/locales/de/reset-empty.png",
+      "artifacts/preview-030-final/locales/de/reset-pending.png",
+      "artifacts/preview-030-final/locales/de/ring-boundaries.png",
+      "artifacts/preview-030-final/locales/de/settings-focused.png",
+      "artifacts/preview-030-final/locales/de/settings.png",
+      "artifacts/preview-030-final/locales/de/stale.png",
+      "artifacts/preview-030-final/locales/de/tray-menu.png",
+      "artifacts/preview-030-final/locales/en/compact.png",
+      "artifacts/preview-030-final/locales/en/main.png",
+      "artifacts/preview-030-final/locales/en/reset-confirmation.png",
+      "artifacts/preview-030-final/locales/en/reset-empty.png",
+      "artifacts/preview-030-final/locales/en/reset-pending.png",
+      "artifacts/preview-030-final/locales/en/ring-boundaries.png",
+      "artifacts/preview-030-final/locales/en/settings-focused.png",
+      "artifacts/preview-030-final/locales/en/settings.png",
+      "artifacts/preview-030-final/locales/en/stale.png",
+      "artifacts/preview-030-final/locales/en/tray-menu.png",
+      "artifacts/preview-030-final/locales/fr/compact.png",
+      "artifacts/preview-030-final/locales/fr/main.png",
+      "artifacts/preview-030-final/locales/fr/reset-confirmation.png",
+      "artifacts/preview-030-final/locales/fr/reset-empty.png",
+      "artifacts/preview-030-final/locales/fr/reset-pending.png",
+      "artifacts/preview-030-final/locales/fr/ring-boundaries.png",
+      "artifacts/preview-030-final/locales/fr/settings-focused.png",
+      "artifacts/preview-030-final/locales/fr/settings.png",
+      "artifacts/preview-030-final/locales/fr/stale.png",
+      "artifacts/preview-030-final/locales/fr/tray-menu.png",
+      "artifacts/preview-030-final/locales/ja/compact.png",
+      "artifacts/preview-030-final/locales/ja/main.png",
+      "artifacts/preview-030-final/locales/ja/reset-confirmation.png",
+      "artifacts/preview-030-final/locales/ja/reset-empty.png",
+      "artifacts/preview-030-final/locales/ja/reset-pending.png",
+      "artifacts/preview-030-final/locales/ja/ring-boundaries.png",
+      "artifacts/preview-030-final/locales/ja/settings-focused.png",
+      "artifacts/preview-030-final/locales/ja/settings.png",
+      "artifacts/preview-030-final/locales/ja/stale.png",
+      "artifacts/preview-030-final/locales/ja/tray-menu.png",
+      "artifacts/preview-030-final/locales/ru/compact.png",
+      "artifacts/preview-030-final/locales/ru/main.png",
+      "artifacts/preview-030-final/locales/ru/reset-confirmation.png",
+      "artifacts/preview-030-final/locales/ru/reset-empty.png",
+      "artifacts/preview-030-final/locales/ru/reset-pending.png",
+      "artifacts/preview-030-final/locales/ru/ring-boundaries.png",
+      "artifacts/preview-030-final/locales/ru/settings-focused.png",
+      "artifacts/preview-030-final/locales/ru/settings.png",
+      "artifacts/preview-030-final/locales/ru/stale.png",
+      "artifacts/preview-030-final/locales/ru/tray-menu.png",
+      "artifacts/preview-030-final/locales/sr/compact.png",
+      "artifacts/preview-030-final/locales/sr/main.png",
+      "artifacts/preview-030-final/locales/sr/reset-confirmation.png",
+      "artifacts/preview-030-final/locales/sr/reset-empty.png",
+      "artifacts/preview-030-final/locales/sr/reset-pending.png",
+      "artifacts/preview-030-final/locales/sr/ring-boundaries.png",
+      "artifacts/preview-030-final/locales/sr/settings-focused.png",
+      "artifacts/preview-030-final/locales/sr/settings.png",
+      "artifacts/preview-030-final/locales/sr/stale.png",
+      "artifacts/preview-030-final/locales/sr/tray-menu.png",
+      "artifacts/preview-030-final/locales/uk/compact.png",
+      "artifacts/preview-030-final/locales/uk/main.png",
+      "artifacts/preview-030-final/locales/uk/reset-confirmation.png",
+      "artifacts/preview-030-final/locales/uk/reset-empty.png",
+      "artifacts/preview-030-final/locales/uk/reset-pending.png",
+      "artifacts/preview-030-final/locales/uk/ring-boundaries.png",
+      "artifacts/preview-030-final/locales/uk/settings-focused.png",
+      "artifacts/preview-030-final/locales/uk/settings.png",
+      "artifacts/preview-030-final/locales/uk/stale.png",
+      "artifacts/preview-030-final/locales/uk/tray-menu.png",
+      "artifacts/preview-030-final/locales/zh-CN/compact.png",
+      "artifacts/preview-030-final/locales/zh-CN/main.png",
+      "artifacts/preview-030-final/locales/zh-CN/reset-confirmation.png",
+      "artifacts/preview-030-final/locales/zh-CN/reset-empty.png",
+      "artifacts/preview-030-final/locales/zh-CN/reset-pending.png",
+      "artifacts/preview-030-final/locales/zh-CN/ring-boundaries.png",
+      "artifacts/preview-030-final/locales/zh-CN/settings-focused.png",
+      "artifacts/preview-030-final/locales/zh-CN/settings.png",
+      "artifacts/preview-030-final/locales/zh-CN/stale.png",
+      "artifacts/preview-030-final/locales/zh-CN/tray-menu.png"
     ],
     "preview": {
       "purpose": "Self-contained HTML/CSS translations for the design panel. The shipped application is native WPF; previews are not application code.",
       "language": "English documentation examples.",
-      "states": "Synthetic component examples; actual WPF evidence includes available, empty, stale, uncertain retry, confirmation and Settings focus states across all eight locales."
+      "states": "Synthetic component examples; actual WPF preview-030 evidence includes all eight locales, available, empty, stale, uncertain retry, confirmation, Settings focus, ring boundaries and tray menu. Independent finish review: SHIP; no material issues."
     },
     "geometry": {
       "main": {
@@ -488,17 +506,43 @@
         "width": 510,
         "intervalSelectHeight": 30,
         "height": 570,
-        "inset": 24
+        "inset": 23
       },
       "compact": {
-        "width": 285,
-        "height": 94
+        "width": 104,
+        "height": 104,
+        "contents": "Rings only; values and details in tooltip; expand by double-click, Ctrl+M or tray."
       },
       "resetConfirmation": {
-        "placement": "center owner",
+        "placement": "center owner after rendering; clamp initial position to monitor working area",
         "width": 470,
         "height": "size to content",
-        "inset": 24
+        "inset": 23
+      },
+      "dialogShell": {
+        "windowStyle": "None",
+        "background": "Transparent",
+        "cornerRadius": 26,
+        "outerMargin": 8,
+        "borderThickness": 1,
+        "contentInset": 23,
+        "placement": "center owner after rendering; clamp initial position to monitor working area",
+        "header": "draggable except buttons",
+        "close": "Cancel"
+      },
+      "tray": {
+        "cornerRadius": 14,
+        "padding": 6,
+        "rowCornerRadius": 8,
+        "rowPadding": "12,9",
+        "rowMargin": 1,
+        "fontSize": 13
+      },
+      "notice": {
+        "shell": "shared WidgetDialogWindow",
+        "placement": "CenterScreen when no owner",
+        "purpose": "Duplicate application launch",
+        "controls": "Close and OK"
       }
     },
     "localization": {
@@ -549,6 +593,15 @@
       "confirmation": "Spend one reset; repeat availability and expiry; Cancel is default and escape action.",
       "uncertain": "Retry reset confirms and reuses the persisted attempt and credit identity, including after restart; may recover with stale data.",
       "blockedRecovery": "Disable action until the pending record can be recovered."
+    },
+    "brand": {
+      "assets": [
+        "src/CodexUsageWidget/Assets/app.svg",
+        "src/CodexUsageWidget/Assets/app.png",
+        "src/CodexUsageWidget/Assets/app.ico"
+      ],
+      "appearance": "Near-black rounded square with pink and lime round-capped arcs only",
+      "usage": "Application windows and notification icon use embedded ICO"
     }
   },
   "components": [
@@ -593,10 +646,10 @@
       "css": ".ds-select{height:30px;padding:0 9px;background:#252930;color:#F6F6F7;border:1px solid #626A76;border-radius:6px;font:13px \"Segoe UI\",sans-serif}.ds-select:focus-visible{border-color:#9BEF29;outline:none}.ds-select option{padding:6px 9px;background:#252930;color:#F6F6F7}.ds-select option:checked{background:#414A55}"
     },
     {
-      "name": "Consumed quota rings",
+      "name": "Remaining quota rings",
       "kind": "custom",
-      "description": "Concentric vector tracks with consumed arcs and explicit remaining descriptions.",
-      "html": "<svg class=\"ds-rings\" viewBox=\"0 0 220 220\" role=\"img\" aria-label=\"Five-hour quota: 34 percent consumed, 66 percent remaining. Weekly quota: 19 percent consumed, 81 percent remaining.\"><circle cx=\"110\" cy=\"110\" r=\"101\" stroke=\"#3D1E2B\"/><circle cx=\"110\" cy=\"110\" r=\"76\" stroke=\"#263719\"/><circle cx=\"110\" cy=\"110\" r=\"101\" stroke=\"#FF397E\" pathLength=\"100\" stroke-dasharray=\"34 100\" transform=\"rotate(-90 110 110)\"/><circle cx=\"110\" cy=\"110\" r=\"76\" stroke=\"#9BEF29\" pathLength=\"100\" stroke-dasharray=\"19 100\" transform=\"rotate(-90 110 110)\"/></svg>",
+      "description": "Concentric vector tracks with remaining arcs; full means all quota remains and empty means none.",
+      "html": "<svg class=\"ds-rings\" viewBox=\"0 0 220 220\" role=\"img\" aria-label=\"Five-hour quota: 66 percent remaining. Weekly quota: 81 percent remaining.\"><circle cx=\"110\" cy=\"110\" r=\"101\" stroke=\"#3D1E2B\"/><circle cx=\"110\" cy=\"110\" r=\"76\" stroke=\"#263719\"/><circle cx=\"110\" cy=\"110\" r=\"101\" stroke=\"#FF397E\" pathLength=\"100\" stroke-dasharray=\"66 100\" transform=\"rotate(-90 110 110)\"/><circle cx=\"110\" cy=\"110\" r=\"76\" stroke=\"#9BEF29\" pathLength=\"100\" stroke-dasharray=\"81 100\" transform=\"rotate(-90 110 110)\"/></svg>",
       "css": ".ds-rings{width:220px;height:220px}.ds-rings circle{fill:none;stroke-width:18;stroke-linecap:round}"
     },
     {
@@ -617,9 +670,16 @@
     {
       "name": "Reset confirmation",
       "kind": "custom",
-      "description": "Owner-centered native dialog, 470 DIP wide with height sized to content. Cancel is default; uncertain outcomes confirm retry of the persisted attempt.",
+      "description": "Shared frameless rounded dark shell; 470 DIP wide, content-sized height; owner-centered and screen-clamped. Cancel is default; retry preserves attempt identity.",
       "html": "<section class=\"ds-confirm\" role=\"dialog\" aria-labelledby=\"ds-confirm-title\"><h2 id=\"ds-confirm-title\">Use an earned reset?</h2><p>This spends one earned reset to reset your Codex limits.</p><strong>3 available</strong><p class=\"ds-confirm-expiry\">First expires: Oct 14, 2026, 18:00</p><div class=\"ds-confirm-actions\"><button class=\"ds-confirm-button\" autofocus>Cancel</button><button class=\"ds-confirm-button\">Use reset</button></div></section>",
-      "css": ".ds-confirm{width:422px;padding:24px;background:#141619;color:#F6F6F7;font:13px \"Segoe UI\",sans-serif}.ds-confirm h2{font-size:21px;font-weight:600;margin:0 0 15px}.ds-confirm p{color:#ABB0BA;margin:0 0 15px}.ds-confirm .ds-confirm-expiry{font-size:12px;margin:5px 0 23px}.ds-confirm-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}.ds-confirm-button{height:36px;padding:0 14px;background:#2B3036;color:#F6F6F7;border:1px solid #59616C;border-radius:8px;font:13px \"Segoe UI\",sans-serif;cursor:pointer}.ds-confirm-button:hover{background:#3B424C}.ds-confirm-button:focus-visible{border-color:#9BEF29;outline:none}.ds-confirm-button:disabled{opacity:.4}"
+      "css": ".ds-confirm{width:406px;padding:23px;border:1px solid #353940;border-radius:26px;background:#141619;color:#F6F6F7;font:13px \"Segoe UI Variable\",\"Segoe UI\",sans-serif}.ds-confirm h2{font-size:21px;font-weight:600;margin:0 0 15px}.ds-confirm p{color:#ABB0BA;margin:0 0 15px}.ds-confirm .ds-confirm-expiry{font-size:12px;margin:5px 0 23px}.ds-confirm-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}.ds-confirm-button{height:36px;padding:0 14px;background:#2B3036;color:#F6F6F7;border:1px solid #59616C;border-radius:8px;font:13px \"Segoe UI Variable\",\"Segoe UI\",sans-serif;cursor:pointer}.ds-confirm-button:hover{background:#3B424C}.ds-confirm-button:focus-visible{border-color:#9BEF29;outline:none}.ds-confirm-button:disabled{opacity:.4}"
+    },
+    {
+      "name": "Dark tray menu",
+      "kind": "nav",
+      "description": "WPF tray actions with dark surface, tonal hover and lime keyboard focus.",
+      "html": "<nav class=\"ds-tray\" aria-label=\"Tray actions\"><button>Show widget</button><button>Full / compact view</button><button>Refresh</button><button>Settings</button><button>Reset limits</button><hr/><button>Exit</button></nav>",
+      "css": ".ds-tray{width:180px;padding:6px;border:1px solid #353940;border-radius:14px;background:#141619;color:#F6F6F7;font:13px \"Segoe UI Variable\",\"Segoe UI\",sans-serif}.ds-tray button{display:block;width:100%;margin:1px;padding:9px 12px;text-align:left;border:1px solid transparent;border-radius:8px;background:transparent;color:inherit;font:inherit;cursor:pointer}.ds-tray button:hover{background:#282B31}.ds-tray button:focus-visible{border-color:#9BEF29;outline:none}.ds-tray button:disabled{opacity:.4}.ds-tray hr{border:0;height:1px;background:#353940;margin:5px 12px}"
     }
   ],
   "narrative": {
@@ -627,7 +687,7 @@
     "overview": "The user approved an Apple Watch Activity-inspired concept: concentric pink and lime rings on a near-black, rounded floating window. The interface is a glanceable utility. Exact quota semantics matter more than decorative effects. This identity uses native Windows WPF typography, controls and vector rendering.",
     "keyCharacteristics": [
       "Matte dark surface with stable pink and lime window identities.",
-      "Consumed quota rings paired with explicit remaining numbers.",
+      "Remaining quota rings paired with explicit remaining numbers in full view.",
       "Separate full and compact compositions with local reset details.",
       "Native Windows keyboard interaction and accessible quota semantics.",
       "English-default, locale-aware copy with reversible live Settings preview.",
@@ -640,8 +700,8 @@
         "section": "colors"
       },
       {
-        "name": "The Consumed Ring Rule",
-        "body": "Arcs encode consumed quota; prominent row and compact numbers encode remaining quota, with explicit labels and accessible names.",
+        "name": "The Remaining Ring Rule",
+        "body": "Arcs encode remaining quota: full means all quota remains, empty means none remains. Full-view numbers and accessible values use the same semantics; compact values live in the tooltip.",
         "section": "components"
       },
       {

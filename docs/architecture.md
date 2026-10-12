@@ -17,8 +17,11 @@ src/CodexUsageWidget/
   MainWindow.xaml.cs Window actions, tray, monitor binding and preview capture
   WidgetViewModel.cs Display state, date/percentage formatting, stale status
   WidgetSettings.cs  Local preferences and explicit startup registration
+  WidgetDialogWindow.cs Shared frameless dialogs, owner centering and screen clamp
+  Assets/app.*       Two-ring SVG/PNG/ICO brand assets
   SettingsWindow.*  Configuration UI
   ResetConfirmationWindow.* Explicit spend/retry confirmation
+  NoticeWindow.*    Shared-shell duplicate-launch notice
   TranslateExtension.cs Live XAML bindings to the selected catalog
   Controls/RingGauge.cs Animated, resolution-independent quota arcs
 tests/CodexUsageWidget.Tests/
@@ -32,7 +35,7 @@ tests/CodexUsageWidget.Tests/
 3. `CodexClient` owns one child process at a time. A connection gate protects startup and the handshake. Each connection owns its reader, stderr drainer, pending request dictionary, write gate and cancellation source.
 4. Replies are correlated by numeric ID. Notifications do not consume request completions. Unsupported server requests receive a method-not-supported response; the widget never supplies auth tokens or approves actions.
 5. `UsageSnapshot` selects only the general `codex` bucket and matches 300/10080-minute windows. Unknown windows are absent, not zero.
-6. `WidgetViewModel` exposes display values. The rings represent consumed percentages and the prominent row values represent remaining percentages. Older snapshots cannot replace a newer snapshot.
+6. `WidgetViewModel` exposes display values. The rings and prominent full-view values represent remaining percentages. Compact mode renders only rings; its tooltip retains values and reset/status detail. Older snapshots cannot replace a newer snapshot.
 
 The transport has no dependency on WPF. The application uses code-behind for native window/tray/reset actions and a small view model for display bindings. A DI container, database and event bus would add no useful capability here.
 
@@ -44,7 +47,7 @@ The transport has no dependency on WPF. The application uses code-behind for nat
 - Polling: fixed selected interval, even when the previous refresh failed. The first read happens immediately.
 - Events: process `account/rateLimits/updated` received on our connection. Cross-client event fanout is not relied upon.
 - Settings change: stop/dispose the old monitor before starting a new one. Queued callbacks from the old monitor are ignored.
-- Exit: cancel the monitor, drain pending activity and kill only the owned process tree. Closing the window normally hides it to the tray.
+- Exit: cancel the monitor, drain pending activity and kill only the owned process tree. Closing the window normally hides it to the tray. The notification icon uses the embedded brand ICO and opens a styled WPF ContextMenu; full/compact mode is also toggled by Ctrl+M and compact-ring double-click.
 
 ## Storage and boundaries
 
@@ -66,6 +69,10 @@ Timeouts and transport errors keep the pending record. The UI offers a confirmed
 
 Settings preview a selection immediately. Cancel restores the original locale; Save persists it with the other preferences. Tray text and accessibility names also update. Serbian uses Cyrillic; Chinese uses the simplified catalog. Runtime catalogs are marked `WithCulture=false` so they stay in the core assembly rather than being split into satellite assemblies.
 
+## Native dialog behavior
+
+Settings and reset confirmation inherit `WidgetDialogWindow`, sharing transparent frameless windows and rounded dark XAML surfaces. After content rendering, the base class centers the measured dialog on its owner, converts the selected monitor working area to device-independent coordinates using owner DPI, and clamps the initial position into that area. The duplicate-launch NoticeWindow uses the same shell and centers on screen without an owner. Header dragging excludes buttons. The close control preserves Cancel behavior, including reverting a Settings language preview.
+
 ## Verification
 
-The executable test suite uses a real child process with synthetic JSON-line responses. `--live` checks the official local server without starting a model turn. `--capture` renders the actual WPF visuals into PNGs for full/compact/stale/settings review.
+The executable test suite uses a real child process with synthetic JSON-line responses. `--live` checks the official local server without starting a model turn. `--capture` renders the actual WPF visuals into PNGs for full/compact/stale/settings review. Final visual evidence in `artifacts/preview-030-final` also includes earned-reset states, all eight locales, ring boundaries and the WPF tray menu.

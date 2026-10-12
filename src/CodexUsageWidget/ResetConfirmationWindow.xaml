@@ -1,13 +1,16 @@
-<Window x:Class="CodexUsageWidget.ResetConfirmationWindow"
+<loc:WidgetDialogWindow x:Class="CodexUsageWidget.ResetConfirmationWindow"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:loc="clr-namespace:CodexUsageWidget"
  xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
- Title="{loc:Tr ResetConfirmTitle}" Width="470" SizeToContent="Height" ResizeMode="NoResize"
- WindowStartupLocation="CenterOwner" Background="{StaticResource Surface}" FontFamily="Segoe UI" FontSize="13"
+ Icon="Assets/app.ico" Title="{loc:Tr ResetConfirmTitle}" Width="470" SizeToContent="Height" ResizeMode="NoResize"
+  Background="Transparent" FontFamily="Segoe UI Variable, Segoe UI" FontSize="13"
  Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}">
- <StackPanel Margin="24">
-  <TextBlock Text="{loc:Tr ResetConfirmTitle}" FontSize="21" FontWeight="SemiBold" Margin="0,0,0,15"/>
+ <Border Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="26" Margin="8"><StackPanel Margin="23">
+    <Grid Margin="0,0,0,15" MouseLeftButtonDown="DialogHeader_MouseLeftButtonDown">
+   <TextBlock Text="{loc:Tr ResetConfirmTitle}" FontSize="21" FontWeight="SemiBold" Margin="0,0,34,0" TextWrapping="Wrap" VerticalAlignment="Center"/>
+   <Button Style="{StaticResource IconButton}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="DialogClose_Click" ToolTip="{loc:Tr Cancel}" AutomationProperties.Name="{loc:Tr Cancel}"><Path Data="M 3,3 L 15,15 M 15,3 L 3,15" Stroke="{StaticResource Muted}" StrokeThickness="1.6" Width="15" Height="15" Stretch="Uniform"/></Button>
+  </Grid>
   <TextBlock x:Name="MessageText" TextWrapping="Wrap" Foreground="{StaticResource Muted}" Margin="0,0,0,15"/>
   <TextBlock x:Name="AvailabilityText" FontWeight="SemiBold" Margin="0,0,0,5"/>
   <TextBlock x:Name="ExpiryText" TextWrapping="Wrap" Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,23"/>
@@ -15,5 +18,5 @@
    <Button Content="{loc:Tr Cancel}" Style="{StaticResource ActionButton}" IsCancel="True" IsDefault="True" Margin="0,0,8,0"/>
    <Button x:Name="ConfirmButton" Content="{loc:Tr ConfirmReset}" Style="{StaticResource ActionButton}" Click="Confirm_Click"/>
   </WrapPanel>
- </StackPanel>
-</Window>
+ </StackPanel></Border>
+</loc:WidgetDialogWindow>

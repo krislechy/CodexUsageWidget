@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0 — 2026-10-12 (local build)
+
+- Rings and their accessibility values now show available quota: full at 100%, empty at 0%.
+- Compact mode is a 104 × 104 DIP tile with only two rings; double-click, Ctrl+M or the tray menu expands it.
+- Shared rounded dark Settings, reset confirmation and WPF tray menu, with visible keyboard focus.
+- Dialogs center on the widget, with a screen-edge clamp to keep every control visible.
+- Multi-resolution two-ring application and tray icon, with SVG source and a reproducible icon generator.
+- Updated local English screenshots and preview captures across all eight languages.
+- Compressed self-contained Portable package and a much smaller Lite package requiring .NET 10 Desktop Runtime.
+- Release packages omit developer mockups and all-language QA screenshots. No automatic GitHub publishing.
+
 ## 0.2.0 — 2026-10-12
 
 - Earned reset availability and earliest known expiry, with clear labels for incomplete metadata.

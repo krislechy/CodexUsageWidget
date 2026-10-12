@@ -3,7 +3,7 @@ using CodexUsageWidget.Core;
 
 namespace CodexUsageWidget;
 
-public partial class ResetConfirmationWindow : Window
+public partial class ResetConfirmationWindow : WidgetDialogWindow
 {
     public ResetConfirmationWindow(WidgetViewModel model)
     {

@@ -21,12 +21,10 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
     public WidgetViewModel() => _text.PropertyChanged += OnLanguageChanged;
     private void OnLanguageChanged(object? sender, PropertyChangedEventArgs e) => NotifyAll();
     public UsageSnapshot? Snapshot => _snapshot;
-    public double FiveHourUsed => _snapshot?.FiveHour?.UsedPercent ?? 0;
-    public double WeeklyUsed => _snapshot?.Weekly?.UsedPercent ?? 0;
+    public double FiveHourAvailable => _snapshot?.FiveHour?.RemainingPercent ?? 0;
+    public double WeeklyAvailable => _snapshot?.Weekly?.RemainingPercent ?? 0;
     public string FiveHourRemaining => Percent(_snapshot?.FiveHour?.RemainingPercent);
     public string WeeklyRemaining => Percent(_snapshot?.Weekly?.RemainingPercent);
-    public string FiveHourUsedLabel => Percent(_snapshot?.FiveHour?.UsedPercent);
-    public string WeeklyUsedLabel => Percent(_snapshot?.Weekly?.UsedPercent);
     public string FiveHourReset => Reset(_snapshot?.FiveHour);
     public string WeeklyReset => Reset(_snapshot?.Weekly);
     public bool CanRefresh => !_busy && !_resetBusy;

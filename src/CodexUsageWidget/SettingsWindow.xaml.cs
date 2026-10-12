@@ -7,7 +7,7 @@ using Microsoft.Win32;
 
 namespace CodexUsageWidget;
 
-public partial class SettingsWindow : Window
+public partial class SettingsWindow : WidgetDialogWindow
 {
     public WidgetSettings Result { get; }
     private readonly bool _originalStartup;

@@ -9,7 +9,7 @@ using CodexUsageWidget.Core;
 
 namespace CodexUsageWidget.Controls;
 
-/// <summary>Resolution-independent clockwise usage arc, including exact zero/full states.</summary>
+/// <summary>Resolution-independent clockwise remaining-quota arc, including exact zero/full states.</summary>
 public sealed class RingGauge : FrameworkElement
 {
     public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(double), typeof(RingGauge),
@@ -85,7 +85,7 @@ public sealed class RingGaugeAutomationPeer(RingGauge owner) : FrameworkElementA
 {
     protected override string GetClassNameCore() => nameof(RingGauge);
     protected override AutomationControlType GetAutomationControlTypeCore() => AutomationControlType.ProgressBar;
-    protected override string GetNameCore() => $"{base.GetNameCore()} {Localization.Current.Format("ConsumedValue", owner.Value.ToString("0.#", Localization.Current.Culture))}";
+    protected override string GetNameCore() => $"{base.GetNameCore()} {Localization.Current.Format("AvailableValue", owner.Value.ToString("0.#", Localization.Current.Culture))}";
     public override object? GetPattern(PatternInterface patternInterface) => patternInterface == PatternInterface.RangeValue ? this : base.GetPattern(patternInterface);
     public bool IsReadOnly => true;
     public double LargeChange => 0;
