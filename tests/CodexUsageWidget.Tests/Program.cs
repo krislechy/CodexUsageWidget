@@ -9,6 +9,16 @@ if (args.FirstOrDefault() == "--fake-server")
     return 0;
 }
 
+if (args.Contains("--live-extra"))
+{
+    await using var client = new CodexClient();
+    var info = await client.ReadExtraInfoAsync();
+    Console.WriteLine($"Extra info: account={info.AccountType is not null}; usage={info.Usage is not null}; daily={info.Usage?.Daily?.Count}; quotas={info.Quotas.Count}; workspaceSupported={info.MessagesEnabled}; unavailable={string.Join(',', info.UnavailableSections)}.");
+    var threads = await client.ReadThreadsAsync();
+    Console.WriteLine($"Thread picker: returned={threads.Threads.Count}; nextPage={threads.Cursor is not null}.");
+    return 0;
+}
+
 if (args.Contains("--live"))
 {
     await using var client = new CodexClient();
@@ -182,6 +192,48 @@ var tests = new List<(string Name, Func<Task> Run)>
         }
         finally { if (File.Exists(ledger)) File.Delete(ledger); }
     }),
+    ("extra info preserves unknown fields, credit units and reported days", () => Check(() =>
+    {
+        using var account = JsonDocument.Parse("{\"account\":{\"type\":\"chatgpt\",\"planType\":\"plus\",\"email\":\"private@example.com\"},\"requiresOpenaiAuth\":true}");
+        using var usage = JsonDocument.Parse("{\"summary\":{\"lifetimeTokens\":12000,\"peakDailyTokens\":null},\"dailyUsageBuckets\":[{\"startDate\":\"2026-10-13\",\"tokens\":0},{\"startDate\":\"bad\",\"tokens\":9},{\"startDate\":\"2026-10-12\",\"tokens\":-1}],\"threadUsage\":{\"threadId\":\"a\",\"estimatedUsageCreditsMicros\":1234567,\"estimatedUsageUsdMicros\":null,\"groups\":[]}}");
+        using var limits = JsonDocument.Parse("{\"ordinaryUsageAllowed\":false,\"rateLimitsByLimitId\":{\"codex\":{\"limitName\":\"Codex\",\"credits\":{\"balance\":\"12.50\",\"hasCredits\":true,\"unlimited\":false}},\"model\":{\"primary\":{\"usedPercent\":100,\"windowDurationMins\":300}}}}");
+        using var notices = JsonDocument.Parse("{\"featureEnabled\":true,\"messages\":[{\"messageBody\":\"active\",\"createdAt\":1900000000,\"archivedAt\":null},{\"messageBody\":\"old\",\"archivedAt\":1900000000}]}");
+        var result = ExtraInfoSnapshot.Parse(account.RootElement, usage.RootElement, limits.RootElement, notices.RootElement);
+        Equal("plus", result.Plan!); True(result.OrdinaryUsageAllowed == false); Equal(2, result.Quotas.Count);
+        Equal("12.50", result.Quotas[0].Balance!); True(result.Quotas[1].HasCredits is null);
+        Equal(0d, result.Quotas[1].Windows[0].RemainingPercent);
+        Equal(1, result.Usage!.Daily!.Count); Equal(0L, result.Usage.Daily[0].Tokens);
+        True(result.Usage.Summary["peakDailyTokens"] is null); Equal(1.234567m, result.Usage.EstimatedCredits!.Value);
+        True(result.Usage.EstimatedUsd is null); Equal(1, result.Messages.Count);
+        True(!JsonSerializer.Serialize(result).Contains("private@example.com", StringComparison.Ordinal));
+        var empty = ExtraInfoSnapshot.Parse(null, null, null, null);
+        True(empty.Usage is null && empty.OrdinaryUsageAllowed is null && empty.MessagesEnabled is null);
+    })),
+    ("extra RPC failures stay isolated and selected thread usage is correlated", async () =>
+    {
+        await using var client = FakeClient("extra");
+        var snapshot = await client.ReadExtraInfoAsync();
+        Equal("plus", snapshot.Plan!); Equal(42L, snapshot.Usage!.Summary["lifetimeTokens"]!.Value);
+        True(snapshot.UnavailableSections.SequenceEqual(new[] { "WorkspaceNotices" }));
+        var page = await client.ReadThreadsAsync();
+        Equal("a", page.Threads[0].Id); Equal("Exact title", page.Threads[0].Name); Equal("next", page.Cursor!);
+        var selected = await client.ReadThreadDetailsAsync("a");
+        Equal(2m, selected.Usage!.EstimatedCredits!.Value);
+        var mismatch = await client.ReadThreadDetailsAsync("other");
+        True(mismatch.Usage is null);
+    }),
+    ("quota notifications deduplicate and reject stale or expired data", () => Check(() =>
+    {
+        var now = DateTimeOffset.UtcNow;
+        var alerts = new QuotaAlerts();
+        var snapshot = new UsageSnapshot(new(95, 300, now.AddHours(2)), null, now,
+            new(2, [new("soon", now.AddHours(1)), new("expired", now.AddHours(-1))]));
+        Equal(0, alerts.Evaluate(snapshot, false, 10, false, 24, now).Count);
+        Equal(0, alerts.Evaluate(snapshot with { ObservedAt = now.AddMinutes(-7) }, true, 10, true, 24, now).Count);
+        Equal(2, alerts.Evaluate(snapshot, true, 10, true, 24, now).Count);
+        Equal(0, alerts.Evaluate(snapshot, true, 10, true, 24, now).Count);
+        Equal(1, alerts.Evaluate(snapshot with { FiveHour = new(96, 300, now.AddHours(3)) }, true, 10, true, 24, now).Count);
+    })),
     ("every locale has the full catalog and valid placeholders", () => Check(() =>
     {
         var localizer = new Localization();
@@ -284,6 +336,21 @@ static async Task FakeServerAsync(string mode)
             }
             if (mode == "reset-lost") continue;
             Console.WriteLine(JsonSerializer.Serialize(new { id, result = new { outcome } }));
+            continue;
+        }
+        if (mode == "extra")
+        {
+            var extra = method.GetString() switch
+            {
+                "account/read" => "{\"account\":{\"type\":\"chatgpt\",\"planType\":\"plus\"},\"requiresOpenaiAuth\":true}",
+                "account/rateLimits/read" => Limits(73, 11),
+                "account/usage/read" when request.GetProperty("params").ValueKind == JsonValueKind.Object => "{\"summary\":{},\"threadUsage\":{\"threadId\":\"a\",\"estimatedUsageCreditsMicros\":2000000,\"groups\":[]}}",
+                "account/usage/read" => "{\"summary\":{\"lifetimeTokens\":42}}",
+                "thread/list" => "{\"data\":[{\"id\":\"a\",\"name\":\"Exact title\"}],\"nextCursor\":\"next\"}",
+                _ => null
+            };
+            if (extra is null) Console.WriteLine(JsonSerializer.Serialize(new { id, error = new { code = -32601, message = "private@example.com" } }));
+            else { using var extraJson = JsonDocument.Parse(extra); Console.WriteLine(JsonSerializer.Serialize(new { id, result = extraJson.RootElement })); }
             continue;
         }
         if (mode == "exit") return;

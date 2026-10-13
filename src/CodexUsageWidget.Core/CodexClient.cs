@@ -15,6 +15,54 @@ public sealed class CodexClient : IAsyncDisposable
 
     public event Action<UsageSnapshot>? LimitsUpdated;
     public event Action? Disconnected;
+    public event Action? ExtraInfoInvalidated;
+    public event Action<string, JsonElement>? ThreadTokensUpdated;
+    private readonly ConcurrentDictionary<string, JsonElement> _threadTokens = new();
+
+    private void OnExtraNotification(string method, JsonElement payload)
+    {
+        if (method == "account/updated") { _threadTokens.Clear(); ExtraInfoInvalidated?.Invoke(); }
+        if (method == "thread/tokenUsage/updated" && ExtraJson.Text(payload, "threadId") is { } id &&
+            ExtraJson.Object(payload, "tokenUsage") is { } tokens)
+        {
+            _threadTokens[id] = tokens.Clone();
+            ThreadTokensUpdated?.Invoke(id, tokens.Clone());
+        }
+    }
+
+    private async Task<JsonElement> ReadExtraAsync(string method, object? parameters, CancellationToken token)
+    {
+        var connection = await GetConnectionAsync(token).ConfigureAwait(false);
+        try { return await connection.RequestAsync(method, parameters, token).ConfigureAwait(false); }
+        catch (TimeoutException) { connection.Abort(); throw; }
+    }
+
+    public async Task<ExtraInfoSnapshot> ReadExtraInfoAsync(CancellationToken token = default)
+    {
+        async Task<(JsonElement? Payload, string Section)> Read(string method, string section, object? parameters = null)
+        {
+            try { return (await ReadExtraAsync(method, parameters, token).ConfigureAwait(false), section); }
+            catch (Exception e) when (e is UsageUnavailableException or IOException or TimeoutException or InvalidOperationException)
+            { return (null, section); }
+        }
+        var results = await Task.WhenAll(Read("account/read", "Account", new { refreshToken = false }),
+            Read("account/usage/read", "TokenActivity"), Read("account/rateLimits/read", "ExtraQuotas"),
+            Read("account/workspaceMessages/read", "WorkspaceNotices")).ConfigureAwait(false);
+        return ExtraInfoSnapshot.Parse(results[0].Payload, results[1].Payload, results[2].Payload, results[3].Payload,
+            results.Where(result => result.Payload is null).Select(result => result.Section).ToArray());
+    }
+
+    public async Task<ThreadPage> ReadThreadsAsync(string? cursor = null, string? search = null, CancellationToken token = default) =>
+        ThreadPage.Parse(await ReadExtraAsync("thread/list", new { limit = 20, cursor, searchTerm = search, sortKey = "updated_at", useStateDbOnly = true }, token).ConfigureAwait(false));
+
+    public async Task<ThreadDetails> ReadThreadDetailsAsync(string id, CancellationToken token = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(id);
+        UsageDetails? usage = null;
+        try { usage = UsageDetails.Parse(await ReadExtraAsync("account/usage/read", new { threadId = id }, token).ConfigureAwait(false)); }
+        catch (UsageUnavailableException) { }
+        return new(usage?.ThreadId == id ? usage : null, _threadTokens.TryGetValue(id, out var tokens) ? tokens : null);
+    }
 
     public CodexClient(string? codexPath = null)
         : this(() => CodexLocator.CreateStartInfo(codexPath), TimeSpan.FromSeconds(20)) { }
@@ -76,7 +124,8 @@ public sealed class CodexClient : IAsyncDisposable
             ObjectDisposedException.ThrowIf(_disposed, this);
             if (_connection?.IsAlive == true) return _connection;
             if (_connection is not null) await _connection.DisposeAsync().ConfigureAwait(false);
-            _connection = new Connection(_startInfo(), _timeout, snapshot => LimitsUpdated?.Invoke(snapshot), () => Disconnected?.Invoke());
+            _threadTokens.Clear();
+            _connection = new Connection(_startInfo(), _timeout, snapshot => LimitsUpdated?.Invoke(snapshot), () => Disconnected?.Invoke(), OnExtraNotification);
             try
             {
                 await _connection.RequestAsync("initialize", new
@@ -114,6 +163,7 @@ public sealed class CodexClient : IAsyncDisposable
         private readonly TimeSpan _timeout;
         private readonly Action<UsageSnapshot> _updated;
         private readonly Action _disconnected;
+        private readonly Action<string, JsonElement> _extraNotification;
         private readonly CancellationTokenSource _lifetime = new();
         private readonly SemaphoreSlim _writeGate = new(1, 1);
         private readonly ConcurrentDictionary<long, TaskCompletionSource<JsonElement>> _pending = new();
@@ -125,11 +175,12 @@ public sealed class CodexClient : IAsyncDisposable
 
         public bool IsAlive => !_closed && !_process.HasExited;
 
-        public Connection(ProcessStartInfo info, TimeSpan timeout, Action<UsageSnapshot> updated, Action disconnected)
+        public Connection(ProcessStartInfo info, TimeSpan timeout, Action<UsageSnapshot> updated, Action disconnected, Action<string, JsonElement> extraNotification)
         {
             _timeout = timeout;
             _updated = updated;
             _disconnected = disconnected;
+            _extraNotification = extraNotification;
             _process = Process.Start(info) ?? throw new UsageUnavailableException("Could not start Codex CLI.");
             _process.StandardInput.AutoFlush = true;
             _errorDrainer = DrainErrorsAsync();
@@ -197,6 +248,11 @@ public sealed class CodexClient : IAsyncDisposable
                         {
                             try { _updated(UsageSnapshot.Parse(parameters)); }
                             catch (UsageUnavailableException) { /* Keep the last good snapshot until polling succeeds. */ }
+                        }
+                        else if (!message.TryGetProperty("id", out _) && message.TryGetProperty("method", out var extraMethod) &&
+                            extraMethod.ValueKind == JsonValueKind.String && message.TryGetProperty("params", out var extraParams))
+                        {
+                            _extraNotification(extraMethod.GetString()!, extraParams);
                         }
                         else if (message.TryGetProperty("id", out var serverId) && message.TryGetProperty("method", out _))
                         {

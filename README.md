@@ -125,3 +125,15 @@ The Colors section in Settings customizes the five-hour ring, weekly ring and wi
 Limit resets shows the earliest upcoming expiry as `First expires in 1 d` or `First expires in 23 h`. Rows sort earliest first, with undated credits last. Whole days are shown from 24 hours onward; shorter periods use rounded-up hours. Partial metadata says `First known expiry in …`. The tooltip provides the exact local date and time.
 
 Compact expiry units are localized: for example, Russian uses `9 дн.` and `23 ч`. The full summary and exact expiry remain available in the tooltip.
+
+### Extra info (experimental)
+
+Open **Extra info** from the expanded widget footer. The window contains collapsible account, token activity, credit/quota, reset metadata, workspace notice, conversation and notification sections. Account details omit email; no raw API responses or chat contents are stored or logged.
+
+Token activity includes today's reported value, lifetime/peak totals, streaks, longest turn and a 7/30-day chart. Hover a bar for its date and tokens; a missing day remains **Not reported**, not zero. Dates are the dates returned by the service. Quota percentages, historical token totals and purchased credits are distinct measures.
+
+The conversation picker searches local threads and loads additional pages. Selecting a conversation calls the read-only usage endpoint with its ID; model groups show total/input/cached/new-input/output tokens and estimated credits. USD and credit costs are estimates, not final billing. Context-window, reasoning and last-turn values require notifications on this app-server connection; other clients may not stream their activity here. The widget does not resume chats or start model turns to obtain those values.
+
+Extra data refreshes on opening, after account notifications, and every five minutes while visible; it uses the existing authenticated app-server connection. Each optional endpoint can fail independently. Workspace notices and some metrics may be disabled or absent for an account. Unsupported features remain visibly unavailable.
+
+In **Extra info → Notifications**, enable low-quota or earned-reset expiry alerts, choose a remaining-percent threshold (1–99%) or expiry lead time (1–168 hours), and save. These Windows notifications use existing quota polling, require no additional endpoints, and notify once per quota window/threshold or reset per app session. Preferences default to disabled; Windows notification settings can suppress delivery. Extra info has no reset action: the existing reset flow still requires confirmation.

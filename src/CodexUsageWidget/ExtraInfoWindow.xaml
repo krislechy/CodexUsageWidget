@@ -1,0 +1,96 @@
+<loc:WidgetDialogWindow x:Class="CodexUsageWidget.ExtraInfoWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:loc="clr-namespace:CodexUsageWidget"
+ xmlns:controls="clr-namespace:CodexUsageWidget.Controls"
+ xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
+ Icon="Assets/app.ico" Title="Extra info" Width="650" Height="780" WindowStartupLocation="CenterOwner"
+ Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
+ Foreground="{StaticResource Text}" FontFamily="Segoe UI Variable, Segoe UI" FontSize="13">
+ <loc:WidgetDialogWindow.Resources>
+  <Style TargetType="TextBox"><Setter Property="Background" Value="#252930"/><Setter Property="Foreground" Value="{StaticResource Text}"/><Setter Property="BorderBrush" Value="#626A76"/><Setter Property="CaretBrush" Value="{StaticResource Lime}"/><Setter Property="Padding" Value="8,5"/></Style>
+  <Style TargetType="Expander">
+   <Setter Property="Margin" Value="0,15,0,0"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Expander">
+    <StackPanel>
+     <ToggleButton IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" HorizontalContentAlignment="Stretch" Foreground="{StaticResource Text}" Background="Transparent" BorderThickness="0">
+      <ToggleButton.Template><ControlTemplate TargetType="ToggleButton">
+       <Border x:Name="HeaderSurface" Padding="0,8" BorderBrush="#353940" BorderThickness="0,0,0,1" Background="Transparent">
+        <Grid><ContentPresenter Content="{Binding Header, RelativeSource={RelativeSource AncestorType=Expander}}" TextElement.FontWeight="SemiBold"/>
+         <Path x:Name="Arrow" Data="M 1,1 L 5,5 L 9,1" Stroke="{StaticResource Muted}" StrokeThickness="1.5" Width="10" Height="6" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5"/>
+        </Grid>
+       </Border>
+       <ControlTemplate.Triggers>
+        <Trigger Property="IsChecked" Value="True"><Setter TargetName="Arrow" Property="RenderTransform"><Setter.Value><RotateTransform Angle="180"/></Setter.Value></Setter></Trigger>
+        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="HeaderSurface" Property="Background" Value="#282B31"/></Trigger>
+       </ControlTemplate.Triggers>
+      </ControlTemplate></ToggleButton.Template>
+     </ToggleButton>
+     <ContentPresenter x:Name="Body" Margin="0,12,0,0" Visibility="Collapsed"/>
+    </StackPanel>
+    <ControlTemplate.Triggers><Trigger Property="IsExpanded" Value="True"><Setter TargetName="Body" Property="Visibility" Value="Visible"/></Trigger></ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+ </loc:WidgetDialogWindow.Resources>
+ <Border Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="26" Margin="8">
+  <Grid Margin="23"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+   <Grid MouseLeftButtonDown="DialogHeader_MouseLeftButtonDown" Margin="0,0,0,8">
+    <TextBlock Text="Extra info" FontSize="24" FontWeight="SemiBold"/>
+    <Button Style="{StaticResource IconButton}" Click="DialogClose_Click" HorizontalAlignment="Right" ToolTip="{loc:Tr Close}" AutomationProperties.Name="{loc:Tr Close}"><Path Data="M 3,3 L 15,15 M 15,3 L 3,15" Stroke="{StaticResource Muted}" StrokeThickness="1.6" Width="15" Height="15" Stretch="Uniform"/></Button>
+   </Grid>
+   <TextBlock Grid.Row="1" Text="{loc:Tr ExtraInfoHint}" Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,6"/>
+   <ScrollViewer x:Name="ExtraScroll" Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,14">
+    <StackPanel>
+     <Expander x:Name="AccountSection" Header="{loc:Tr Account}" IsExpanded="True"><StackPanel x:Name="AccountRows"/></Expander>
+     <Expander x:Name="TokenActivitySection" Header="{loc:Tr TokenActivity}" IsExpanded="True">
+      <StackPanel>
+       <StackPanel x:Name="UsageRows"/>
+       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,8">
+        <Button x:Name="WeekButton" Content="{loc:Tr Days7}" Style="{StaticResource ActionButton}" Height="28" Click="Week_Click"/>
+        <Button x:Name="MonthButton" Content="{loc:Tr Days30}" Style="{StaticResource ActionButton}" Height="28" Click="Month_Click" Margin="7,0,0,0"/>
+       </StackPanel>
+       <controls:UsageChart x:Name="Chart" Height="130"/>
+       <TextBlock x:Name="ChartRange" Foreground="{StaticResource Muted}" FontSize="11" Margin="0,4,0,0"/>
+       <TextBlock Text="{loc:Tr ActivityHelp}" Foreground="{StaticResource Muted}" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0"/>
+      </StackPanel>
+     </Expander>
+     <Expander x:Name="ExtraQuotasSection" Header="{loc:Tr ExtraQuotas}"><StackPanel x:Name="QuotaRows"/></Expander>
+     <Expander x:Name="ResetMetadataSection" Header="{loc:Tr ResetMetadata}"><StackPanel x:Name="ResetRows"/></Expander>
+     <Expander x:Name="WorkspaceNoticesSection" Header="{loc:Tr WorkspaceNotices}"><StackPanel x:Name="NoticeRows"/></Expander>
+     <Expander x:Name="ThreadDetailsSection" Header="{loc:Tr ThreadDetails}">
+      <StackPanel>
+       <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBox x:Name="ThreadSearch" AutomationProperties.Name="{loc:Tr SearchThreads}" ToolTip="{loc:Tr SearchThreads}"/>
+        <Button Grid.Column="1" Content="{loc:Tr SearchThreads}" Style="{StaticResource ActionButton}" Height="30" Click="SearchThreads_Click" Margin="8,0,0,0"/>
+       </Grid>
+       <Grid Margin="0,8,0,10"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <Button x:Name="ChooseThread" Content="{loc:Tr SelectThread}" Style="{StaticResource ActionButton}" HorizontalContentAlignment="Left" Click="ChooseThread_Click" ToolTip="{loc:Tr SelectThread}"/>
+        <Button x:Name="MoreThreads" Grid.Column="1" Content="{loc:Tr MoreThreads}" Style="{StaticResource ActionButton}" Click="MoreThreads_Click" Margin="8,0,0,0" Visibility="Collapsed"/>
+       </Grid>
+       <StackPanel x:Name="ThreadRows"/>
+       <TextBlock Text="{loc:Tr ThreadHelp}" Foreground="{StaticResource Muted}" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0"/>
+      </StackPanel>
+     </Expander>
+     <Expander x:Name="NotificationsSection" Header="{loc:Tr Notifications}">
+      <StackPanel>
+       <CheckBox x:Name="LowAlerts" Content="{loc:Tr LowQuotaAlerts}" Margin="0,0,0,8"/>
+       <Grid Margin="0,0,0,14"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="65"/></Grid.ColumnDefinitions>
+        <TextBlock Text="{loc:Tr LowThreshold}" VerticalAlignment="Center"/><TextBox x:Name="LowThreshold" Grid.Column="1" AutomationProperties.Name="{loc:Tr LowThreshold}"/>
+       </Grid>
+       <CheckBox x:Name="ExpiryAlerts" Content="{loc:Tr ResetExpiryAlerts}" Margin="0,0,0,8"/>
+       <Grid Margin="0,0,0,12"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="65"/></Grid.ColumnDefinitions>
+        <TextBlock Text="{loc:Tr ExpiryThreshold}" VerticalAlignment="Center"/><TextBox x:Name="ExpiryThreshold" Grid.Column="1" AutomationProperties.Name="{loc:Tr ExpiryThreshold}"/>
+       </Grid>
+       <TextBlock Text="{loc:Tr AlertsHelp}" Foreground="{StaticResource Muted}" FontSize="11" TextWrapping="Wrap"/>
+       <Button Content="{loc:Tr SaveAlerts}" Style="{StaticResource ActionButton}" HorizontalAlignment="Right" Click="SaveAlerts_Click" Margin="0,10,0,0"/>
+      </StackPanel>
+     </Expander>
+    </StackPanel>
+   </ScrollViewer>
+   <Grid Grid.Row="3"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <TextBlock x:Name="ExtraStatus" Foreground="{StaticResource Muted}" FontSize="11" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0"/>
+    <Button x:Name="ReloadButton" Grid.Column="1" Content="{loc:Tr RefreshShort}" Style="{StaticResource ActionButton}" Click="Reload_Click"/>
+   </Grid>
+  </Grid>
+ </Border>
+</loc:WidgetDialogWindow>

@@ -14,3 +14,9 @@ Reviewed on 2026-10-13 using [official OpenAI app-server documentation](https://
 Recommended next scope: configurable low-quota/reset-expiry notifications; an on-demand usage statistics panel; credits balance when returned. Threshold notifications reuse already polled quota/reset metadata and require no new endpoint. Keep streaks, longest turns and conversation dashboards out of the default ring view.
 
 Null/absent fields mean unavailable. Account-wide usage statistics do not establish an exact remaining-token allowance. Subscription quota percentages, consumed-token history and purchased-credit balance are separate measures. Daily statistics and estimated cost must not be presented as final billing or as a guaranteed quota conversion.
+
+## Implemented experiment (0.8.0)
+
+The Extra info window now exposes every data surface above, with collapsible sections, reported-field fallbacks, 7/30-day activity, selected-thread estimates, credit/spend metadata and configurable quota/reset-expiry alerts. Reset metadata retains grant time, title and description. The original ring view remains focused on quota. Account usage and workspace capabilities are read-only and account-dependent, as documented in the official source above.
+
+A read-only local smoke check found account, token history and quota data available, 78 reported daily buckets, and a 20-row thread page with a next cursor. Workspace messages were feature-disabled. This is a point-in-time capability result, not a guarantee for other accounts. Live thread context/reasoning metrics stay unavailable until this connection receives an event; the experiment never resumes a conversation to force one.

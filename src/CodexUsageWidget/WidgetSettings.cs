@@ -15,6 +15,10 @@ public sealed class WidgetSettings
     public string FiveHourColor { get; set; } = "#FF397E";
     public string WeeklyColor { get; set; } = "#9BEF29";
     public string BackgroundColor { get; set; } = "#141619";
+    public bool LowQuotaAlerts { get; set; }
+    public int LowQuotaThreshold { get; set; } = 10;
+    public bool ResetExpiryAlerts { get; set; }
+    public int ResetExpiryHours { get; set; } = 24;
     public double? Left { get; set; }
     public double? Top { get; set; }
     public static string SettingsPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodexUsageWidget", "settings.json");
@@ -33,6 +37,8 @@ public sealed class WidgetSettings
             if (!WidgetTheme.TryColor(settings.FiveHourColor, out _)) settings.FiveHourColor = "#FF397E";
             if (!WidgetTheme.TryColor(settings.WeeklyColor, out _)) settings.WeeklyColor = "#9BEF29";
             if (!WidgetTheme.TryColor(settings.BackgroundColor, out _)) settings.BackgroundColor = "#141619";
+            if (settings.LowQuotaThreshold is < 1 or > 99) settings.LowQuotaThreshold = 10;
+            if (settings.ResetExpiryHours is < 1 or > 168) settings.ResetExpiryHours = 24;
             return settings;
         }
         catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException) { return new(); }

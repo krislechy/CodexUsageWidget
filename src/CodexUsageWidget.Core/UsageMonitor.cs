@@ -23,6 +23,7 @@ public sealed class UsageMonitor : IAsyncDisposable
     }
 
     public void Start() => _loop ??= Task.Run(RunAsync);
+    public CodexClient Client => _client;
 
     private void OnLimitsUpdated(UsageSnapshot snapshot)
     {

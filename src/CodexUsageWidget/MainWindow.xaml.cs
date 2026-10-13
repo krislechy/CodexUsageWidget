@@ -28,6 +28,33 @@ public partial class MainWindow : Window
     private readonly string[] _arguments;
     private readonly DispatcherTimer _clock = new() { Interval = TimeSpan.FromSeconds(1) };
     private WidgetSettings _settings;
+    private ExtraInfoWindow? _extraInfo;
+    private readonly QuotaAlerts _alerts = new();
+
+    private void ExtraInfo_Click(object sender, RoutedEventArgs e)
+    {
+        if (_extraInfo is not null) { _extraInfo.Show(); _extraInfo.Activate(); return; }
+        if (!_preview && _monitor is null) return;
+        var window = new ExtraInfoWindow(_settings, _preview ? null : _monitor!.Client, _preview ? null : () => _settings.Save()) { Owner = this, Topmost = Topmost };
+        _extraInfo = window;
+        window.Closed += (_, _) => _extraInfo = null;
+        window.Show();
+    }
+
+    private void ShowQuotaAlerts(UsageSnapshot snapshot)
+    {
+        if (_tray is null || _preview) return;
+        var alerts = _alerts.Evaluate(snapshot, _settings.LowQuotaAlerts, _settings.LowQuotaThreshold,
+            _settings.ResetExpiryAlerts, _settings.ResetExpiryHours, DateTimeOffset.UtcNow);
+        if (alerts.Count == 0) return;
+        var text = Localization.Current;
+        var messages = alerts.Where(alert => alert.Kind == "low").Select(alert => text.Format("LowQuotaAlertBody",
+            text[alert.DurationMinutes == 300 ? "FiveHours" : "Weekly"], alert.RemainingPercent?.ToString("0.#", text.Culture))).ToList();
+        var resets = alerts.Where(alert => alert.Kind == "expiry").ToArray();
+        if (resets.Length > 0) messages.Add(text.Format("ResetExpiryAlertBody", resets.Length,
+            resets.Min(alert => alert.Expiry)!.Value.ToLocalTime().ToString("g", text.Culture)));
+        _tray.ShowBalloonTip(5000, "Codex Usage Widget", string.Join("\n", messages), Forms.ToolTipIcon.Info);
+    }
     private UsageMonitor? _monitor;
     private Forms.NotifyIcon? _tray;
     private ContextMenu? _trayMenu;
@@ -126,7 +153,7 @@ public partial class MainWindow : Window
     {
         var monitor = new UsageMonitor(new CodexClient(_settings.CodexPath), TimeSpan.FromSeconds(_settings.RefreshSeconds));
         _monitor = monitor;
-        monitor.SnapshotReceived += snapshot => Dispatch(monitor, () => _viewModel.SetSnapshot(snapshot));
+        monitor.SnapshotReceived += snapshot => Dispatch(monitor, () => { _viewModel.SetSnapshot(snapshot); ShowQuotaAlerts(snapshot); });
         monitor.StatusChanged += status => Dispatch(monitor, () => _viewModel.SetError(status));
         monitor.BusyChanged += busy => Dispatch(monitor, () => _viewModel.SetBusy(busy));
         monitor.Start();
@@ -273,6 +300,7 @@ public partial class MainWindow : Window
         _changingSettings = true;
         try
         {
+            _extraInfo?.Close();
             var settings = new SettingsWindow(_settings) { Owner = this, Topmost = Topmost };
             if (settings.ShowDialog() != true) return;
             var oldMonitor = _monitor;
@@ -407,6 +435,7 @@ public partial class MainWindow : Window
         _exiting = true;
         SaveSettings();
         _clock.Stop();
+        _extraInfo?.Close();
         Hide();
         if (_tray is not null)
         {
@@ -592,6 +621,26 @@ public partial class MainWindow : Window
         await Task.Delay(100);
         Capture((FrameworkElement)notice.Content, Path.Combine(directory, "already-running.png"));
         notice.Close();
+        var extraInfo = new ExtraInfoWindow(new WidgetSettings(), null) { Owner = this };
+        extraInfo.Show();
+        await Task.Delay(150);
+        VerifyDialogCenter(extraInfo);
+        if (extraInfo.IsLoading || !((System.Windows.Controls.StackPanel)extraInfo.FindName("AccountRows")).Children.OfType<System.Windows.Controls.Grid>().Any())
+            throw new InvalidOperationException("Extra info must show account data after opening.");
+        Capture((FrameworkElement)extraInfo.Content, Path.Combine(directory, "extra-info.png"));
+        foreach (var section in new[] { "Account", "TokenActivity" })
+            ((System.Windows.Controls.Expander)extraInfo.FindName(section + "Section")).IsExpanded = false;
+        ((System.Windows.Controls.Expander)extraInfo.FindName("ExtraQuotasSection")).IsExpanded = true;
+        await Task.Delay(100);
+        Capture((FrameworkElement)extraInfo.Content, Path.Combine(directory, "extra-quotas.png"));
+        ((System.Windows.Controls.Expander)extraInfo.FindName("ExtraQuotasSection")).IsExpanded = false;
+        ((System.Windows.Controls.Expander)extraInfo.FindName("ThreadDetailsSection")).IsExpanded = true;
+        await extraInfo.SelectThreadAsync(new ThreadChoice("demo-chat", "Example conversation"));
+        await Task.Delay(100);
+        ((System.Windows.Controls.ScrollViewer)extraInfo.FindName("ExtraScroll")).ScrollToBottom();
+        await Task.Delay(100);
+        Capture((FrameworkElement)extraInfo.Content, Path.Combine(directory, "extra-thread.png"));
+        extraInfo.Close();
         _trayMenu = CreateTrayMenu();
         UpdateTray();
         _trayMenu.Placement = PlacementMode.Center;

@@ -25,7 +25,9 @@ public partial class SettingsWindow : WidgetDialogWindow
         {
             CodexPath = settings.CodexPath, RefreshSeconds = settings.RefreshSeconds, Topmost = settings.Topmost,
             Compact = settings.Compact, Left = settings.Left, Top = settings.Top, Language = settings.Language,
-            FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor
+            FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor,
+            LowQuotaAlerts = settings.LowQuotaAlerts, LowQuotaThreshold = settings.LowQuotaThreshold,
+            ResetExpiryAlerts = settings.ResetExpiryAlerts, ResetExpiryHours = settings.ResetExpiryHours
         };
         CodexPathBox.Text = settings.CodexPath ?? "";
         TopmostBox.IsChecked = settings.Topmost;

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0 — 2026-10-13 (local build)
+
+- Added the experimental Extra info window, opened from the expanded widget footer. Its collapsible sections cover account/auth plan and backend usage permission; token activity, lifetime/peak/streak/longest-turn metrics and 7/30-day charts; all returned quota buckets, credits and spend controls; earned-reset grant/title/description metadata; workspace notices; selected-chat usage and estimated credit/USD costs.
+- Chat selection supports search and cursor pagination. Model breakdowns show input, cached/new input and output tokens. Context, reasoning and last-turn values appear only when this connection receives the corresponding notification; no chat is resumed and no model turn is started.
+- Data loads on opening and every five minutes while the window is visible. Endpoint failures are isolated, missing fields stay unavailable, and account changes invalidate prior data. Daily gaps are not invented zeroes; cost estimates and quota percentages remain separate.
+- Optional Windows low-quota and reset-expiry notifications reuse existing polling, with configurable thresholds and session-local deduplication. They are disabled by default. The Extra info window never consumes a reset or sends an external message.
+- Added parser, partial-RPC, thread-correlation and alert regression coverage plus English native captures. Read-only live checks confirmed account/usage/limits methods and paginated local thread listing; workspace messages are disabled for the current account.
+
 ## 0.7.1 — 2026-10-13 (local build)
 
 - The reset heading explicitly identifies the first expiring credit. Compact day/hour units and spacing follow the selected language, including Russian `дн.` and `ч`, rather than hard-coded English suffixes.

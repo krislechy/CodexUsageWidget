@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace CodexUsageWidget.Core;
 
-public sealed record ResetCredit(string Id, DateTimeOffset? ExpiresAt);
+public sealed record ResetCredit(string Id, DateTimeOffset? ExpiresAt, DateTimeOffset? GrantedAt = null, string? Title = null, string? Description = null);
 
 public sealed record ResetCredits(int AvailableCount, IReadOnlyList<ResetCredit>? Credits)
 {
@@ -33,7 +33,8 @@ public sealed record ResetCredits(int AvailableCount, IReadOnlyList<ResetCredit>
                     try { expiresAt = DateTimeOffset.FromUnixTimeSeconds(seconds); }
                     catch (ArgumentOutOfRangeException) { }
                 }
-                if (credits.All(credit => credit.Id != id.GetString())) credits.Add(new(id.GetString()!, expiresAt));
+                if (credits.All(credit => credit.Id != id.GetString())) credits.Add(new(id.GetString()!, expiresAt,
+                    ExtraJson.Time(row, "grantedAt"), ExtraJson.Text(row, "title"), ExtraJson.Text(row, "description")));
             }
         }
         return new(available, credits);
