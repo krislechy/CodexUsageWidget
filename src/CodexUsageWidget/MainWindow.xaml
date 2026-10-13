@@ -10,13 +10,15 @@
  ShowInTaskbar="False" Topmost="True" FontFamily="Segoe UI Variable, Segoe UI"
  KeyDown="Window_KeyDown" Loaded="Window_Loaded" Closing="Window_Closing">
  <Window.Resources>
+  <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}"><Setter Property="Foreground" Value="{DynamicResource WidgetText}"/></Style>
+  <Style x:Key="WidgetIconButton" TargetType="Button" BasedOn="{StaticResource IconButton}"><Setter Property="Foreground" Value="{DynamicResource WidgetMuted}"/></Style>
   <Geometry x:Key="PinIcon">M 6,1 L 12,1 M 7,1 L 7,6 L 4,10 L 14,10 L 11,6 L 11,1 M 9,10 L 9,17</Geometry>
   <Geometry x:Key="SettingsIcon">M 8,1 L 11,1 L 12,4 L 15,4 L 17,7 L 15,9 L 17,12 L 15,15 L 12,14 L 11,17 L 8,17 L 7,14 L 4,15 L 2,12 L 4,9 L 2,7 L 4,4 L 7,4 Z M 12,9 A 3,3 0 1 1 6,9 A 3,3 0 1 1 12,9</Geometry>
   <Geometry x:Key="CloseIcon">M 3,3 L 15,15 M 15,3 L 3,15</Geometry>
   <Geometry x:Key="RefreshIcon">M 15,7 A 6,6 0 0 0 4,5 M 4,1 L 4,5 L 8,5 M 3,11 A 6,6 0 0 0 14,13 M 14,17 L 14,13 L 10,13</Geometry>
   <Geometry x:Key="CompactIcon">M 4,6 L 9,11 L 14,6</Geometry>
  </Window.Resources>
- <Border x:Name="Surface" Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="26" Margin="8"
+ <Border x:Name="Surface" Background="{DynamicResource WidgetSurface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="26" Margin="8"
   PreviewMouseLeftButtonDown="Surface_MouseLeftButtonDown">
   <Grid>
    <ScrollViewer x:Name="ExpandedScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Visibility="{Binding IsExpanded, Converter={StaticResource BoolVisibility}}">
@@ -28,59 +30,59 @@
      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="90"/></Grid.ColumnDefinitions>
      <TextBlock Text="Codex Usage" FontSize="21" FontWeight="SemiBold" VerticalAlignment="Center"/>
      <StackPanel Grid.Column="1" Orientation="Horizontal">
-      <Button x:Name="PinButton" Style="{StaticResource IconButton}" Click="Pin_Click" ToolTip="{loc:Tr AboveWindows}" AutomationProperties.Name="{loc:Tr AboveWindows}">
+      <Button x:Name="PinButton" Style="{StaticResource WidgetIconButton}" Click="Pin_Click" ToolTip="{loc:Tr AboveWindows}" AutomationProperties.Name="{loc:Tr AboveWindows}">
        <Path Data="{StaticResource PinIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="15" Height="16" Stretch="Uniform"/>
       </Button>
-      <Button Style="{StaticResource IconButton}" Click="Settings_Click" ToolTip="{loc:Tr Settings}" AutomationProperties.Name="{loc:Tr Settings}">
+      <Button Style="{StaticResource WidgetIconButton}" Click="Settings_Click" ToolTip="{loc:Tr Settings}" AutomationProperties.Name="{loc:Tr Settings}">
        <Path Data="{StaticResource SettingsIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.4" Width="17" Height="17" Stretch="Uniform"/>
       </Button>
-      <Button Style="{StaticResource IconButton}" Click="Hide_Click" ToolTip="{loc:Tr HideToTray}" AutomationProperties.Name="{loc:Tr HideToTray}">
+      <Button Style="{StaticResource WidgetIconButton}" Click="Hide_Click" ToolTip="{loc:Tr HideToTray}" AutomationProperties.Name="{loc:Tr HideToTray}">
        <Path Data="{StaticResource CloseIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="15" Height="15" Stretch="Uniform"/>
       </Button>
      </StackPanel>
     </Grid>
     <Grid x:Name="FullRingArea" Background="Transparent" Grid.Row="1" Width="232" Height="232" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0">
-     <controls:RingGauge Value="{Binding FiveHourAvailable}" RingBrush="{StaticResource Pink}" TrackBrush="#3D1E2B" StrokeWidth="18" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
-     <controls:RingGauge Width="184" Height="184" Value="{Binding WeeklyAvailable}" RingBrush="{StaticResource Lime}" TrackBrush="#263719" StrokeWidth="18" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
+     <controls:RingGauge Value="{Binding FiveHourAvailable}" RingBrush="{DynamicResource Pink}" TrackBrush="{DynamicResource PinkTrack}" StrokeWidth="18" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
+     <controls:RingGauge Width="184" Height="184" Value="{Binding WeeklyAvailable}" RingBrush="{DynamicResource Lime}" TrackBrush="{DynamicResource LimeTrack}" StrokeWidth="18" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-      <TextBlock Text="{loc:Tr Available}" Foreground="{StaticResource Muted}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+      <TextBlock Text="{loc:Tr Available}" Foreground="{DynamicResource WidgetMuted}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
       <TextBlock Text="{Binding FiveHourRemaining}" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"/>
-      <TextBlock Text="{Binding WeeklyRemaining}" Foreground="{StaticResource Lime}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,1,0,0"/>
-      <TextBlock x:Name="FullCountdown" Text="{Binding FiveHourCountdown}" Foreground="{StaticResource Muted}" FontSize="16" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" HorizontalAlignment="Center" Margin="0,8,0,0" ToolTip="{Binding FiveHourReset}" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
+      <TextBlock Text="{Binding WeeklyRemaining}" Foreground="{DynamicResource Lime}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,1,0,0"/>
+      <TextBlock x:Name="FullCountdown" Text="{Binding FiveHourCountdown}" Foreground="{DynamicResource WidgetMuted}" FontSize="16" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" HorizontalAlignment="Center" Margin="0,8,0,0" ToolTip="{Binding FiveHourReset}" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
      </StackPanel>
     </Grid>
     <Grid Grid.Row="2" Margin="0,6,0,0" AutomationProperties.Name="{Binding FiveHourAccessible}">
      <Grid.ColumnDefinitions><ColumnDefinition Width="21"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
      <Grid.RowDefinitions><RowDefinition Height="35"/><RowDefinition/><RowDefinition Height="1"/></Grid.RowDefinitions>
-     <Ellipse Width="12" Height="12" Fill="{StaticResource Pink}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+     <Ellipse Width="12" Height="12" Fill="{DynamicResource Pink}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
      <TextBlock Grid.Column="1" Text="{loc:Tr FiveHours}" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"/>
      <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
       <TextBlock Text="{Binding FiveHourRemaining}" FontSize="29" FontWeight="Bold"/>
-      <TextBlock Text="{loc:Tr Remaining}" FontSize="10" Foreground="{StaticResource Muted}" VerticalAlignment="Center" Margin="7,4,0,0"/>
+      <TextBlock Text="{loc:Tr Remaining}" FontSize="10" Foreground="{DynamicResource WidgetMuted}" VerticalAlignment="Center" Margin="7,4,0,0"/>
      </StackPanel>
-     <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding FiveHourReset}" FontSize="11" Foreground="{StaticResource Muted}" TextTrimming="CharacterEllipsis" ToolTip="{Binding FiveHourReset}"/>
+     <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding FiveHourReset}" FontSize="11" Foreground="{DynamicResource WidgetMuted}" TextTrimming="CharacterEllipsis" ToolTip="{Binding FiveHourReset}"/>
      <Border Grid.Row="2" Grid.ColumnSpan="3" Background="#2A2D33"/>
     </Grid>
     <Grid Grid.Row="3" Margin="0,8,0,0" AutomationProperties.Name="{Binding WeeklyAccessible}">
      <Grid.ColumnDefinitions><ColumnDefinition Width="21"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
      <Grid.RowDefinitions><RowDefinition Height="35"/><RowDefinition/><RowDefinition Height="1"/></Grid.RowDefinitions>
-     <Ellipse Width="12" Height="12" Fill="{StaticResource Lime}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+     <Ellipse Width="12" Height="12" Fill="{DynamicResource Lime}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
      <TextBlock Grid.Column="1" Text="{loc:Tr Weekly}" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"/>
      <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
       <TextBlock Text="{Binding WeeklyRemaining}" FontSize="29" FontWeight="Bold"/>
-      <TextBlock Text="{loc:Tr Remaining}" FontSize="10" Foreground="{StaticResource Muted}" VerticalAlignment="Center" Margin="7,4,0,0"/>
+      <TextBlock Text="{loc:Tr Remaining}" FontSize="10" Foreground="{DynamicResource WidgetMuted}" VerticalAlignment="Center" Margin="7,4,0,0"/>
      </StackPanel>
-     <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding WeeklyReset}" FontSize="11" Foreground="{StaticResource Muted}" TextTrimming="CharacterEllipsis" ToolTip="{Binding WeeklyReset}"/>
+     <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding WeeklyReset}" FontSize="11" Foreground="{DynamicResource WidgetMuted}" TextTrimming="CharacterEllipsis" ToolTip="{Binding WeeklyReset}"/>
      <Border Grid.Row="2" Grid.ColumnSpan="3" Background="#2A2D33"/>
     </Grid>
     <Grid Grid.Row="4" Margin="0,11,0,0" ToolTip="{Binding ResetDetails}">
      <Grid.RowDefinitions><RowDefinition Height="32"/><RowDefinition Height="Auto"/><RowDefinition Height="1"/></Grid.RowDefinitions>
-     <ToggleButton x:Name="ResetDisclosure" Background="Transparent" BorderThickness="0" Foreground="{StaticResource Text}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Click="ResetDisclosure_Click" AutomationProperties.Name="{loc:Tr ResetsHeading}">
+     <ToggleButton x:Name="ResetDisclosure" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource WidgetText}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Click="ResetDisclosure_Click" AutomationProperties.Name="{loc:Tr ResetsHeading}">
       <ToggleButton.Template><ControlTemplate TargetType="ToggleButton">
        <Border x:Name="DisclosureSurface" Background="Transparent" CornerRadius="7">
         <Grid VerticalAlignment="Center"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
          <ContentPresenter HorizontalAlignment="Stretch"/>
-         <Path x:Name="DisclosureArrow" Grid.Column="1" Data="M 1,1 L 5,5 L 9,1" Stroke="{StaticResource Muted}" StrokeThickness="1.5" Width="10" Height="6" Stretch="Uniform" Margin="14,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+         <Path x:Name="DisclosureArrow" Grid.Column="1" Data="M 1,1 L 5,5 L 9,1" Stroke="{DynamicResource WidgetMuted}" StrokeThickness="1.5" Width="10" Height="6" Stretch="Uniform" Margin="14,0,0,0" RenderTransformOrigin="0.5,0.5"/>
         </Grid>
        </Border>
        <ControlTemplate.Triggers>
@@ -88,9 +90,10 @@
         <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="DisclosureSurface" Property="Background" Value="#282B31"/></Trigger>
        </ControlTemplate.Triggers>
       </ControlTemplate></ToggleButton.Template>
-      <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-       <TextBlock Text="{loc:Tr ResetsHeading}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-       <Border Grid.Column="1" Background="#D92B3B" CornerRadius="14" Width="28" Height="28" Margin="9,0,0,0" ToolTip="{Binding ResetAvailability}">
+      <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBlock Text="{loc:Tr ResetsHeading}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        <TextBlock x:Name="SoonestExpiry" Grid.Column="1" Text="{Binding SoonestExpiryText}" Foreground="{DynamicResource WidgetMuted}" FontSize="10" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="9,0,0,0" ToolTip="{Binding ResetExpiry}"/>
+       <Border Grid.Column="2" Background="#D92B3B" CornerRadius="14" Width="28" Height="28" Margin="9,0,0,0" ToolTip="{Binding ResetAvailability}">
         <TextBlock x:Name="ResetCountBadge" Text="{Binding ResetCountText}" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
        </Border>
       </Grid>
@@ -104,7 +107,7 @@
           <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
            <StackPanel VerticalAlignment="Center" Margin="0,0,9,0">
             <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"/>
-            <TextBlock Text="{Binding Expiry}" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+            <TextBlock Text="{Binding Expiry}" FontSize="11" Foreground="{DynamicResource WidgetMuted}" TextWrapping="Wrap" Margin="0,5,0,0"/>
            </StackPanel>
            <Button Grid.Column="1" Content="{loc:Tr ConfirmReset}" Tag="{Binding}" IsEnabled="{Binding DataContext.CanChooseReset, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource ActionButton}" FontSize="11" Padding="9,0" VerticalAlignment="Center" Click="Reset_Click" AutomationProperties.Name="{loc:Tr ConfirmReset}"/>
           </Grid>
@@ -113,7 +116,7 @@
        </ItemsControl>
       </ScrollViewer>
       <StackPanel Grid.Row="1" Margin="0,5,0,0">
-       <TextBlock Text="{Binding ResetListMessage}" FontSize="11" Foreground="{StaticResource Muted}" TextWrapping="Wrap"/>
+       <TextBlock Text="{Binding ResetListMessage}" FontSize="11" Foreground="{DynamicResource WidgetMuted}" TextWrapping="Wrap"/>
        <Button x:Name="ResetButton" Content="{loc:Tr RetryReset}" IsEnabled="{Binding CanReset}" Visibility="{Binding PendingReset, Converter={StaticResource BoolVisibility}}" Style="{StaticResource ActionButton}" FontSize="12" HorizontalAlignment="Right" Click="Reset_Click" Margin="0,5,0,0"/>
       </StackPanel>
      </Grid>
@@ -124,20 +127,20 @@
      <Ellipse Width="6" Height="6" HorizontalAlignment="Left" VerticalAlignment="Center">
       <Ellipse.Style><Style TargetType="Ellipse"><Setter Property="Fill" Value="#83E788"/><Style.Triggers><DataTrigger Binding="{Binding HasError}" Value="True"><Setter Property="Fill" Value="#F1B859"/></DataTrigger></Style.Triggers></Style></Ellipse.Style>
      </Ellipse>
-     <TextBlock Grid.Column="1" Text="{Binding StatusText}" Foreground="{StaticResource Muted}" FontSize="10" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding StatusDetails}" AutomationProperties.LiveSetting="Polite"/>
-     <Button Grid.Column="2" Style="{StaticResource IconButton}" Click="Compact_Click" ToolTip="{loc:Tr CompactView}" AutomationProperties.Name="{loc:Tr CompactView}">
+     <TextBlock Grid.Column="1" Text="{Binding StatusText}" Foreground="{DynamicResource WidgetMuted}" FontSize="10" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding StatusDetails}" AutomationProperties.LiveSetting="Polite"/>
+     <Button Grid.Column="2" Style="{StaticResource WidgetIconButton}" Click="Compact_Click" ToolTip="{loc:Tr CompactView}" AutomationProperties.Name="{loc:Tr CompactView}">
       <Path Data="{StaticResource CompactIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="13" Height="8" Stretch="Uniform"/>
      </Button>
-     <Button Grid.Column="3" Style="{StaticResource IconButton}" Click="Refresh_Click" IsEnabled="{Binding CanRefresh}" ToolTip="{loc:Tr RefreshNow}" AutomationProperties.Name="{loc:Tr RefreshLimits}">
+     <Button Grid.Column="3" Style="{StaticResource WidgetIconButton}" Click="Refresh_Click" IsEnabled="{Binding CanRefresh}" ToolTip="{loc:Tr RefreshNow}" AutomationProperties.Name="{loc:Tr RefreshLimits}">
       <Path Data="{StaticResource RefreshIcon}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" Width="15" Height="16" Stretch="Uniform"/>
      </Button>
     </Grid>
    </Grid></ScrollViewer>
    <Grid x:Name="CompactPanel" Background="Transparent" Margin="9" Visibility="{Binding IsCompact, Converter={StaticResource BoolVisibility}}" ToolTip="{Binding CompactTooltip}" AutomationProperties.Name="{loc:Tr ExpandView}">
     <Grid Width="92" Height="92" HorizontalAlignment="Center" VerticalAlignment="Center">
-     <controls:RingGauge Value="{Binding FiveHourAvailable}" StrokeWidth="6" RingBrush="{StaticResource Pink}" TrackBrush="#3D1E2B" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
-     <controls:RingGauge Width="70" Height="70" Value="{Binding WeeklyAvailable}" StrokeWidth="6" RingBrush="{StaticResource Lime}" TrackBrush="#263719" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
-     <TextBlock x:Name="CompactCountdown" Text="{Binding FiveHourCountdown}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource Text}" HorizontalAlignment="Center" VerticalAlignment="Center" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
+     <controls:RingGauge Value="{Binding FiveHourAvailable}" StrokeWidth="6" RingBrush="{DynamicResource Pink}" TrackBrush="{DynamicResource PinkTrack}" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
+     <controls:RingGauge Width="70" Height="70" Value="{Binding WeeklyAvailable}" StrokeWidth="6" RingBrush="{DynamicResource Lime}" TrackBrush="{DynamicResource LimeTrack}" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
+     <TextBlock x:Name="CompactCountdown" Text="{Binding FiveHourCountdown}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource WidgetText}" HorizontalAlignment="Center" VerticalAlignment="Center" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
     </Grid>
    </Grid>
   </Grid>

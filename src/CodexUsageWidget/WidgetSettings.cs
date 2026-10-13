@@ -12,6 +12,9 @@ public sealed class WidgetSettings
     public bool Topmost { get; set; } = true;
     public bool Compact { get; set; }
     public string Language { get; set; } = "en";
+    public string FiveHourColor { get; set; } = "#FF397E";
+    public string WeeklyColor { get; set; } = "#9BEF29";
+    public string BackgroundColor { get; set; } = "#141619";
     public double? Left { get; set; }
     public double? Top { get; set; }
     public static string SettingsPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodexUsageWidget", "settings.json");
@@ -27,6 +30,9 @@ public sealed class WidgetSettings
             if (!System.Linq.Enumerable.Any(CodexUsageWidget.Core.Localization.Languages, item => item.Code == settings.Language)) settings.Language = "en";
             if (settings.Left is { } left && !double.IsFinite(left)) settings.Left = null;
             if (settings.Top is { } top && !double.IsFinite(top)) settings.Top = null;
+            if (!WidgetTheme.TryColor(settings.FiveHourColor, out _)) settings.FiveHourColor = "#FF397E";
+            if (!WidgetTheme.TryColor(settings.WeeklyColor, out _)) settings.WeeklyColor = "#9BEF29";
+            if (!WidgetTheme.TryColor(settings.BackgroundColor, out _)) settings.BackgroundColor = "#141619";
             return settings;
         }
         catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException) { return new(); }

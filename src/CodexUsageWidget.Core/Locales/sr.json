@@ -75,5 +75,11 @@
   "Disconnected": "Веза је прекинута. Поновно повезивање при следећем освежавању.",
   "ConnectionError": "Није могуће преузети Codex податке. Проверите везу, пријаву и CLI путању.",
   "ResetCreditTitle": "Ресетовање Codex лимита",
-  "ResetCreditExpires": "Важи до · {0}"
+  "ResetCreditExpires": "Важи до · {0}",
+  "Colors": "Боје",
+  "Background": "Позадина",
+  "DefaultColors": "Подразумеване боје",
+  "ColorInvalid": "Унесите боју у формату #RRGGBB.",
+  "ExpiresIn": "Истиче за {0}",
+  "KnownExpiresIn": "Познати истек за {0}"
 }

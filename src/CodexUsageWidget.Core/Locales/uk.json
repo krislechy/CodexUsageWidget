@@ -75,5 +75,11 @@
   "Disconnected": "З’єднання втрачено. Перепідключимося під час оновлення.",
   "ConnectionError": "Не вдалося отримати дані Codex. Перевірте з’єднання, вхід і шлях до CLI.",
   "ResetCreditTitle": "Скидання лімітів Codex",
-  "ResetCreditExpires": "Діє до · {0}"
+  "ResetCreditExpires": "Діє до · {0}",
+  "Colors": "Кольори",
+  "Background": "Тло",
+  "DefaultColors": "Стандартні кольори",
+  "ColorInvalid": "Введіть колір у форматі #RRGGBB.",
+  "ExpiresIn": "Згорить через {0}",
+  "KnownExpiresIn": "Відоме закінчення через {0}"
 }

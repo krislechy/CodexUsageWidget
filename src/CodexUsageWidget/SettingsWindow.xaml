@@ -3,7 +3,7 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:loc="clr-namespace:CodexUsageWidget"
  xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
- Icon="Assets/app.ico" Title="{loc:Tr Settings}" Width="510" Height="570" ResizeMode="NoResize"
+ Icon="Assets/app.ico" Title="{loc:Tr Settings}" Width="510" Height="660" ResizeMode="NoResize"
  Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
  Background="Transparent" Foreground="{StaticResource Text}"
  WindowStartupLocation="CenterOwner" FontFamily="Segoe UI Variable, Segoe UI" FontSize="13">
@@ -65,6 +65,22 @@
      <ComboBoxItem Content="{loc:Tr Minutes2}" Tag="120"/><ComboBoxItem Content="{loc:Tr Minutes5}" Tag="300"/>
     </ComboBox>
    </Grid>
+   <Grid Margin="0,0,0,10"><TextBlock Text="{loc:Tr Colors}" FontWeight="SemiBold" VerticalAlignment="Center"/><Button Content="{loc:Tr DefaultColors}" Style="{StaticResource ActionButton}" Height="28" FontSize="11" HorizontalAlignment="Right" Click="DefaultColors_Click"/></Grid>
+   <Grid Margin="0,0,0,7"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="36"/><ColumnDefinition Width="110"/></Grid.ColumnDefinitions>
+    <TextBlock Text="{loc:Tr FiveHours}" VerticalAlignment="Center"/>
+    <Button x:Name="FiveHourSwatch" Grid.Column="1" Tag="FiveHourColorBox" Style="{StaticResource ActionButton}" BorderBrush="#626A76" Width="28" Height="28" Padding="0" Click="ColorPalette_Click" ToolTip="{loc:Tr FiveHours}" AutomationProperties.Name="{loc:Tr FiveHours}"/>
+    <TextBox x:Name="FiveHourColorBox" Grid.Column="2" TextChanged="Colors_Changed" MaxLength="7" Padding="8,5" AutomationProperties.Name="{loc:Tr FiveHours}"/>
+   </Grid>
+   <Grid Margin="0,0,0,7"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="36"/><ColumnDefinition Width="110"/></Grid.ColumnDefinitions>
+    <TextBlock Text="{loc:Tr Weekly}" VerticalAlignment="Center"/>
+    <Button x:Name="WeeklySwatch" Grid.Column="1" Tag="WeeklyColorBox" Style="{StaticResource ActionButton}" BorderBrush="#626A76" Width="28" Height="28" Padding="0" Click="ColorPalette_Click" ToolTip="{loc:Tr Weekly}" AutomationProperties.Name="{loc:Tr Weekly}"/>
+    <TextBox x:Name="WeeklyColorBox" Grid.Column="2" TextChanged="Colors_Changed" MaxLength="7" Padding="8,5" AutomationProperties.Name="{loc:Tr Weekly}"/>
+   </Grid>
+   <Grid Margin="0,0,0,7"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="36"/><ColumnDefinition Width="110"/></Grid.ColumnDefinitions>
+    <TextBlock Text="{loc:Tr Background}" VerticalAlignment="Center"/>
+    <Button x:Name="BackgroundSwatch" Grid.Column="1" Tag="BackgroundColorBox" Style="{StaticResource ActionButton}" BorderBrush="#626A76" Width="28" Height="28" Padding="0" Click="ColorPalette_Click" ToolTip="{loc:Tr Background}" AutomationProperties.Name="{loc:Tr Background}"/>
+    <TextBox x:Name="BackgroundColorBox" Grid.Column="2" TextChanged="Colors_Changed" MaxLength="7" Padding="8,5" AutomationProperties.Name="{loc:Tr Background}"/>
+   </Grid><TextBlock x:Name="ColorError" Foreground="#F1B859" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,14"/>
    <CheckBox x:Name="TopmostBox" Content="{loc:Tr AboveWindows}"/>
    <CheckBox x:Name="StartupBox" Content="{loc:Tr StartWindows}"/>
    <TextBlock Text="{loc:Tr LoginHint}" Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap"/>
@@ -72,7 +88,7 @@
   </StackPanel>
   <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
    <Button Content="{loc:Tr Cancel}" Style="{StaticResource ActionButton}" IsCancel="True" Margin="0,0,8,0"/>
-   <Button Content="{loc:Tr Save}" Style="{StaticResource ActionButton}" IsDefault="True" Click="Save_Click"/>
+   <Button x:Name="SaveButton" Content="{loc:Tr Save}" Style="{StaticResource ActionButton}" IsDefault="True" Click="Save_Click"/>
   </StackPanel>
  </Grid></Border>
 </loc:WidgetDialogWindow>

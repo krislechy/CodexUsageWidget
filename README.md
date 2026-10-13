@@ -117,3 +117,9 @@ See [release workflow](docs/releasing.md), [architecture](docs/architecture.md),
 [MIT](LICENSE).
 
 View switches and tray restoration refill the rings from zero while numeric data stays accurate. Windows animation preferences are respected.
+
+### Custom colors and expiry summary
+
+The Colors section in Settings customizes the five-hour ring, weekly ring and widget background. Click a swatch for a preset or type any `#RRGGBB` value. Colors preview immediately; Save persists them, Cancel restores them, and Default colors restores the original palette. Text contrast and ring tracks adapt; dialogs retain their shared dark style.
+
+Limit resets shows the earliest upcoming expiry as `Expires in 1d` or `Expires in 23h`. Rows sort earliest first, with undated credits last. Whole days are shown from 24 hours onward; shorter periods use rounded-up hours. Partial metadata says `Known expiry in …`. The tooltip provides the exact local date and time.

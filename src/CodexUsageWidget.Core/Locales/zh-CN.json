@@ -75,5 +75,11 @@
   "Disconnected": "连接已断开。将在下次刷新时重新连接。",
   "ConnectionError": "无法读取 Codex 数据。请检查连接、登录状态和 CLI 路径。",
   "ResetCreditTitle": "重置 Codex 限额",
-  "ResetCreditExpires": "有效期至 · {0}"
+  "ResetCreditExpires": "有效期至 · {0}",
+  "Colors": "颜色",
+  "Background": "背景",
+  "DefaultColors": "默认颜色",
+  "ColorInvalid": "请以 #RRGGBB 格式输入颜色。",
+  "ExpiresIn": "{0}后到期",
+  "KnownExpiresIn": "已知到期：{0}"
 }

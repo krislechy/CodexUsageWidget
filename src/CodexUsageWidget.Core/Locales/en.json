@@ -75,5 +75,11 @@
   "Disconnected": "Disconnected. Reconnecting on the next refresh.",
   "ConnectionError": "Could not read Codex data. Check connection, login and CLI path.",
   "ResetCreditTitle": "Codex limit reset",
-  "ResetCreditExpires": "Expires · {0}"
+  "ResetCreditExpires": "Expires · {0}",
+  "Colors": "Colors",
+  "Background": "Background",
+  "DefaultColors": "Default colors",
+  "ColorInvalid": "Enter a color as #RRGGBB.",
+  "ExpiresIn": "Expires in {0}",
+  "KnownExpiresIn": "Known expiry in {0}"
 }

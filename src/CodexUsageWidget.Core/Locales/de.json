@@ -75,5 +75,11 @@
   "Disconnected": "Verbindung getrennt. Neuverbindung bei der nächsten Aktualisierung.",
   "ConnectionError": "Codex-Daten konnten nicht gelesen werden. Verbindung, Anmeldung und CLI-Pfad prüfen.",
   "ResetCreditTitle": "Codex-Limits zurücksetzen",
-  "ResetCreditExpires": "Gültig bis · {0}"
+  "ResetCreditExpires": "Gültig bis · {0}",
+  "Colors": "Farben",
+  "Background": "Hintergrund",
+  "DefaultColors": "Standardfarben",
+  "ColorInvalid": "Farbe als #RRGGBB eingeben.",
+  "ExpiresIn": "Verfällt in {0}",
+  "KnownExpiresIn": "Bekannter Ablauf in {0}"
 }

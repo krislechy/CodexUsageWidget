@@ -75,5 +75,11 @@
   "Disconnected": "接続が切れました。次の更新時に再接続します。",
   "ConnectionError": "Codex のデータを取得できません。接続、ログイン、CLI のパスを確認してください。",
   "ResetCreditTitle": "Codex の利用枠をリセット",
-  "ResetCreditExpires": "有効期限 · {0}"
+  "ResetCreditExpires": "有効期限 · {0}",
+  "Colors": "色",
+  "Background": "背景",
+  "DefaultColors": "既定の色",
+  "ColorInvalid": "色を #RRGGBB 形式で入力してください。",
+  "ExpiresIn": "{0}後に失効",
+  "KnownExpiresIn": "判明している失効まで{0}"
 }

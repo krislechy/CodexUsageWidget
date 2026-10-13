@@ -75,5 +75,11 @@
   "Disconnected": "Соединение потеряно. Переподключимся при обновлении.",
   "ConnectionError": "Не удалось получить данные Codex. Проверьте соединение, вход и путь к CLI.",
   "ResetCreditTitle": "Сброс лимитов Codex",
-  "ResetCreditExpires": "Действует до · {0}"
+  "ResetCreditExpires": "Действует до · {0}",
+  "Colors": "Цвета",
+  "Background": "Фон",
+  "DefaultColors": "Цвета по умолчанию",
+  "ColorInvalid": "Введите цвет в формате #RRGGBB.",
+  "ExpiresIn": "Сгорит через {0}",
+  "KnownExpiresIn": "Известное истечение через {0}"
 }

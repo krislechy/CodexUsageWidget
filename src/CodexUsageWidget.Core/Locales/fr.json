@@ -75,5 +75,11 @@
   "Disconnected": "Déconnecté. Reconnexion à la prochaine actualisation.",
   "ConnectionError": "Impossible de lire les données Codex. Vérifiez la connexion, l’authentification et le chemin CLI.",
   "ResetCreditTitle": "Réinitialisation des limites Codex",
-  "ResetCreditExpires": "Expire le · {0}"
+  "ResetCreditExpires": "Expire le · {0}",
+  "Colors": "Couleurs",
+  "Background": "Fond",
+  "DefaultColors": "Couleurs par défaut",
+  "ColorInvalid": "Saisissez une couleur au format #RRGGBB.",
+  "ExpiresIn": "Expire dans {0}",
+  "KnownExpiresIn": "Expiration connue dans {0}"
 }

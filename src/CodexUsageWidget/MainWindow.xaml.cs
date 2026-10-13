@@ -41,6 +41,7 @@ public partial class MainWindow : Window
         _preview = preview;
         _arguments = arguments;
         _settings = preview ? new WidgetSettings() : WidgetSettings.Load();
+        WidgetTheme.Apply(_settings);
         var languageIndex = Array.IndexOf(arguments, "--language");
         Localization.Current.SetLanguage(languageIndex >= 0 && languageIndex + 1 < arguments.Length
             ? arguments[languageIndex + 1] : _settings.Language);
@@ -61,8 +62,9 @@ public partial class MainWindow : Window
         IsVisibleChanged += (_, _) => UpdateClockState();
         StateChanged += (_, _) => UpdateClockState();
         DpiChanged += (_, _) => Dispatcher.BeginInvoke(DispatcherPriority.Loaded, EnsureVisible);
-        _viewModel.PropertyChanged += (_, e) => { if (e.PropertyName != nameof(WidgetViewModel.FiveHourCountdown)) UpdateTray(); };
+        _viewModel.PropertyChanged += (_, e) => { if (e.PropertyName is not (nameof(WidgetViewModel.FiveHourCountdown) or nameof(WidgetViewModel.SoonestExpiryText))) UpdateTray(); };
         Localization.Current.PropertyChanged += LanguageChanged;
+        WidgetTheme.Changed += UpdatePin;
         if (!_preview) LoadPendingReset();
     }
 
@@ -202,7 +204,7 @@ public partial class MainWindow : Window
 
     private void UpdatePin()
     {
-        PinButton.Foreground = (Brush)FindResource(Topmost ? "Lime" : "Muted");
+        PinButton.Foreground = (Brush)FindResource(Topmost ? "Lime" : "WidgetMuted");
         PinButton.ToolTip = Localization.Current[Topmost ? "PinOn" : "PinOff"];
     }
 
@@ -415,6 +417,7 @@ public partial class MainWindow : Window
         if (_trayMenu is not null) _trayMenu.IsOpen = false;
         if (_monitor is not null) await _monitor.DisposeAsync();
         Localization.Current.PropertyChanged -= LanguageChanged;
+        WidgetTheme.Changed -= UpdatePin;
         _viewModel.Dispose();
         Application.Current.Shutdown();
     }
@@ -552,7 +555,38 @@ public partial class MainWindow : Window
         Keyboard.Focus(selector);
         await Task.Delay(100);
         Capture((FrameworkElement)settings.Content, Path.Combine(directory, "settings-focused.png"));
+        var fiveColor = (System.Windows.Controls.TextBox)settings.FindName("FiveHourColorBox");
+        var backgroundColor = (System.Windows.Controls.TextBox)settings.FindName("BackgroundColorBox");
+        fiveColor.Text = "#38BDF8";
+        backgroundColor.Text = "#F5F5F7";
+        await Task.Delay(100);
+        if (((SolidColorBrush)Surface.Background).Color != Color.FromRgb(245, 245, 247) ||
+            ((SolidColorBrush)FindResource("Pink")).Color != Color.FromRgb(56, 189, 248))
+            throw new InvalidOperationException("Custom colors must preview immediately.");
+        Capture(Surface, Path.Combine(directory, "custom-colors.png"));
+        fiveColor.Text = "#bad";
+        if (((System.Windows.Controls.Button)settings.FindName("SaveButton")).IsEnabled)
+            throw new InvalidOperationException("Malformed colors must block saving.");
+        fiveColor.Text = "#38BDF8";
+        var serializedColors = System.Text.Json.JsonSerializer.Deserialize<WidgetSettings>(System.Text.Json.JsonSerializer.Serialize(settings.Result))!;
+        if (serializedColors.FiveHourColor != "#38BDF8" || serializedColors.BackgroundColor != "#F5F5F7")
+            throw new InvalidOperationException("Custom colors must round-trip through settings JSON.");
         settings.Close();
+        if (((SolidColorBrush)Surface.Background).Color != Color.FromRgb(20, 22, 25) ||
+            ((SolidColorBrush)FindResource("Pink")).Color != Color.FromRgb(255, 57, 126))
+            throw new InvalidOperationException("Cancel must restore the original colors.");
+        var expiryNow = DateTimeOffset.UtcNow;
+        if (WidgetViewModel.FormatExpiryLeadTime(expiryNow.AddDays(1.5), expiryNow) != "1d" ||
+            WidgetViewModel.FormatExpiryLeadTime(expiryNow.AddHours(23), expiryNow) != "23h" ||
+            WidgetViewModel.FormatExpiryLeadTime(expiryNow.AddHours(-1), expiryNow) != "0h")
+            throw new InvalidOperationException("Expiry summary must switch from days to hours and never be negative.");
+        _viewModel.SetSnapshot(_viewModel.Snapshot! with { ObservedAt = DateTimeOffset.UtcNow,
+            ResetCredits = new ResetCredits(2, [new ResetCredit("later", expiryNow.AddDays(5)), new ResetCredit("first", expiryNow.AddHours(22.5))]), ResetCreditsIncluded = true });
+        await Task.Delay(100);
+        if (_viewModel.ResetEntries[0].Credit.Id != "first" || SoonestExpiry.Text != "Expires in 23h")
+            throw new InvalidOperationException("The header must summarize the first expiring credit regardless of server order.");
+        Capture(Surface, Path.Combine(directory, "reset-hours.png"));
+        SetDemoSnapshot();
         var notice = new NoticeWindow { Owner = this };
         notice.Show();
         await Task.Delay(100);

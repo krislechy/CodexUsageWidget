@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0 — 2026-10-13 (local build)
+
+- Settings customizes both quota ring colors and the widget background with palette swatches or #RRGGBB values. Changes preview immediately; Cancel restores the previous colors and Save persists them. Default colors restores the original palette.
+- Widget text adjusts for readable contrast on custom backgrounds; ring tracks follow the selected colors. Settings scrolls when the monitor cannot fit the full content.
+- Limit resets shows the earliest future credit expiry beside the heading: whole days from 24 hours onward, rounded-up hours below it. Rows remain sorted earliest first; partial metadata is labeled as a known expiry.
+- English verification covers preview, invalid input, cancellation, JSON persistence, expiry boundaries and unordered server metadata. Reset confirmation remains mandatory.
+
 ## 0.6.0 — 2026-10-13 (local build)
 
 - Reference-inspired reset rows: localized title and expiry with UTC offset at left, an individual Use reset button at right, separated by subtle lines in the existing dark theme.

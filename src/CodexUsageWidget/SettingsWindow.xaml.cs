@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using CodexUsageWidget.Core;
 using Microsoft.Win32;
 
@@ -13,15 +14,18 @@ public partial class SettingsWindow : WidgetDialogWindow
     private readonly bool _originalStartup;
     private readonly string _originalLanguage;
     private bool _initialized;
+    private readonly WidgetSettings _originalColors;
 
     public SettingsWindow(WidgetSettings settings)
     {
         _originalLanguage = Localization.Current.Language;
+        _originalColors = new WidgetSettings { FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor };
         InitializeComponent();
         Result = new WidgetSettings
         {
             CodexPath = settings.CodexPath, RefreshSeconds = settings.RefreshSeconds, Topmost = settings.Topmost,
-            Compact = settings.Compact, Left = settings.Left, Top = settings.Top, Language = settings.Language
+            Compact = settings.Compact, Left = settings.Left, Top = settings.Top, Language = settings.Language,
+            FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor
         };
         CodexPathBox.Text = settings.CodexPath ?? "";
         TopmostBox.IsChecked = settings.Topmost;
@@ -31,8 +35,56 @@ public partial class SettingsWindow : WidgetDialogWindow
             if (int.Parse((string)item.Tag) == settings.RefreshSeconds) IntervalBox.SelectedItem = item;
         LanguageBox.ItemsSource = Localization.Languages;
         LanguageBox.SelectedValue = _originalLanguage;
+        FiveHourColorBox.Text = settings.FiveHourColor;
+        WeeklyColorBox.Text = settings.WeeklyColor;
+        BackgroundColorBox.Text = settings.BackgroundColor;
         _initialized = true;
-        Closed += (_, _) => { if (DialogResult != true) Localization.Current.SetLanguage(_originalLanguage); };
+        Colors_Changed(this, null!);
+        Loaded += (_, _) => WindowPlacement.KeepInside(this, Owner is null ? null : WindowPlacement.ScreenFor(Owner));
+        Closed += (_, _) => { if (DialogResult != true) { Localization.Current.SetLanguage(_originalLanguage); WidgetTheme.Apply(_originalColors); } };
+    }
+
+    private void Colors_Changed(object sender, TextChangedEventArgs e)
+    {
+        if (!_initialized) return;
+        var valid = WidgetTheme.TryColor(FiveHourColorBox.Text.Trim(), out var five) &
+            WidgetTheme.TryColor(WeeklyColorBox.Text.Trim(), out var weekly) &
+            WidgetTheme.TryColor(BackgroundColorBox.Text.Trim(), out var background);
+        SaveButton.IsEnabled = valid;
+        ColorError.Text = valid ? "" : Localization.Current["ColorInvalid"];
+        if (!valid) return;
+        FiveHourSwatch.Background = new SolidColorBrush(five);
+        WeeklySwatch.Background = new SolidColorBrush(weekly);
+        BackgroundSwatch.Background = new SolidColorBrush(background);
+        Result.FiveHourColor = FiveHourColorBox.Text.Trim().ToUpperInvariant();
+        Result.WeeklyColor = WeeklyColorBox.Text.Trim().ToUpperInvariant();
+        Result.BackgroundColor = BackgroundColorBox.Text.Trim().ToUpperInvariant();
+        WidgetTheme.Apply(Result);
+    }
+
+    private void ColorPalette_Click(object sender, RoutedEventArgs e)
+    {
+        var button = (Button)sender;
+        var box = (TextBox)FindName((string)button.Tag);
+        var menu = new ContextMenu { PlacementTarget = button };
+        foreach (var hex in new[] { "#FF397E", "#9BEF29", "#38BDF8", "#A78BFA", "#FF9F0A", "#141619", "#30343B", "#F5F5F7" })
+        {
+            WidgetTheme.TryColor(hex, out var color);
+            var row = new StackPanel { Orientation = Orientation.Horizontal };
+            row.Children.Add(new System.Windows.Shapes.Rectangle { Width = 16, Height = 16, Fill = new SolidColorBrush(color), Margin = new Thickness(0, 0, 10, 0) });
+            row.Children.Add(new TextBlock { Text = hex });
+            var item = new MenuItem { Header = row };
+            item.Click += (_, _) => box.Text = hex;
+            menu.Items.Add(item);
+        }
+        menu.IsOpen = true;
+    }
+
+    private void DefaultColors_Click(object sender, RoutedEventArgs e)
+    {
+        FiveHourColorBox.Text = "#FF397E";
+        WeeklyColorBox.Text = "#9BEF29";
+        BackgroundColorBox.Text = "#141619";
     }
 
     private void Language_Changed(object sender, SelectionChangedEventArgs e)
@@ -49,6 +101,7 @@ public partial class SettingsWindow : WidgetDialogWindow
 
     private void Save_Click(object sender, RoutedEventArgs e)
     {
+        if (!SaveButton.IsEnabled) return;
         try
         {
             var path = CodexPathBox.Text.Trim();

@@ -60,6 +60,14 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
         : _snapshot?.ResetCredits?.ExpiryDetailsComplete == false ? _text["ResetsDetailsIncomplete"] : $"{ResetAvailability}\n{ResetExpiry}";
     public string ResetButtonText => _text[_pendingReset ? "RetryReset" : "ResetAction"];
     public string ResetCountText => _snapshot?.ResetCredits?.AvailableCount.ToString(_text.Culture) ?? "?";
+    public string SoonestExpiryText => _snapshot?.ResetCredits is { AvailableCount: > 0, EarliestKnownExpiry: { } expiry } credits
+        ? _text.Format(credits.ExpiryDetailsComplete ? "ExpiresIn" : "KnownExpiresIn", FormatExpiryLeadTime(expiry, DateTimeOffset.UtcNow)) : "";
+    internal static string FormatExpiryLeadTime(DateTimeOffset expiry, DateTimeOffset now)
+    {
+        var remaining = expiry - now;
+        return remaining.TotalDays >= 1 ? $"{(int)remaining.TotalDays}d"
+            : $"{Math.Max(0, (int)Math.Ceiling(remaining.TotalHours))}h";
+    }
     public bool CanChooseReset => CanReset && !_pendingReset;
     public string ResetListMessage => _pendingReset ? _text["ResetPending"] :
         _snapshot?.ResetCredits is not { } credits ? _text["ResetsUnknown"] :
@@ -104,6 +112,7 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
     public void Tick()
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FiveHourCountdown)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SoonestExpiryText)));
         if (DateTimeOffset.UtcNow.Second % 15 == 0) NotifyAll();
     }
     private void NotifyAll() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
