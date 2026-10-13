@@ -140,8 +140,8 @@ public partial class MainWindow : Window
     {
         Width = _viewModel.IsCompact ? 128 : 386;
         var showResets = ResetDisclosure.IsChecked == true;
-        ResetSectionRow.Height = new GridLength(showResets ? 202 : 44);
-        Height = _viewModel.IsCompact ? 128 : showResets ? 706 : 548;
+        ResetSectionRow.Height = new GridLength(showResets ? 292 : 44);
+        Height = _viewModel.IsCompact ? 128 : showResets ? 796 : 548;
         Surface.CornerRadius = new CornerRadius(_viewModel.IsCompact ? 22 : 26);
     }
 
@@ -209,17 +209,32 @@ public partial class MainWindow : Window
     private async void Reset_Click(object sender, RoutedEventArgs e)
     {
         if (_resetAction || !_viewModel.CanReset) return;
+        var selected = sender is Button { Tag: ResetEntry entry } ? entry : null;
+        if (selected is not null && _viewModel.FindSelectableCredit(selected.Credit.Id) is null) return;
         _resetAction = true;
         var sent = false;
         try
         {
-            var dialog = new ResetConfirmationWindow(_viewModel) { Owner = this, Topmost = Topmost };
+            var previous = _preview ? null : _pendingResets.Load();
+            if (!_preview && _viewModel.PendingReset && previous is null)
+                throw new IOException("Pending reset identity is missing.");
+            if (previous is not null && selected is not null)
+            {
+                _viewModel.SetPendingReset(true);
+                _viewModel.SetNotice("ResetPending");
+                return;
+            }
+            var confirmationSelection = selected ?? (previous is null ? null :
+                _viewModel.ResetEntries.FirstOrDefault(row => row.Credit.Id == previous.CreditId));
+            var dialog = new ResetConfirmationWindow(_viewModel, confirmationSelection) { Owner = this, Topmost = Topmost };
             if (dialog.ShowDialog() != true) return;
             if (!_viewModel.CanReset) { _viewModel.SetNotice("RefreshToReset"); return; }
+            var credit = selected is null ? _viewModel.NextResetCredit : _viewModel.FindSelectableCredit(selected.Credit.Id);
+            if (selected is not null && credit is null) { _viewModel.SetNotice("RefreshToReset"); return; }
             if (_preview) { _viewModel.SetNotice("ResetSuccess"); return; }
             if (_monitor is null || _exiting) return;
             _viewModel.SetResetBusy(true);
-            var request = _pendingResets.Load() ?? _pendingResets.Begin(_viewModel.NextResetCredit?.Id
+            var request = previous ?? _pendingResets.Begin(credit?.Id
                 ?? throw new IOException("Reset details are not available."));
             _viewModel.SetPendingReset(true);
             sent = true;
@@ -442,6 +457,36 @@ public partial class MainWindow : Window
         if (!ResetDetailsPanel.IsVisible || ResetEntriesList.ActualHeight < 1)
             throw new InvalidOperationException("Reset disclosure must reveal details and grow the window.");
         Capture(Surface, Path.Combine(directory, "resets-expanded.png"));
+        var rowButtons = FindVisualChildren<Button>(ResetEntriesList).Where(button => button.Tag is ResetEntry).ToArray();
+        if (rowButtons.Length != 3 || rowButtons.Any(button => !button.IsEnabled))
+            throw new InvalidOperationException("Each available credit must have its own enabled action.");
+        var chosen = (ResetEntry)rowButtons[1].Tag;
+        if (_viewModel.FindSelectableCredit(chosen.Credit.Id)?.Id != "demo-second")
+            throw new InvalidOperationException("Selecting a reset row must preserve its credit identity.");
+        var confirmationSeen = false;
+        _ = Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, () =>
+        {
+            var selectedDialog = Application.Current.Windows.OfType<ResetConfirmationWindow>().Single(window => window.Owner == this);
+            var expiry = (TextBlock)selectedDialog.FindName("ExpiryText");
+            if (expiry.Text != chosen.Expiry) throw new InvalidOperationException("Confirmation must identify the selected credit expiry.");
+            if (!FindVisualChildren<Button>(selectedDialog).Any(button => button.IsDefault && button.IsCancel))
+                throw new InvalidOperationException("Cancel must remain the confirmation default.");
+            confirmationSeen = true;
+            Capture((FrameworkElement)selectedDialog.Content, Path.Combine(directory, "selected-reset-confirmation.png"));
+            selectedDialog.Close();
+        });
+        rowButtons[1].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        if (!confirmationSeen || _viewModel.ResetCountText != "3" || _resetAction)
+            throw new InvalidOperationException("Cancel must leave every reset unspent.");
+        _viewModel.SetPendingReset(true);
+        await Task.Delay(100);
+        if (FindVisualChildren<Button>(ResetEntriesList).Where(button => button.Tag is ResetEntry).Any(button => button.IsEnabled) || !ResetButton.IsVisible)
+            throw new InvalidOperationException("Pending attempts must disable fresh row actions and expose the same-attempt retry.");
+        var retryPosition = ResetButton.TransformToAncestor(ResetDetailsPanel).Transform(new Point());
+        if (retryPosition.Y + ResetButton.ActualHeight > ResetDetailsPanel.ActualHeight + 1)
+            throw new InvalidOperationException("Retry must remain inside the reset section.");
+        Capture(Surface, Path.Combine(directory, "reset-pending-expanded.png"));
+        _viewModel.SetPendingReset(false);
         ResetDisclosure.IsChecked = false;
         ResetDisclosure_Click(this, new RoutedEventArgs());
         await Task.Delay(100);
@@ -449,6 +494,13 @@ public partial class MainWindow : Window
             throw new InvalidOperationException("Closing reset details must recover the space.");
         if (_viewModel.ResetEntries.Count != 3 || ResetEntriesList.Items.Count != 3)
             throw new InvalidOperationException("Every returned reset must be listed.");
+        var validationSnapshot = _viewModel.Snapshot!;
+        var nowForSelection = DateTimeOffset.UtcNow;
+        _viewModel.SetSnapshot(validationSnapshot with { ObservedAt = nowForSelection, ResetCredits = new ResetCredits(3,
+            [new("expired-selection", nowForSelection.AddSeconds(-1)), new("unknown-expiry", null), new("valid-selection", nowForSelection.AddDays(1))]), ResetCreditsIncluded = true });
+        if (_viewModel.FindSelectableCredit("expired-selection") is not null || _viewModel.FindSelectableCredit("valid-selection") is null)
+            throw new InvalidOperationException("Only current selectable rows may start a new reset.");
+        SetDemoSnapshot();
         Compact_Click(this, new RoutedEventArgs());
         await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ContextIdle);
         await Task.Delay(100);

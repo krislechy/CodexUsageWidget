@@ -60,16 +60,21 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
         : _snapshot?.ResetCredits?.ExpiryDetailsComplete == false ? _text["ResetsDetailsIncomplete"] : $"{ResetAvailability}\n{ResetExpiry}";
     public string ResetButtonText => _text[_pendingReset ? "RetryReset" : "ResetAction"];
     public string ResetCountText => _snapshot?.ResetCredits?.AvailableCount.ToString(_text.Culture) ?? "?";
-    public IReadOnlyList<string> ResetEntries
+    public bool CanChooseReset => CanReset && !_pendingReset;
+    public string ResetListMessage => _pendingReset ? _text["ResetPending"] :
+        _snapshot?.ResetCredits is not { } credits ? _text["ResetsUnknown"] :
+        credits.AvailableCount == 0 ? _text["NoResets"] :
+        credits.ExpiryDetailsComplete ? "" : _text["ResetsDetailsIncomplete"];
+    public IReadOnlyList<ResetEntry> ResetEntries
     {
         get
         {
             if (_snapshot?.ResetCredits is not { AvailableCount: > 0 } credits) return [];
             var rows = credits.Credits?.Where(credit => credit.ExpiresAt is null || credit.ExpiresAt > DateTimeOffset.UtcNow)
                 .OrderBy(credit => credit.ExpiresAt ?? DateTimeOffset.MaxValue).ToArray() ?? [];
-            var entries = rows.Select((credit, index) => $"{index + 1} · {(credit.ExpiresAt is { } expiry ? expiry.ToLocalTime().ToString("g", _text.Culture) : _text["ExpiryUnknown"])}").ToList();
-            if (rows.Length < credits.AvailableCount) entries.Add(_text["ResetsDetailsIncomplete"]);
-            return entries;
+            return rows.Select(credit => new ResetEntry(credit, _text["ResetCreditTitle"], credit.ExpiresAt is { } expiry
+                ? _text.Format("ResetCreditExpires", expiry.ToLocalTime().ToString("g", _text.Culture) + " UTC" + expiry.ToLocalTime().ToString("zzz", CultureInfo.InvariantCulture))
+                : _text["ExpiryUnknown"])).ToArray();
         }
     }
     public bool CanReset => !_busy && !_resetBusy && !_resetRecoveryBlocked && (_pendingReset ||
@@ -77,6 +82,8 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
          _snapshot.ResetCredits.NextCredit(DateTimeOffset.UtcNow) is not null));
     public bool PendingReset => _pendingReset;
     public ResetCredit? NextResetCredit => _snapshot?.ResetCredits?.NextCredit(DateTimeOffset.UtcNow);
+    public ResetCredit? FindSelectableCredit(string id) => CanChooseReset ? _snapshot?.ResetCredits?.Credits?
+        .FirstOrDefault(credit => credit.Id == id && (credit.ExpiresAt is null || credit.ExpiresAt > DateTimeOffset.UtcNow)) : null;
 
     public void SetSnapshot(UsageSnapshot snapshot)
     {
@@ -125,3 +132,5 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
         return "ConnectionError";
     }
 }
+
+public sealed record ResetEntry(ResetCredit Credit, string Title, string Expiry);

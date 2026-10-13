@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T16:41:13.5660047Z",
+  "generatedAt": "2026-10-13T17:03:27.0963296Z",
   "title": "Design System: Codex Usage Widget",
   "extensions": {
     "platform": {
@@ -404,7 +404,9 @@
       "docs/screenshots/tooltip.png",
       "docs/screenshots/resets-expanded.png",
       "docs/screenshots/compact-refill.png",
-      "docs/screenshots/tray-restore-refill.png"
+      "docs/screenshots/tray-restore-refill.png",
+      "docs/screenshots/selected-reset-confirmation.png",
+      "docs/screenshots/reset-pending-expanded.png"
     ],
     "preview": {
       "purpose": "Self-contained HTML/CSS translations for the design panel. The shipped application is native WPF; previews are not application code.",
@@ -476,7 +478,7 @@
         "padding": "12,9"
       },
       "resetDisclosure": {
-        "expandedWindowHeight": 706,
+        "expandedWindowHeight": 796,
         "listBottomMargin": 5,
         "listHeight": 82,
         "defaultExpanded": false,
@@ -487,6 +489,15 @@
           "color": "#D92B3B",
           "text": "White",
           "diameter": 28
+        },
+        "resetRows": {
+          "expiryFontSize": 11,
+          "header": "Count and chevron at right",
+          "bodyHeight": 236,
+          "action": "Selected credit; mandatory matching confirmation; pending recovery disables new actions",
+          "titleFontSize": 13,
+          "rowMinHeight": 72,
+          "verticalPadding": 9
         }
       }
     },

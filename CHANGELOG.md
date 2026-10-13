@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 — 2026-10-13 (local build)
+
+- Reference-inspired reset rows: localized title and expiry with UTC offset at left, an individual Use reset button at right, separated by subtle lines in the existing dark theme.
+- Header count and disclosure are aligned at the right. The entire section body still collapses.
+- Every row opens mandatory confirmation identifying its expiry, with Cancel as default; after confirmation the selected ID is revalidated against current available credit metadata.
+- Pending attempts disable all fresh row actions and expose an explicit same-attempt retry. Missing retry identity blocks sending instead of creating a new reset.
+- English native checks exercise selection of the second row, cancellation without spending, expired-row rejection and accessible pending retry placement.
+
 ## 0.5.2 — 2026-10-13 (local build)
 
 - Collapse the entire earned-reset body, including action, availability and expiry dates. The heading stays visible with a red circular, white-number available-count badge.

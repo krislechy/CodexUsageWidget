@@ -73,5 +73,7 @@
   "LimitsUnavailable": "Codex が要求された上限情報を返していません。",
   "RequestRejected": "Codex がリクエストを拒否しました。ログインと CLI のバージョンを確認してください。",
   "Disconnected": "接続が切れました。次の更新時に再接続します。",
-  "ConnectionError": "Codex のデータを取得できません。接続、ログイン、CLI のパスを確認してください。"
+  "ConnectionError": "Codex のデータを取得できません。接続、ログイン、CLI のパスを確認してください。",
+  "ResetCreditTitle": "Codex の利用枠をリセット",
+  "ResetCreditExpires": "有効期限 · {0}"
 }

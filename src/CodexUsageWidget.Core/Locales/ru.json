@@ -73,5 +73,7 @@
   "LimitsUnavailable": "Codex не вернул данные о лимитах.",
   "RequestRejected": "Codex отклонил запрос. Проверьте вход и версию CLI.",
   "Disconnected": "Соединение потеряно. Переподключимся при обновлении.",
-  "ConnectionError": "Не удалось получить данные Codex. Проверьте соединение, вход и путь к CLI."
+  "ConnectionError": "Не удалось получить данные Codex. Проверьте соединение, вход и путь к CLI.",
+  "ResetCreditTitle": "Сброс лимитов Codex",
+  "ResetCreditExpires": "Действует до · {0}"
 }

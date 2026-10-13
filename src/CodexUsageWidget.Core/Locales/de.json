@@ -73,5 +73,7 @@
   "LimitsUnavailable": "Codex hat keine Daten zu den angefragten Limits geliefert.",
   "RequestRejected": "Codex hat die Anfrage abgelehnt. Anmeldung und CLI-Version prüfen.",
   "Disconnected": "Verbindung getrennt. Neuverbindung bei der nächsten Aktualisierung.",
-  "ConnectionError": "Codex-Daten konnten nicht gelesen werden. Verbindung, Anmeldung und CLI-Pfad prüfen."
+  "ConnectionError": "Codex-Daten konnten nicht gelesen werden. Verbindung, Anmeldung und CLI-Pfad prüfen.",
+  "ResetCreditTitle": "Codex-Limits zurücksetzen",
+  "ResetCreditExpires": "Gültig bis · {0}"
 }

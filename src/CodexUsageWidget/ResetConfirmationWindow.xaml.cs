@@ -5,12 +5,12 @@ namespace CodexUsageWidget;
 
 public partial class ResetConfirmationWindow : WidgetDialogWindow
 {
-    public ResetConfirmationWindow(WidgetViewModel model)
+    public ResetConfirmationWindow(WidgetViewModel model, ResetEntry? selected = null)
     {
         InitializeComponent();
         MessageText.Text = Localization.Current[model.PendingReset ? "RetryConfirm" : "ResetConfirm"];
-        AvailabilityText.Text = model.ResetAvailability;
-        ExpiryText.Text = model.ResetExpiry;
+        AvailabilityText.Text = selected is null ? model.ResetAvailability : $"{selected.Title}\n{model.ResetAvailability}";
+        ExpiryText.Text = selected?.Expiry ?? (model.PendingReset ? Localization.Current["ExpiryUnknown"] : model.ResetExpiry);
         if (model.PendingReset) ConfirmButton.Content = Localization.Current["RetryReset"];
     }
 

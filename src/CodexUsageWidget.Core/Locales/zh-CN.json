@@ -73,5 +73,7 @@
   "LimitsUnavailable": "Codex 未返回所请求的限额数据。",
   "RequestRejected": "Codex 拒绝了请求。请检查登录状态和 CLI 版本。",
   "Disconnected": "连接已断开。将在下次刷新时重新连接。",
-  "ConnectionError": "无法读取 Codex 数据。请检查连接、登录状态和 CLI 路径。"
+  "ConnectionError": "无法读取 Codex 数据。请检查连接、登录状态和 CLI 路径。",
+  "ResetCreditTitle": "重置 Codex 限额",
+  "ResetCreditExpires": "有效期至 · {0}"
 }

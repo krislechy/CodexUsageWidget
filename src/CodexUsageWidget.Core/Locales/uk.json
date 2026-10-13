@@ -73,5 +73,7 @@
   "LimitsUnavailable": "Codex не повернув дані про ліміти.",
   "RequestRejected": "Codex відхилив запит. Перевірте вхід і версію CLI.",
   "Disconnected": "З’єднання втрачено. Перепідключимося під час оновлення.",
-  "ConnectionError": "Не вдалося отримати дані Codex. Перевірте з’єднання, вхід і шлях до CLI."
+  "ConnectionError": "Не вдалося отримати дані Codex. Перевірте з’єднання, вхід і шлях до CLI.",
+  "ResetCreditTitle": "Скидання лімітів Codex",
+  "ResetCreditExpires": "Діє до · {0}"
 }

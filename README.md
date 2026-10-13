@@ -16,7 +16,7 @@ A small Windows desktop companion that keeps your Codex subscription limits visi
 - Shared rounded dark Settings and reset confirmation windows, using native XAML CenterOwner placement.
 - A two-ring application icon, supplied in multiple resolutions for Windows and the tray.
 - Monitor-aware window bounds, larger compact rings and a countdown that pauses while hidden in the tray.
-- A fully collapsible earned-reset section with a red available-count badge; click the heading to reveal its action, availability and expiry dates.
+- A fully collapsible earned-reset section with a red available-count badge; each row shows expiry and its own action, always protected by confirmation.
 - Remembers window position, layout, CLI path and refresh interval.
 - Optional start with Windows, enabled only when you check it in Settings.
 - Retains the last successful snapshot during an outage and marks it as stale.
@@ -63,7 +63,7 @@ Hover the compact widget for quota reset dates, earned reset availability/expiry
 
 The reset section uses Codex's authoritative `availableCount`. When Codex supplies all expiry dates it shows the earliest expiry; if the detail list is capped or incomplete, it explicitly labels the earliest **known** date. Missing metadata stays unknown. Resetting requires a usable returned credit ID and current quota data; a stale snapshot cannot start a new reset.
 
-The confirmation explains that one earned reset will be spent. The widget selects the soonest-expiring usable returned credit, persists the request before sending it, then calls `account/rateLimitResetCredit/consume` with that credit ID and an idempotency key. If the answer is lost, **Retry reset** repeats the same request, including after restarting the application, rather than spending a second reset. Polling never triggers a reset. The widget re-reads authoritative limits after any definitive outcome.
+Each reset row opens mandatory confirmation naming its expiry, with Cancel as default. The selected returned credit is checked again after confirmation, then its ID and an idempotency key are persisted before `account/rateLimitResetCredit/consume` is sent. If the answer is lost, **Retry reset** repeats the same persisted request, including after restarting the application. Fresh row actions remain disabled during recovery; missing retry identity blocks sending. Polling never triggers a reset. The widget re-reads authoritative limits after any definitive outcome.
 
 ### Languages
 

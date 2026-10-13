@@ -73,5 +73,7 @@
   "LimitsUnavailable": "Codex has not returned the requested limits.",
   "RequestRejected": "Codex rejected the request. Check login and CLI version.",
   "Disconnected": "Disconnected. Reconnecting on the next refresh.",
-  "ConnectionError": "Could not read Codex data. Check connection, login and CLI path."
+  "ConnectionError": "Could not read Codex data. Check connection, login and CLI path.",
+  "ResetCreditTitle": "Codex limit reset",
+  "ResetCreditExpires": "Expires · {0}"
 }

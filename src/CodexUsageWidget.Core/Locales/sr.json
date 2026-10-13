@@ -73,5 +73,7 @@
   "LimitsUnavailable": "Codex није вратио податке о лимитима.",
   "RequestRejected": "Codex је одбио захтев. Проверите пријаву и верзију CLI-ја.",
   "Disconnected": "Веза је прекинута. Поновно повезивање при следећем освежавању.",
-  "ConnectionError": "Није могуће преузети Codex податке. Проверите везу, пријаву и CLI путању."
+  "ConnectionError": "Није могуће преузети Codex податке. Проверите везу, пријаву и CLI путању.",
+  "ResetCreditTitle": "Ресетовање Codex лимита",
+  "ResetCreditExpires": "Важи до · {0}"
 }
