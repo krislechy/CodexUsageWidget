@@ -106,6 +106,10 @@
     </ControlTemplate.Triggers>
    </ControlTemplate></Setter.Value></Setter>
   </Style>
-  <Style TargetType="Separator"><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Separator"><Border Height="1" Background="#353940" Margin="12,5"/></ControlTemplate></Setter.Value></Setter></Style>
+  <Style TargetType="Separator">
+   <Setter Property="OverridesDefaultStyle" Value="True"/><Setter Property="Margin" Value="0"/>
+   <Setter Property="HorizontalAlignment" Value="Stretch"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Separator"><Border Height="1" Background="#353940" Margin="0,5"/></ControlTemplate></Setter.Value></Setter>
+  </Style>
  </Application.Resources>
 </Application>

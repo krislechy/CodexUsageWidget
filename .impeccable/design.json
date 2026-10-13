@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T16:21:25.9075644Z",
+  "generatedAt": "2026-10-13T16:41:13.5660047Z",
   "title": "Design System: Codex Usage Widget",
   "extensions": {
     "platform": {
@@ -355,7 +355,7 @@
       {
         "name": "ring-update",
         "value": "550ms exponential ease-out, exponent 5",
-        "purpose": "Animate from current visible value; interruptible; disabled when Windows ClientAreaAnimation is false."
+        "purpose": "Interruptible quota updates; replay visible arcs from zero on compact/full switches and tray/minimized restoration; disabled by Windows animation preference."
       }
     ],
     "breakpoints": [],
@@ -402,7 +402,9 @@
       "docs/screenshots/tray-menu.png",
       "docs/screenshots/already-running.png",
       "docs/screenshots/tooltip.png",
-      "docs/screenshots/resets-expanded.png"
+      "docs/screenshots/resets-expanded.png",
+      "docs/screenshots/compact-refill.png",
+      "docs/screenshots/tray-restore-refill.png"
     ],
     "preview": {
       "purpose": "Self-contained HTML/CSS translations for the design panel. The shipped application is native WPF; previews are not application code.",
@@ -418,10 +420,10 @@
           244,
           74,
           74,
-          94,
+          44,
           32
         ],
-        "height": 598,
+        "height": 548,
         "contentInset": "19,14,19,12"
       },
       "settings": {
@@ -474,11 +476,18 @@
         "padding": "12,9"
       },
       "resetDisclosure": {
-        "expandedWindowHeight": 685,
+        "expandedWindowHeight": 706,
         "listBottomMargin": 5,
         "listHeight": 82,
         "defaultExpanded": false,
-        "collapsedContent": "Heading, available count, nearest expiry and reset action."
+        "collapsedContent": "Heading and red circular count badge only; action, availability and expiry details all hidden.",
+        "badge": {
+          "unknown": "?",
+          "fontSize": 11,
+          "color": "#D92B3B",
+          "text": "White",
+          "diameter": 28
+        }
       }
     },
     "localization": {

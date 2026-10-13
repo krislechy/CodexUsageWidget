@@ -140,9 +140,8 @@ public partial class MainWindow : Window
     {
         Width = _viewModel.IsCompact ? 128 : 386;
         var showResets = ResetDisclosure.IsChecked == true;
-        ResetSectionRow.Height = new GridLength(showResets ? 181 : 94);
-        ResetListRow.Height = new GridLength(showResets ? 87 : 0);
-        Height = _viewModel.IsCompact ? 128 : showResets ? 685 : 598;
+        ResetSectionRow.Height = new GridLength(showResets ? 202 : 44);
+        Height = _viewModel.IsCompact ? 128 : showResets ? 706 : 548;
         Surface.CornerRadius = new CornerRadius(_viewModel.IsCompact ? 22 : 26);
     }
 
@@ -156,6 +155,7 @@ public partial class MainWindow : Window
         {
             WindowPlacement.KeepInside(this, screen);
             SaveSettings();
+            ReplayVisibleRings();
         });
     }
 
@@ -307,16 +307,27 @@ public partial class MainWindow : Window
         UpdateTray();
     }
 
-    private void ShowWidget() { Show(); EnsureVisible(); UpdateClockState(); Activate(); }
+    private void ShowWidget()
+    {
+        if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
+        Show(); EnsureVisible(); UpdateClockState(); Activate();
+    }
 
     private void UpdateClockState()
     {
         if (IsVisible && WindowState != WindowState.Minimized)
         {
+            var resume = !_clock.IsEnabled;
             _viewModel.Tick();
             _clock.Start();
+            if (resume) Dispatcher.BeginInvoke(DispatcherPriority.Loaded, ReplayVisibleRings);
         }
         else _clock.Stop();
+    }
+
+    private void ReplayVisibleRings()
+    {
+        foreach (var ring in FindVisualChildren<RingGauge>(Surface).Where(ring => ring.IsVisible)) ring.ReplayFill();
     }
 
     private bool IsInsideRingArea(DependencyObject? source)
@@ -341,7 +352,7 @@ public partial class MainWindow : Window
         Add("MenuShow", ShowWidget);
         Add("MenuMode", () => Compact_Click(this, new RoutedEventArgs()));
         Add("Settings", () => { ShowWidget(); Settings_Click(this, new RoutedEventArgs()); });
-        menu.Items.Add(new Separator());
+        menu.Items.Add(new Separator { Style = (Style)FindResource(typeof(Separator)) });
         Add("MenuExit", ExitAsync);
         return menu;
     }
@@ -422,7 +433,8 @@ public partial class MainWindow : Window
         if (!_viewModel.CanReset || !_viewModel.ResetAvailability.Contains("3", StringComparison.Ordinal))
             throw new InvalidOperationException("Available reset state verification failed.");
         Capture(Surface, Path.Combine(directory, "main.png"));
-        if (ResetDetailsPanel.IsVisible) throw new InvalidOperationException("Reset details must start collapsed.");
+        if (ResetDetailsPanel.IsVisible || ResetButton.IsVisible || ResetCountBadge.Text != "3")
+            throw new InvalidOperationException("Collapsed resets must show only their heading and live count badge.");
         var collapsedHeight = Height;
         ResetDisclosure.IsChecked = true;
         ResetDisclosure_Click(this, new RoutedEventArgs());
@@ -437,9 +449,12 @@ public partial class MainWindow : Window
             throw new InvalidOperationException("Closing reset details must recover the space.");
         if (_viewModel.ResetEntries.Count != 3 || ResetEntriesList.Items.Count != 3)
             throw new InvalidOperationException("Every returned reset must be listed.");
-        _viewModel.IsCompact = true;
-        ApplyLayout();
-        await Task.Delay(150);
+        Compact_Click(this, new RoutedEventArgs());
+        await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ContextIdle);
+        await Task.Delay(100);
+        VerifyRefillInProgress();
+        Capture(Surface, Path.Combine(directory, "compact-refill.png"));
+        await Task.Delay(550);
         if (FindVisualChildren<TextBlock>(CompactPanel).Any(text => text.IsVisible && !ReferenceEquals(text, CompactCountdown)) ||
             FindVisualChildren<RingGauge>(CompactPanel).Count() != 2)
             throw new InvalidOperationException("Compact mode must show only two rings and the countdown.");
@@ -472,6 +487,7 @@ public partial class MainWindow : Window
         _viewModel.SetSnapshot(_viewModel.Snapshot! with { ObservedAt = DateTimeOffset.UtcNow, ResetCredits = new ResetCredits(0, []), ResetCreditsIncluded = true });
         if (_viewModel.CanReset) throw new InvalidOperationException("Zero available resets should disable the action.");
         await Task.Delay(100);
+        if (ResetCountBadge.Text != "0") throw new InvalidOperationException("The badge must display the authoritative zero count.");
         Capture(Surface, Path.Combine(directory, "reset-empty.png"));
         SetDemoSnapshot();
         var settings = new SettingsWindow(new WidgetSettings { Language = Localization.Current.Language }) { Owner = this };
@@ -522,6 +538,14 @@ public partial class MainWindow : Window
         if (_clock.IsEnabled) throw new InvalidOperationException("The countdown timer must stop while hidden.");
         ShowWidget();
         if (!_clock.IsEnabled) throw new InvalidOperationException("The countdown timer must resume when shown.");
+        await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ContextIdle);
+        await Task.Delay(100);
+        VerifyRefillInProgress();
+        Capture(Surface, Path.Combine(directory, "tray-restore-refill.png"));
+        await Task.Delay(550);
+        foreach (var ring in FindVisualChildren<RingGauge>(Surface).Where(ring => ring.IsVisible))
+            if (Math.Abs(ring.AnimatedValue - ring.Value) > 0.01)
+                throw new InvalidOperationException("Refill must end at the authoritative percentage.");
         foreach (var screen in Forms.Screen.AllScreens)
         {
             _viewModel.IsCompact = true;
@@ -541,6 +565,15 @@ public partial class MainWindow : Window
         if (Math.Abs(dialog.Left + dialog.ActualWidth / 2 - Left - ActualWidth / 2) > 1 ||
             Math.Abs(dialog.Top + dialog.ActualHeight / 2 - Top - ActualHeight / 2) > 1)
             throw new InvalidOperationException("Dialog is not centered on its owner.");
+    }
+
+    private void VerifyRefillInProgress()
+    {
+        if (!SystemParameters.ClientAreaAnimation) return;
+        foreach (var ring in FindVisualChildren<RingGauge>(Surface).Where(ring => ring.IsVisible && ring.Value > 0))
+            if (ring.AnimatedValue < 0 || ring.AnimatedValue >= ring.Value)
+                throw new InvalidOperationException("Visible rings must replay their fill from zero.");
+        VerifyRingAccessibility();
     }
 
     private void VerifyRingAccessibility()

@@ -59,6 +59,7 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
     public string ResetDetails => _resetRecoveryBlocked ? _text["PendingStoreError"] : _pendingReset ? _text["ResetPending"] : HasError ? _text["RefreshToReset"]
         : _snapshot?.ResetCredits?.ExpiryDetailsComplete == false ? _text["ResetsDetailsIncomplete"] : $"{ResetAvailability}\n{ResetExpiry}";
     public string ResetButtonText => _text[_pendingReset ? "RetryReset" : "ResetAction"];
+    public string ResetCountText => _snapshot?.ResetCredits?.AvailableCount.ToString(_text.Culture) ?? "?";
     public IReadOnlyList<string> ResetEntries
     {
         get

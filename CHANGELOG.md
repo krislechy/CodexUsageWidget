@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.2 — 2026-10-13 (local build)
+
+- Collapse the entire earned-reset body, including action, availability and expiry dates. The heading stays visible with a red circular, white-number available-count badge.
+- Explicit dark tray separator styling removes the Windows theme's asymmetric inset.
+- Switching compact/full or restoring from tray/minimized replays visible quota arcs from zero to their current percentage with the existing 550 ms ease-out. Displayed data and accessibility values remain authoritative; Windows reduced-animation settings are respected.
+- English native preview verifies body visibility, badge counts, intermediate refill frames and final quota values.
+
 ## 0.5.1 — 2026-10-13 (local build)
 
 - Earned-reset dates are collapsed by default behind a styled disclosure heading. Availability, nearest expiry and the reset action remain visible.

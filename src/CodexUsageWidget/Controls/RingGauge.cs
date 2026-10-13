@@ -37,16 +37,22 @@ public sealed class RingGauge : FrameworkElement
         var target = Math.Clamp((double)e.NewValue, 0, 100);
         if (UIElementAutomationPeer.FromElement(ring) is { } peer)
             peer.RaisePropertyChangedEvent(RangeValuePatternIdentifiers.ValueProperty, (double)e.OldValue, target);
-        if (!SystemParameters.ClientAreaAnimation || !ring.IsLoaded)
+        ring.AnimateTo(ring.AnimatedValue, target);
+    }
+
+    public void ReplayFill() => AnimateTo(0, Math.Clamp(Value, 0, 100));
+
+    private void AnimateTo(double from, double target)
+    {
+        if (!SystemParameters.ClientAreaAnimation || !IsLoaded)
         {
-            ring.BeginAnimation(AnimatedValueProperty, null);
-            ring.AnimatedValue = target;
+            BeginAnimation(AnimatedValueProperty, null);
+            AnimatedValue = target;
             return;
         }
-        var from = ring.AnimatedValue;
-        ring.BeginAnimation(AnimatedValueProperty, null);
-        ring.AnimatedValue = target;
-        ring.BeginAnimation(AnimatedValueProperty, new DoubleAnimation(from, target, TimeSpan.FromMilliseconds(550))
+        BeginAnimation(AnimatedValueProperty, null);
+        AnimatedValue = target;
+        BeginAnimation(AnimatedValueProperty, new DoubleAnimation(from, target, TimeSpan.FromMilliseconds(550))
         {
             EasingFunction = new ExponentialEase { Exponent = 5, EasingMode = EasingMode.EaseOut },
             FillBehavior = FillBehavior.Stop

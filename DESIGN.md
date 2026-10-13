@@ -13,6 +13,7 @@ colors:
   separator: "#2A2D33"
   warning: "#F1B859"
   current: "#83E788"
+  reset-count: "#D92B3B"
   control-hover: "#282B31"
   control-pressed: "#353942"
   control-hover-text: "#FFFFFF"
@@ -135,7 +136,7 @@ The remaining-value role is the frontmatter's percentage token. The full ring ce
 
 ## Layout
 
-Main window: 386 × 598 (685 with reset details open) device-independent pixels, including transparent margins. Header, 232-pixel ring assembly, two quota rows, earned-reset section, then the status/control footer. The expanded grid allocates 34, 244, 74, 74, 94 (181 expanded) and 32 pixels to those rows; its inset is 19 horizontally, 14 above and 12 below within the eight-pixel outer margin. Full rows include remaining percentage and reset date. Compact window: 128 × 128 pixels with concentric 92- and 70-pixel rings and the live five-hour countdown; no percentages, status text or inline buttons. Hover reveals quota values, local reset dates, earned resets and status. Double-click anywhere on the compact surface (or the expanded ring area), press Ctrl+M or use the tray mode action to expand; drag the surface to reposition.
+Main window: 386 × 548 (706 with reset details open) device-independent pixels, including transparent margins. Header, 232-pixel ring assembly, two quota rows, earned-reset section, then the status/control footer. The expanded grid allocates 34, 244, 74, 74, 44 (202 expanded) and 32 pixels to those rows; its inset is 19 horizontally, 14 above and 12 below within the eight-pixel outer margin. Full rows include remaining percentage and reset date. Compact window: 128 × 128 pixels with concentric 92- and 70-pixel rings and the live five-hour countdown; no percentages, status text or inline buttons. Hover reveals quota values, local reset dates, earned resets and status. Double-click anywhere on the compact surface (or the expanded ring area), press Ctrl+M or use the tray mode action to expand; drag the surface to reposition.
 
 The full and compact layouts are separate compositions, not a scaled screenshot. WPF vector rendering handles display scaling. Settings use the shared frameless dark rounded dialog shell (510 × 570), with an eight-pixel transparent outer margin, one-pixel outline and 23-pixel content inset. The language selector is 32 pixels high; the refresh selector remains 30 pixels high. Earned-reset confirmation is a 470-pixel-wide owner-centered dialog that sizes its height to wrapped content, with the same shell and inset. Both dialogs declare WindowStartupLocation="CenterOwner" in XAML; their headers are draggable and their close controls cancel. The duplicate-launch notice shares this shell and centers on screen when no owner exists. Tab traversal is disabled by user request; explicit shortcuts and mouse controls remain and give icon controls accessible names. These are explicit desktop modes; there are no web breakpoints.
 
@@ -209,4 +210,6 @@ An uncertain outcome changes the action to Retry reset and explains that the ear
 
 The reset section lists every returned available credit by local expiry date/time in a scrollable list; missing details are stated explicitly. The main content also scrolls on small monitors. Native physical bounds clamp the main widget after expansion/drag. The countdown stops while hidden/minimized and resumes immediately on showing; visible compact mode keeps counting.
 
-The reset list is collapsed by default behind a shared dark disclosure toggle. Availability, nearest expiry and reset action stay visible. The list has an 82 DIP scroll viewport with 5 DIP bottom spacing; disclosure changes the full-window height from 598 to 685 DIP and clamps it to the current monitor. Header hover is tonal gray with a rotated stroked chevron.
+The entire reset body is collapsed by default: action, availability and expiry details are hidden together. Only the heading and a red 28 DIP circular badge with white 11 DIP bold count remain. Unknown count is shown as a question mark, not zero. The list uses an 82 DIP scroll viewport. Disclosure changes the full-window height from 548 to 706 DIP and clamps it to the current monitor. Header hover is tonal gray with a rotated stroked chevron.
+
+View switches and restoration from the tray/minimized state replay visible rings from zero, using the existing 550 ms exponential ease-out. Actual numeric values and UI Automation values remain unchanged during replay. Windows disabled-animation preferences show the final arcs immediately. The tray separator explicitly overrides the Windows theme, spanning the menu content width with zero extra horizontal inset and five DIP vertical margins.
