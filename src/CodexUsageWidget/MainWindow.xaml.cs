@@ -139,7 +139,10 @@ public partial class MainWindow : Window
     private void ApplyLayout()
     {
         Width = _viewModel.IsCompact ? 128 : 386;
-        Height = _viewModel.IsCompact ? 128 : 678;
+        var showResets = ResetDisclosure.IsChecked == true;
+        ResetSectionRow.Height = new GridLength(showResets ? 181 : 94);
+        ResetListRow.Height = new GridLength(showResets ? 87 : 0);
+        Height = _viewModel.IsCompact ? 128 : showResets ? 685 : 598;
         Surface.CornerRadius = new CornerRadius(_viewModel.IsCompact ? 22 : 26);
     }
 
@@ -148,6 +151,17 @@ public partial class MainWindow : Window
         var screen = WindowPlacement.ScreenFor(this);
         _viewModel.IsCompact = !_viewModel.IsCompact;
         _settings.Compact = _viewModel.IsCompact;
+        ApplyLayout();
+        Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+        {
+            WindowPlacement.KeepInside(this, screen);
+            SaveSettings();
+        });
+    }
+
+    private void ResetDisclosure_Click(object sender, RoutedEventArgs e)
+    {
+        var screen = WindowPlacement.ScreenFor(this);
         ApplyLayout();
         Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
         {
@@ -408,6 +422,19 @@ public partial class MainWindow : Window
         if (!_viewModel.CanReset || !_viewModel.ResetAvailability.Contains("3", StringComparison.Ordinal))
             throw new InvalidOperationException("Available reset state verification failed.");
         Capture(Surface, Path.Combine(directory, "main.png"));
+        if (ResetDetailsPanel.IsVisible) throw new InvalidOperationException("Reset details must start collapsed.");
+        var collapsedHeight = Height;
+        ResetDisclosure.IsChecked = true;
+        ResetDisclosure_Click(this, new RoutedEventArgs());
+        await Task.Delay(150);
+        if (!ResetDetailsPanel.IsVisible || ResetEntriesList.ActualHeight < 1)
+            throw new InvalidOperationException("Reset disclosure must reveal details and grow the window.");
+        Capture(Surface, Path.Combine(directory, "resets-expanded.png"));
+        ResetDisclosure.IsChecked = false;
+        ResetDisclosure_Click(this, new RoutedEventArgs());
+        await Task.Delay(100);
+        if (ResetDetailsPanel.IsVisible || Height != collapsedHeight)
+            throw new InvalidOperationException("Closing reset details must recover the space.");
         if (_viewModel.ResetEntries.Count != 3 || ResetEntriesList.Items.Count != 3)
             throw new InvalidOperationException("Every returned reset must be listed.");
         _viewModel.IsCompact = true;

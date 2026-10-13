@@ -4,7 +4,7 @@
  xmlns:controls="clr-namespace:CodexUsageWidget.Controls"
  xmlns:loc="clr-namespace:CodexUsageWidget"
  xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
- Icon="Assets/app.ico" Title="Codex Usage Widget" Width="386" Height="678" WindowStyle="None" WindowStartupLocation="CenterScreen"
+ Icon="Assets/app.ico" Title="Codex Usage Widget" Width="386" Height="598" WindowStyle="None" WindowStartupLocation="CenterScreen"
  Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
  AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
  ShowInTaskbar="False" Topmost="True" FontFamily="Segoe UI Variable, Segoe UI"
@@ -22,7 +22,7 @@
    <ScrollViewer x:Name="ExpandedScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Visibility="{Binding IsExpanded, Converter={StaticResource BoolVisibility}}">
    <Grid x:Name="ExpandedPanel" Margin="19,14,19,12">
     <Grid.RowDefinitions>
-     <RowDefinition Height="34"/><RowDefinition Height="244"/><RowDefinition Height="74"/><RowDefinition Height="74"/><RowDefinition Height="174"/><RowDefinition Height="32"/>
+     <RowDefinition Height="34"/><RowDefinition Height="244"/><RowDefinition Height="74"/><RowDefinition Height="74"/><RowDefinition x:Name="ResetSectionRow" Height="94"/><RowDefinition Height="32"/>
     </Grid.RowDefinitions>
     <Grid>
      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="90"/></Grid.ColumnDefinitions>
@@ -75,12 +75,26 @@
     </Grid>
     <Grid Grid.Row="4" Margin="0,11,0,0" ToolTip="{Binding ResetDetails}">
      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-     <Grid.RowDefinitions><RowDefinition Height="25"/><RowDefinition Height="22"/><RowDefinition Height="25"/><RowDefinition/><RowDefinition Height="1"/></Grid.RowDefinitions>
-     <TextBlock Text="{loc:Tr ResetsHeading}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+     <Grid.RowDefinitions><RowDefinition Height="25"/><RowDefinition Height="22"/><RowDefinition Height="25"/><RowDefinition x:Name="ResetListRow" Height="0"/><RowDefinition Height="1"/></Grid.RowDefinitions>
+     <ToggleButton x:Name="ResetDisclosure" Background="Transparent" BorderThickness="0" Foreground="{StaticResource Text}" HorizontalContentAlignment="Left" Click="ResetDisclosure_Click" AutomationProperties.Name="{loc:Tr ResetsHeading}">
+      <ToggleButton.Template><ControlTemplate TargetType="ToggleButton">
+       <Border x:Name="DisclosureSurface" Background="Transparent" CornerRadius="7" Padding="0,0,6,0">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+         <Path x:Name="DisclosureArrow" Data="M 1,1 L 5,5 L 1,9" Stroke="{StaticResource Muted}" StrokeThickness="1.5" Width="6" Height="10" Stretch="Uniform" Margin="0,0,7,0" RenderTransformOrigin="0.5,0.5"/>
+         <ContentPresenter/>
+        </StackPanel>
+       </Border>
+       <ControlTemplate.Triggers>
+        <Trigger Property="IsChecked" Value="True"><Setter TargetName="DisclosureArrow" Property="RenderTransform"><Setter.Value><RotateTransform Angle="90"/></Setter.Value></Setter></Trigger>
+        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="DisclosureSurface" Property="Background" Value="#282B31"/></Trigger>
+       </ControlTemplate.Triggers>
+      </ControlTemplate></ToggleButton.Template>
+      <TextBlock Text="{loc:Tr ResetsHeading}" FontSize="14" FontWeight="SemiBold"/>
+     </ToggleButton>
      <Button Grid.Column="1" Grid.RowSpan="2" x:Name="ResetButton" Content="{Binding ResetButtonText}" IsEnabled="{Binding CanReset}" Style="{StaticResource ActionButton}" FontSize="12" Padding="11,0" VerticalAlignment="Center" Click="Reset_Click" AutomationProperties.Name="{loc:Tr ResetAction}"/>
      <TextBlock Grid.Row="1" Text="{Binding ResetAvailability}" Foreground="{StaticResource Muted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0" TextTrimming="CharacterEllipsis"/>
      <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding ResetExpiry}" FontSize="11" Foreground="{StaticResource Muted}" TextTrimming="CharacterEllipsis" ToolTip="{Binding ResetDetails}" VerticalAlignment="Center"/>
-     <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,5">
+     <ScrollViewer x:Name="ResetDetailsPanel" Grid.Row="3" Grid.ColumnSpan="2" Height="82" Visibility="{Binding IsChecked, ElementName=ResetDisclosure, Converter={StaticResource BoolVisibility}}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,5">
       <ItemsControl x:Name="ResetEntriesList" ItemsSource="{Binding ResetEntries}"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,2,0,2" TextWrapping="Wrap"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
      </ScrollViewer>
      <Border Grid.Row="4" Grid.ColumnSpan="2" Background="#2A2D33"/>

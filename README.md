@@ -16,7 +16,7 @@ A small Windows desktop companion that keeps your Codex subscription limits visi
 - Shared rounded dark Settings and reset confirmation windows, using native XAML CenterOwner placement.
 - A two-ring application icon, supplied in multiple resolutions for Windows and the tray.
 - Monitor-aware window bounds, larger compact rings and a countdown that pauses while hidden in the tray.
-- A scrollable list of all returned earned-reset expiry dates and times.
+- A collapsible list of all returned earned-reset expiry dates and times; click the Limit resets heading to reveal it.
 - Remembers window position, layout, CLI path and refresh interval.
 - Optional start with Windows, enabled only when you check it in Settings.
 - Retains the last successful snapshot during an outage and marks it as stale.

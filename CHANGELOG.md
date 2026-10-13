@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1 — 2026-10-13 (local build)
+
+- Earned-reset dates are collapsed by default behind a styled disclosure heading. Availability, nearest expiry and the reset action remain visible.
+- Opening/closing the list adjusts the full window height and keeps it within its current monitor. Compact mode is unchanged.
+- English native preview checks the collapsed default, disclosure expansion and recovered space.
+- Documented available app-server data and prioritized possible widget extensions; no additional account queries are enabled.
+
 ## 0.5.0 — 2026-10-13 (local build)
 
 - Larger compact rings (92/70 DIP) in a 128 × 128 tile, with a 13 DIP countdown; full rings grow to 232/184 DIP.

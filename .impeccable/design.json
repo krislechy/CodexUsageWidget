@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T15:57:38.5390543Z",
+  "generatedAt": "2026-10-13T16:21:25.9075644Z",
   "title": "Design System: Codex Usage Widget",
   "extensions": {
     "platform": {
@@ -401,7 +401,8 @@
       "docs/screenshots/ring-boundaries.png",
       "docs/screenshots/tray-menu.png",
       "docs/screenshots/already-running.png",
-      "docs/screenshots/tooltip.png"
+      "docs/screenshots/tooltip.png",
+      "docs/screenshots/resets-expanded.png"
     ],
     "preview": {
       "purpose": "Self-contained HTML/CSS translations for the design panel. The shipped application is native WPF; previews are not application code.",
@@ -417,10 +418,10 @@
           244,
           74,
           74,
-          174,
+          94,
           32
         ],
-        "height": 678,
+        "height": 598,
         "contentInset": "19,14,19,12"
       },
       "settings": {
@@ -471,6 +472,13 @@
         "maxWidth": 360,
         "cornerRadius": 12,
         "padding": "12,9"
+      },
+      "resetDisclosure": {
+        "expandedWindowHeight": 685,
+        "listBottomMargin": 5,
+        "listHeight": 82,
+        "defaultExpanded": false,
+        "collapsedContent": "Heading, available count, nearest expiry and reset action."
       }
     },
     "localization": {
