@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 using CodexUsageWidget.Core;
 
 namespace CodexUsageWidget;
@@ -15,6 +16,8 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        EventManager.RegisterClassHandler(typeof(UIElement), Keyboard.PreviewKeyDownEvent,
+            new KeyEventHandler((_, key) => { if (key.Key == Key.Tab) key.Handled = true; }), true);
         Localization.Current.SetLanguage(WidgetSettings.Load().Language);
         var preview = e.Args.Contains("--demo") || e.Args.Contains("--capture");
         if (!preview)

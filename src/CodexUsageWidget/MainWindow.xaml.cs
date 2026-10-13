@@ -58,6 +58,9 @@ public partial class MainWindow : Window
             EnsureVisible();
         }
         _clock.Tick += (_, _) => _viewModel.Tick();
+        IsVisibleChanged += (_, _) => UpdateClockState();
+        StateChanged += (_, _) => UpdateClockState();
+        DpiChanged += (_, _) => Dispatcher.BeginInvoke(DispatcherPriority.Loaded, EnsureVisible);
         _viewModel.PropertyChanged += (_, e) => { if (e.PropertyName != nameof(WidgetViewModel.FiveHourCountdown)) UpdateTray(); };
         Localization.Current.PropertyChanged += LanguageChanged;
         if (!_preview) LoadPendingReset();
@@ -79,28 +82,12 @@ public partial class MainWindow : Window
         }
     }
 
-    private void EnsureVisible()
-    {
-        var window = new Rect(Left, Top, Width, Height);
-        var visible = Forms.Screen.AllScreens.Any(screen =>
-        {
-            var dpi = VisualTreeHelper.GetDpi(this);
-            var area = screen.WorkingArea;
-            var rect = new Rect(area.Left / dpi.DpiScaleX, area.Top / dpi.DpiScaleY, area.Width / dpi.DpiScaleX, area.Height / dpi.DpiScaleY);
-            var intersection = Rect.Intersect(window, rect);
-            return !intersection.IsEmpty && intersection.Width >= Math.Min(Width, 120) && intersection.Height >= Math.Min(Height, 80);
-        });
-        if (!visible)
-        {
-            var area = SystemParameters.WorkArea;
-            Left = Math.Max(area.Left, area.Right - Width - 24);
-            Top = Math.Max(area.Top, area.Bottom - Height - 24);
-        }
-    }
+    private void EnsureVisible() => WindowPlacement.KeepInside(this);
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        _clock.Start();
+        EnsureVisible();
+        UpdateClockState();
         if (_preview)
         {
             SetDemoSnapshot();
@@ -151,23 +138,27 @@ public partial class MainWindow : Window
 
     private void ApplyLayout()
     {
-        Width = _viewModel.IsCompact ? 104 : 386;
-        Height = _viewModel.IsCompact ? 104 : 598;
+        Width = _viewModel.IsCompact ? 128 : 386;
+        Height = _viewModel.IsCompact ? 128 : 678;
         Surface.CornerRadius = new CornerRadius(_viewModel.IsCompact ? 22 : 26);
     }
 
     private void Compact_Click(object sender, RoutedEventArgs e)
     {
+        var screen = WindowPlacement.ScreenFor(this);
         _viewModel.IsCompact = !_viewModel.IsCompact;
         _settings.Compact = _viewModel.IsCompact;
         ApplyLayout();
-        EnsureVisible();
-        SaveSettings();
+        Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+        {
+            WindowPlacement.KeepInside(this, screen);
+            SaveSettings();
+        });
     }
 
     private void Surface_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (_viewModel.IsCompact && e.ClickCount == 2)
+        if (e.ClickCount == 2 && (_viewModel.IsCompact || IsInsideRingArea(e.OriginalSource as DependencyObject)))
         {
             Compact_Click(sender, new RoutedEventArgs());
             e.Handled = true;
@@ -176,12 +167,13 @@ public partial class MainWindow : Window
         var current = e.OriginalSource as DependencyObject;
         while (current is not null)
         {
-            if (current is ButtonBase) return;
+            if (current is ButtonBase or Thumb or ScrollBar) return;
             current = VisualTreeHelper.GetParent(current);
         }
         if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 1)
         {
             DragMove();
+            EnsureVisible();
             SaveSettings();
         }
     }
@@ -301,7 +293,27 @@ public partial class MainWindow : Window
         UpdateTray();
     }
 
-    private void ShowWidget() { EnsureVisible(); Show(); Activate(); }
+    private void ShowWidget() { Show(); EnsureVisible(); UpdateClockState(); Activate(); }
+
+    private void UpdateClockState()
+    {
+        if (IsVisible && WindowState != WindowState.Minimized)
+        {
+            _viewModel.Tick();
+            _clock.Start();
+        }
+        else _clock.Stop();
+    }
+
+    private bool IsInsideRingArea(DependencyObject? source)
+    {
+        while (source is not null)
+        {
+            if (ReferenceEquals(source, FullRingArea)) return true;
+            source = VisualTreeHelper.GetParent(source);
+        }
+        return false;
+    }
 
     private ContextMenu CreateTrayMenu()
     {
@@ -396,6 +408,8 @@ public partial class MainWindow : Window
         if (!_viewModel.CanReset || !_viewModel.ResetAvailability.Contains("3", StringComparison.Ordinal))
             throw new InvalidOperationException("Available reset state verification failed.");
         Capture(Surface, Path.Combine(directory, "main.png"));
+        if (_viewModel.ResetEntries.Count != 3 || ResetEntriesList.Items.Count != 3)
+            throw new InvalidOperationException("Every returned reset must be listed.");
         _viewModel.IsCompact = true;
         ApplyLayout();
         await Task.Delay(150);
@@ -474,6 +488,25 @@ public partial class MainWindow : Window
         if (rings.Length != 2 || rings[0].Value != 100 || rings[0].AnimatedValue != 100 || rings[1].Value != 0 || rings[1].AnimatedValue != 0)
             throw new InvalidOperationException("Full and empty rings must represent remaining quota.");
         Capture(Surface, Path.Combine(directory, "ring-boundaries.png"));
+        var tab = new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(this)!, Environment.TickCount, Key.Tab) { RoutedEvent = Keyboard.PreviewKeyDownEvent };
+        RaiseEvent(tab);
+        if (!tab.Handled) throw new InvalidOperationException("Tab navigation must be disabled.");
+        Hide();
+        if (_clock.IsEnabled) throw new InvalidOperationException("The countdown timer must stop while hidden.");
+        ShowWidget();
+        if (!_clock.IsEnabled) throw new InvalidOperationException("The countdown timer must resume when shown.");
+        foreach (var screen in Forms.Screen.AllScreens)
+        {
+            _viewModel.IsCompact = true;
+            ApplyLayout();
+            await Task.Delay(100);
+            WindowPlacement.MoveToCornerForPreview(this, screen);
+            await Task.Delay(200);
+            Compact_Click(this, new RoutedEventArgs());
+            await Task.Delay(200);
+            if (!WindowPlacement.IsInside(this) || WindowPlacement.ScreenFor(this)?.DeviceName != screen.DeviceName)
+                throw new InvalidOperationException("Expanded widget must fit on the selected monitor.");
+        }
     }
 
     private void VerifyDialogCenter(Window dialog)

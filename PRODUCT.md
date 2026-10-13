@@ -19,7 +19,7 @@ A Codex user wants to see the remaining subscription quota and reset dates at a 
 - Read general Codex subscription limits through the official local Codex CLI app-server.
 - Subscribe to limit notifications and refresh every minute as a fallback. Notifications on our connection are not assumed to observe all other Codex clients.
 - Show five-hour and weekly remaining percentages and local reset dates; absent quota windows stay unavailable rather than becoming zero.
-- Offer draggable full and compact rings with countdown (104 × 104 DIP) always-on-top windows, local preferences and a dark WPF tray menu. Compact mode expands by double-click, Ctrl+M or the tray.
+- Offer draggable full and compact rings with countdown (128 × 128 DIP) always-on-top windows, local preferences and a dark WPF tray menu. Compact mode expands by double-click, Ctrl+M or the tray.
 - English project documentation and English-default UI. Settings offer English, Russian, Ukrainian, Serbian (Cyrillic), French, German, Simplified Chinese and Japanese.
 - Show available earned resets and their earliest known expiry; distinguish complete from partial expiry metadata.
 - Consume one earned reset only after explicit in-app confirmation. Persist a retry identity before sending; uncertainty never creates a fresh reset attempt.
@@ -34,3 +34,5 @@ The user approved `docs/design/mockup-01.png`: Apple Watch Activity-inspired pin
 Project name: Codex Usage Widget. Local Git repository and public GitHub repository authorized by the user. Windows executable and English documentation.
 
 Current delivery policy: build and document locally. GitHub reads, pushes, releases and repository changes require an explicit user command; feature work does not authorize publishing. The user explicitly authorized publication of both Portable and Lite for 0.4.0; future publications still require a command. Routine verification uses English only.
+
+Version 0.5.0 is a local build: larger ring diameters, readable countdown, native monitor bounds, hidden timer pause, Tab suppression and the complete returned reset expiry list. No GitHub publication is authorized by this feature request.

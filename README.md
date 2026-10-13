@@ -15,6 +15,8 @@ A small Windows desktop companion that keeps your Codex subscription limits visi
 - Draggable windows, optional always-on-top, matching dark tooltips and a system tray menu.
 - Shared rounded dark Settings and reset confirmation windows, using native XAML CenterOwner placement.
 - A two-ring application icon, supplied in multiple resolutions for Windows and the tray.
+- Monitor-aware window bounds, larger compact rings and a countdown that pauses while hidden in the tray.
+- A scrollable list of all returned earned-reset expiry dates and times.
 - Remembers window position, layout, CLI path and refresh interval.
 - Optional start with Windows, enabled only when you check it in Settings.
 - Retains the last successful snapshot during an outage and marks it as stale.
@@ -49,6 +51,7 @@ If the widget cannot find Codex, open the gear button and select `codex.exe` or 
 | Reset limits in the expanded widget | Confirm spending one earned reset |
 | Chevron / Ctrl+M | Switch between full and compact views |
 | Double-click compact background | Expand the widget |
+| Double-click expanded rings | Switch to compact view |
 | Refresh / Ctrl+R | Refresh immediately |
 | Close / Escape / Alt+F4 | Hide to the tray; updates continue |
 | Left-click tray icon | Show the widget |

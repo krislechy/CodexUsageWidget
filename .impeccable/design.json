@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-12T20:40:00.2528335Z",
+  "generatedAt": "2026-10-13T15:57:38.5390543Z",
   "title": "Design System: Codex Usage Widget",
   "extensions": {
     "platform": {
@@ -364,11 +364,11 @@
       "startDegrees": -90,
       "direction": "clockwise",
       "strokeCaps": "round",
-      "outerDiameter": 220,
-      "innerDiameter": 170,
+      "outerDiameter": 232,
+      "innerDiameter": 184,
       "strokeWidth": 18,
-      "compactOuterDiameter": 68,
-      "compactInnerDiameter": 48,
+      "compactOuterDiameter": 92,
+      "compactInnerDiameter": 70,
       "compactStrokeWidth": 6
     },
     "focus": {
@@ -406,7 +406,7 @@
     "preview": {
       "purpose": "Self-contained HTML/CSS translations for the design panel. The shipped application is native WPF; previews are not application code.",
       "language": "English documentation examples.",
-      "states": "English native WPF state verification includes countdown updates and boundaries, ring boundaries, compact expansion, tooltip, tray actions, dialogs and reset states. No per-language UI loop."
+      "states": "English native UI checks: remaining ring boundaries, reset list, Tab suppression, timer visibility and expansion at the edge of each attached monitor."
     },
     "geometry": {
       "main": {
@@ -417,10 +417,10 @@
           244,
           74,
           74,
-          94,
+          174,
           32
         ],
-        "height": 598,
+        "height": 678,
         "contentInset": "19,14,19,12"
       },
       "settings": {
@@ -431,8 +431,8 @@
         "inset": 23
       },
       "compact": {
-        "width": 104,
-        "height": 104,
+        "width": 128,
+        "height": 128,
         "contents": "Rings and HH:mm:ss countdown only; percentage values in tooltip; double-click anywhere, Ctrl+M or tray to expand."
       },
       "resetConfirmation": {
@@ -534,10 +534,11 @@
     "countdown": {
       "expired": "00:00:00",
       "unknown": "--:--:--",
-      "compactFontSize": 9.5,
+      "compactFontSize": 13,
       "intervalSeconds": 1,
-      "fullFontSize": 14,
-      "format": "HH:mm:ss"
+      "fullFontSize": 16,
+      "format": "HH:mm:ss",
+      "visibility": "Paused when hidden/minimized; immediate recomputation on showing; active while compact is visible."
     }
   },
   "components": [

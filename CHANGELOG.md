@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 — 2026-10-13 (local build)
+
+- Larger compact rings (92/70 DIP) in a 128 × 128 tile, with a 13 DIP countdown; full rings grow to 232/184 DIP.
+- Expansion and dragging keep the entire widget inside the current monitor's working area, using native physical coordinates for mixed-DPI desktops. Oversized windows fit the available area and scroll their content.
+- Countdown clock stops while hidden in the tray or minimized, resumes immediately when shown, and keeps running in visible compact mode. Quota monitoring continues.
+- Tab and Shift+Tab navigation are disabled across owned WPF controls and windows.
+- Double-click anywhere in compact mode to expand; double-click the ring area in full mode to compact.
+- The reset section lists every returned available reset with its local expiry date/time. Unknown or incomplete metadata is explicit; longer lists scroll.
+- English-only native checks cover monitor-edge expansion, timer visibility, Tab suppression and reset-list completeness.
+
 ## 0.4.0 — 2026-10-12
 
 - Live five-hour reset countdown in both ring centers, updated every second in HH:mm:ss format.

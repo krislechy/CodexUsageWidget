@@ -9,6 +9,14 @@
   <SolidColorBrush x:Key="Pink" Color="#FF397E"/>
   <SolidColorBrush x:Key="Lime" Color="#9BEF29"/>
   <BooleanToVisibilityConverter x:Key="BoolVisibility"/>
+  <Style TargetType="ScrollBar">
+   <Setter Property="Width" Value="8"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ScrollBar">
+    <Track x:Name="PART_Track" IsDirectionReversed="True" Orientation="Vertical">
+     <Track.Thumb><Thumb><Thumb.Template><ControlTemplate TargetType="Thumb"><Border Background="#59616C" CornerRadius="4" Margin="2,0"/></ControlTemplate></Thumb.Template></Thumb></Track.Thumb>
+    </Track>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
   <Style TargetType="ToolTip">
    <Setter Property="Foreground" Value="{StaticResource Text}"/>
    <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI"/>

@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Linq;
 using CodexUsageWidget.Core;
 
 namespace CodexUsageWidget;
@@ -57,6 +59,18 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
     public string ResetDetails => _resetRecoveryBlocked ? _text["PendingStoreError"] : _pendingReset ? _text["ResetPending"] : HasError ? _text["RefreshToReset"]
         : _snapshot?.ResetCredits?.ExpiryDetailsComplete == false ? _text["ResetsDetailsIncomplete"] : $"{ResetAvailability}\n{ResetExpiry}";
     public string ResetButtonText => _text[_pendingReset ? "RetryReset" : "ResetAction"];
+    public IReadOnlyList<string> ResetEntries
+    {
+        get
+        {
+            if (_snapshot?.ResetCredits is not { AvailableCount: > 0 } credits) return [];
+            var rows = credits.Credits?.Where(credit => credit.ExpiresAt is null || credit.ExpiresAt > DateTimeOffset.UtcNow)
+                .OrderBy(credit => credit.ExpiresAt ?? DateTimeOffset.MaxValue).ToArray() ?? [];
+            var entries = rows.Select((credit, index) => $"{index + 1} · {(credit.ExpiresAt is { } expiry ? expiry.ToLocalTime().ToString("g", _text.Culture) : _text["ExpiryUnknown"])}").ToList();
+            if (rows.Length < credits.AvailableCount) entries.Add(_text["ResetsDetailsIncomplete"]);
+            return entries;
+        }
+    }
     public bool CanReset => !_busy && !_resetBusy && !_resetRecoveryBlocked && (_pendingReset ||
         (_errorKey is null && !SnapshotExpired && _snapshot?.ResetCredits?.AvailableCount > 0 &&
          _snapshot.ResetCredits.NextCredit(DateTimeOffset.UtcNow) is not null));

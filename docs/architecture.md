@@ -76,3 +76,9 @@ Settings and reset confirmation inherit `WidgetDialogWindow`, sharing transparen
 ## Verification
 
 The executable test suite uses a real child process with synthetic JSON-line responses. `--live` checks the official local server without starting a model turn. `--capture` renders the actual WPF visuals into PNGs for full/compact/stale/settings review. Final visual evidence in `artifacts/preview-040` also includes earned-reset states, English UI, ring boundaries, countdown, tooltip and the WPF tray menu.
+
+## Monitor bounds and countdown visibility
+
+WindowPlacement uses GetWindowRect and SetWindowPos in physical pixels under the PerMonitorV2 manifest, retaining the selected screen during expansion. The work area excludes taskbars and supports negative screen origins. The main scroll viewer keeps content reachable when a monitor is smaller than the requested window. See [Microsoft DPI coordinate guidance](https://learn.microsoft.com/en-us/windows/win32/hidpi/high-dpi-desktop-application-development-on-windows).
+
+IsVisibleChanged and StateChanged stop the local countdown clock while hidden/minimized and restart it with an immediate binding update when shown. The server timestamp remains authoritative, so the countdown never drifts from a paused integer counter. Quota polling is independent and continues in the tray. Global PreviewKeyDown handles Tab/Shift+Tab for owned WPF elements. ResetEntries lists returned future/undated available credits, sorted by expiry, and labels partial metadata without inventing missing dates.
