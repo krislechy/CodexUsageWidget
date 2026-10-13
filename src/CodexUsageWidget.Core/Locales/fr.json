@@ -80,6 +80,8 @@
   "Background": "Fond",
   "DefaultColors": "Couleurs par défaut",
   "ColorInvalid": "Saisissez une couleur au format #RRGGBB.",
-  "ExpiresIn": "Expire dans {0}",
-  "KnownExpiresIn": "Expiration connue dans {0}"
+  "ExpiresIn": "Le premier expire dans {0}",
+  "KnownExpiresIn": "Première expiration connue dans {0}",
+  "ExpiryDays": "{0} j",
+  "ExpiryHours": "{0} h"
 }

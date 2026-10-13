@@ -80,6 +80,8 @@
   "Background": "Позадина",
   "DefaultColors": "Подразумеване боје",
   "ColorInvalid": "Унесите боју у формату #RRGGBB.",
-  "ExpiresIn": "Истиче за {0}",
-  "KnownExpiresIn": "Познати истек за {0}"
+  "ExpiresIn": "Први истиче за {0}",
+  "KnownExpiresIn": "Први познати истиче за {0}",
+  "ExpiryDays": "{0} д",
+  "ExpiryHours": "{0} ч"
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1 — 2026-10-13 (local build)
+
+- The reset heading explicitly identifies the first expiring credit. Compact day/hour units and spacing follow the selected language, including Russian `дн.` and `ч`, rather than hard-coded English suffixes.
+- Refined the count badge into a smaller cranberry-red circle with a restrained outline and tabular white numerals. Zero and unknown counts use a neutral surface; larger numbers fit without clipping.
+- The expiry tooltip includes the complete localized summary and exact date when the inline text is shortened. English-only routine checks and both local packages remain enabled.
+
 ## 0.7.0 — 2026-10-13 (local build)
 
 - Settings customizes both quota ring colors and the widget background with palette swatches or #RRGGBB values. Changes preview immediately; Cancel restores the previous colors and Save persists them. Default colors restores the original palette.

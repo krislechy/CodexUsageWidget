@@ -80,6 +80,8 @@
   "Background": "背景",
   "DefaultColors": "默认颜色",
   "ColorInvalid": "请以 #RRGGBB 格式输入颜色。",
-  "ExpiresIn": "{0}后到期",
-  "KnownExpiresIn": "已知到期：{0}"
+  "ExpiresIn": "首个将在{0}后到期",
+  "KnownExpiresIn": "已知首个将在{0}后到期",
+  "ExpiryDays": "{0}天",
+  "ExpiryHours": "{0}小时"
 }

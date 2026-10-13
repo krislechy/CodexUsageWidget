@@ -80,6 +80,8 @@
   "Background": "Тло",
   "DefaultColors": "Стандартні кольори",
   "ColorInvalid": "Введіть колір у форматі #RRGGBB.",
-  "ExpiresIn": "Згорить через {0}",
-  "KnownExpiresIn": "Відоме закінчення через {0}"
+  "ExpiresIn": "Перший згорить через {0}",
+  "KnownExpiresIn": "Перший відомий згорить через {0}",
+  "ExpiryDays": "{0} дн.",
+  "ExpiryHours": "{0} год"
 }

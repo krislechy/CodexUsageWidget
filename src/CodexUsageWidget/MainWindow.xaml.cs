@@ -576,14 +576,14 @@ public partial class MainWindow : Window
             ((SolidColorBrush)FindResource("Pink")).Color != Color.FromRgb(255, 57, 126))
             throw new InvalidOperationException("Cancel must restore the original colors.");
         var expiryNow = DateTimeOffset.UtcNow;
-        if (WidgetViewModel.FormatExpiryLeadTime(expiryNow.AddDays(1.5), expiryNow) != "1d" ||
-            WidgetViewModel.FormatExpiryLeadTime(expiryNow.AddHours(23), expiryNow) != "23h" ||
-            WidgetViewModel.FormatExpiryLeadTime(expiryNow.AddHours(-1), expiryNow) != "0h")
+        if (WidgetViewModel.FormatExpiryLeadTime(expiryNow.AddDays(1.5), expiryNow) != "1 d" ||
+            WidgetViewModel.FormatExpiryLeadTime(expiryNow.AddHours(23), expiryNow) != "23 h" ||
+            WidgetViewModel.FormatExpiryLeadTime(expiryNow.AddHours(-1), expiryNow) != "0 h")
             throw new InvalidOperationException("Expiry summary must switch from days to hours and never be negative.");
         _viewModel.SetSnapshot(_viewModel.Snapshot! with { ObservedAt = DateTimeOffset.UtcNow,
             ResetCredits = new ResetCredits(2, [new ResetCredit("later", expiryNow.AddDays(5)), new ResetCredit("first", expiryNow.AddHours(22.5))]), ResetCreditsIncluded = true });
         await Task.Delay(100);
-        if (_viewModel.ResetEntries[0].Credit.Id != "first" || SoonestExpiry.Text != "Expires in 23h")
+        if (_viewModel.ResetEntries[0].Credit.Id != "first" || SoonestExpiry.Text != "First expires in 23 h")
             throw new InvalidOperationException("The header must summarize the first expiring credit regardless of server order.");
         Capture(Surface, Path.Combine(directory, "reset-hours.png"));
         SetDemoSnapshot();

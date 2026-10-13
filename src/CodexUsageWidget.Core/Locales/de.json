@@ -80,6 +80,8 @@
   "Background": "Hintergrund",
   "DefaultColors": "Standardfarben",
   "ColorInvalid": "Farbe als #RRGGBB eingeben.",
-  "ExpiresIn": "Verfällt in {0}",
-  "KnownExpiresIn": "Bekannter Ablauf in {0}"
+  "ExpiresIn": "Erster verfällt in {0}",
+  "KnownExpiresIn": "Erster bekannter Ablauf in {0}",
+  "ExpiryDays": "{0} T",
+  "ExpiryHours": "{0} Std."
 }

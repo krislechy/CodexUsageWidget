@@ -65,8 +65,9 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
     internal static string FormatExpiryLeadTime(DateTimeOffset expiry, DateTimeOffset now)
     {
         var remaining = expiry - now;
-        return remaining.TotalDays >= 1 ? $"{(int)remaining.TotalDays}d"
-            : $"{Math.Max(0, (int)Math.Ceiling(remaining.TotalHours))}h";
+        var days = remaining.TotalDays >= 1;
+        var amount = days ? (int)remaining.TotalDays : Math.Max(0, (int)Math.Ceiling(remaining.TotalHours));
+        return Localization.Current.Format(days ? "ExpiryDays" : "ExpiryHours", amount);
     }
     public bool CanChooseReset => CanReset && !_pendingReset;
     public string ResetListMessage => _pendingReset ? _text["ResetPending"] :

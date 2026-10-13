@@ -122,4 +122,6 @@ View switches and tray restoration refill the rings from zero while numeric data
 
 The Colors section in Settings customizes the five-hour ring, weekly ring and widget background. Click a swatch for a preset or type any `#RRGGBB` value. Colors preview immediately; Save persists them, Cancel restores them, and Default colors restores the original palette. Text contrast and ring tracks adapt; dialogs retain their shared dark style.
 
-Limit resets shows the earliest upcoming expiry as `Expires in 1d` or `Expires in 23h`. Rows sort earliest first, with undated credits last. Whole days are shown from 24 hours onward; shorter periods use rounded-up hours. Partial metadata says `Known expiry in …`. The tooltip provides the exact local date and time.
+Limit resets shows the earliest upcoming expiry as `First expires in 1 d` or `First expires in 23 h`. Rows sort earliest first, with undated credits last. Whole days are shown from 24 hours onward; shorter periods use rounded-up hours. Partial metadata says `First known expiry in …`. The tooltip provides the exact local date and time.
+
+Compact expiry units are localized: for example, Russian uses `9 дн.` and `23 ч`. The full summary and exact expiry remain available in the tooltip.

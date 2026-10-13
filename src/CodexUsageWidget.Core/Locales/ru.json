@@ -80,6 +80,8 @@
   "Background": "Фон",
   "DefaultColors": "Цвета по умолчанию",
   "ColorInvalid": "Введите цвет в формате #RRGGBB.",
-  "ExpiresIn": "Сгорит через {0}",
-  "KnownExpiresIn": "Известное истечение через {0}"
+  "ExpiresIn": "Первый сгорит через {0}",
+  "KnownExpiresIn": "Первый известный сгорит через {0}",
+  "ExpiryDays": "{0} дн.",
+  "ExpiryHours": "{0} ч"
 }

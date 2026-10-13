@@ -92,9 +92,18 @@
       </ControlTemplate></ToggleButton.Template>
       <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
         <TextBlock Text="{loc:Tr ResetsHeading}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-        <TextBlock x:Name="SoonestExpiry" Grid.Column="1" Text="{Binding SoonestExpiryText}" Foreground="{DynamicResource WidgetMuted}" FontSize="10" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="9,0,0,0" ToolTip="{Binding ResetExpiry}"/>
-       <Border Grid.Column="2" Background="#D92B3B" CornerRadius="14" Width="28" Height="28" Margin="9,0,0,0" ToolTip="{Binding ResetAvailability}">
-        <TextBlock x:Name="ResetCountBadge" Text="{Binding ResetCountText}" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock x:Name="SoonestExpiry" Grid.Column="1" Text="{Binding SoonestExpiryText}" Foreground="{DynamicResource WidgetMuted}" FontSize="10" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="9,0,0,0">
+         <TextBlock.ToolTip><StackPanel><TextBlock Text="{Binding SoonestExpiryText}" Foreground="{StaticResource Text}"/><TextBlock Text="{Binding ResetExpiry}" Foreground="{StaticResource Muted}" Margin="0,4,0,0"/></StackPanel></TextBlock.ToolTip>
+        </TextBlock>
+       <Border Grid.Column="2" CornerRadius="13" MinWidth="26" Height="26" Padding="6,0" Margin="9,0,0,0" ToolTip="{Binding ResetAvailability}" AutomationProperties.Name="{Binding ResetAvailability}">
+        <Border.Style><Style TargetType="Border">
+         <Setter Property="Background" Value="#B82443"/><Setter Property="BorderBrush" Value="#DC4864"/><Setter Property="BorderThickness" Value="1"/>
+         <Style.Triggers>
+          <DataTrigger Binding="{Binding ResetCountText}" Value="0"><Setter Property="Background" Value="#30343B"/><Setter Property="BorderBrush" Value="#59616C"/></DataTrigger>
+          <DataTrigger Binding="{Binding ResetCountText}" Value="?"><Setter Property="Background" Value="#30343B"/><Setter Property="BorderBrush" Value="#59616C"/></DataTrigger>
+         </Style.Triggers>
+        </Style></Border.Style>
+        <TextBlock x:Name="ResetCountBadge" Text="{Binding ResetCountText}" Foreground="White" FontSize="12" FontWeight="SemiBold" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" VerticalAlignment="Center" HorizontalAlignment="Center"/>
        </Border>
       </Grid>
      </ToggleButton>

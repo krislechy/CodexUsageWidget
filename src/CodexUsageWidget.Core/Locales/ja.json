@@ -80,6 +80,8 @@
   "Background": "背景",
   "DefaultColors": "既定の色",
   "ColorInvalid": "色を #RRGGBB 形式で入力してください。",
-  "ExpiresIn": "{0}後に失効",
-  "KnownExpiresIn": "判明している失効まで{0}"
+  "ExpiresIn": "最初の失効まで{0}",
+  "KnownExpiresIn": "判明している最初の失効まで{0}",
+  "ExpiryDays": "{0}日",
+  "ExpiryHours": "{0}時間"
 }

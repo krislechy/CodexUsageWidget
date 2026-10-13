@@ -13,7 +13,7 @@ colors:
   separator: "#2A2D33"
   warning: "#F1B859"
   current: "#83E788"
-  reset-count: "#D92B3B"
+  reset-count: "#B82443"
   control-hover: "#282B31"
   control-pressed: "#353942"
   control-hover-text: "#FFFFFF"
@@ -221,3 +221,5 @@ The reset reference is implemented as flat rows separated by the existing outlin
 The widget supports custom ring and background RGB colors without changing its layout. Settings pairs three labeled palette swatches with editable hex fields and a Default colors action. Preview is live and reversible; invalid input blocks Save. The main text and secondary text choose readable contrast against the selected background, while ring tracks mix the accent with that background. Dialogs and the tray keep their established dark surfaces. Settings remains centered with XAML CenterOwner and scrolls when clamped to its owner's monitor.
 
 The reset heading includes a compact relative expiry alongside its title and retains the red count badge and disclosure. It uses days at or above 24 hours, hours below; a tooltip retains the precise local expiry. Incomplete metadata uses explicit known-expiry wording. Reset rows remain ordered by ascending expiry with undated rows last.
+
+The reset count badge uses a 26-pixel cranberry-red circle with a one-pixel rose outline and 12-pixel semibold white tabular digits. Zero and unknown counts use a neutral gray fill and outline. Its minimum width expands for larger counts. The inline expiry identifies the first credit with localized compact units and preserves the complete copy in its tooltip.
