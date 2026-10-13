@@ -43,7 +43,7 @@
  </loc:WidgetDialogWindow.Resources>
 <Border Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="26" Margin="8"><Grid Margin="23">
   <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-  <StackPanel>
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,14"><StackPanel>
       <Grid Margin="0,0,0,22" MouseLeftButtonDown="DialogHeader_MouseLeftButtonDown">
     <TextBlock Text="{loc:Tr Settings}" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center"/>
     <Button Style="{StaticResource IconButton}" HorizontalAlignment="Right" Click="DialogClose_Click" ToolTip="{loc:Tr Cancel}" AutomationProperties.Name="{loc:Tr Cancel}"><Path Data="M 3,3 L 15,15 M 15,3 L 3,15" Stroke="{StaticResource Muted}" StrokeThickness="1.6" Width="15" Height="15" Stretch="Uniform"/></Button>
@@ -85,7 +85,7 @@
    <CheckBox x:Name="StartupBox" Content="{loc:Tr StartWindows}"/>
    <TextBlock Text="{loc:Tr LoginHint}" Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap"/>
    <TextBlock x:Name="ErrorText" Foreground="#F1B859" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0"/>
-  </StackPanel>
+  </StackPanel></ScrollViewer>
   <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
    <Button Content="{loc:Tr Cancel}" Style="{StaticResource ActionButton}" IsCancel="True" Margin="0,0,8,0"/>
    <Button x:Name="SaveButton" Content="{loc:Tr Save}" Style="{StaticResource ActionButton}" IsDefault="True" Click="Save_Click"/>
