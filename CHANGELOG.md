@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.0 — 2026-10-16
+
+- Published the accumulated changes since 0.4.0 in both Windows x64 Portable and Lite variants.
+- Larger, clearer quota rings and countdowns; safe placement across monitors and display scaling; animated refill when changing view or restoring the widget. Tab traversal remains disabled by request.
+- Entire reset details collapse under one heading, with a refined available-count badge, localized first-expiry summary and chronological rows. Every reset still requires confirmation, with durable retry identity for uncertain outcomes.
+- Customizable five-hour ring, weekly ring and widget background colors, with live preview, cancellation, default-palette restoration and adaptive text contrast.
+- Experimental Extra info: account/plan and backend permission; token statistics and 7/30-day charts; credits, extra quota buckets and spend controls; reset metadata, workspace notices, selected-chat token breakdowns and estimated costs. Missing account-dependent data remains unavailable.
+- Optional low-quota and earned-reset expiry notifications use existing polling and session-local deduplication, with configurable thresholds.
+- Automatic stable GitHub Releases updates, preserving Portable/Lite and settings. Settings includes Check for updates and Update now. Verified ZIP/owned-file manifests, a separate helper and rollback protect installation; automatic installation waits for dialogs and reset work.
+- English-only routine UI verification, 32 regression tests, both packaged helper smoke checks and SHA-256 checksums. Documentation and release screenshots are in English.
+
+For the first upgrade from 0.4.0 or another build without the updater, download and extract this release manually. Portable bundles its runtime; Lite requires Microsoft .NET 10 Desktop Runtime (Windows x64). Future compatible stable releases can update automatically. Costs in Extra info are estimates, not final billing; some metrics and workspace features depend on the account.
+
 ## 0.9.0 — 2026-10-16 (local build)
 
 - Added GitHub Releases automatic updates for packaged Windows x64 Portable and Lite builds. Stable releases are checked after startup and every six hours; drafts, prereleases, same versions and downgrades are ignored. The package variant is preserved and no GitHub token is needed.
