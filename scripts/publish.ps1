@@ -33,6 +33,12 @@ if ($variant -eq 'Lite') {
  'Requires Microsoft .NET 10 Desktop Runtime (Windows x64). https://dotnet.microsoft.com/en-us/download/dotnet/10.0' | Set-Content -LiteralPath (Join-Path $portable 'RUNTIME-REQUIRED.txt') -Encoding utf8
 }
 Copy-Item -LiteralPath (Join-Path $projectRoot 'DESIGN.md') -Destination $portable
+[xml]$versionProps = Get-Content -LiteralPath (Join-Path $projectRoot 'Directory.Build.props')
+$manifestFiles = @(Get-ChildItem -LiteralPath $portable -File -Recurse | ForEach-Object {
+ [ordered]@{ path=$_.FullName.Substring($portable.Length + 1).Replace('\','/'); length=$_.Length; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
+})
+[ordered]@{ product='CodexUsageWidget'; version=[string]$versionProps.Project.PropertyGroup.Version; variant=$variant; files=$manifestFiles } |
+ ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $portable 'update-manifest.json') -Encoding utf8
 $archive = Join-Path $outputRoot ($name + '.zip')
 Compress-Archive -Path (Join-Path $portable '*') -DestinationPath $archive -Force
 $checksum = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()

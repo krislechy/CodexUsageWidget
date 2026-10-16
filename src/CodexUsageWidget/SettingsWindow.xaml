@@ -3,7 +3,7 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:loc="clr-namespace:CodexUsageWidget"
  xmlns:core="clr-namespace:CodexUsageWidget.Core;assembly=CodexUsageWidget.Core"
- Icon="Assets/app.ico" Title="{loc:Tr Settings}" Width="510" Height="660" ResizeMode="NoResize"
+ Icon="Assets/app.ico" Title="{loc:Tr Settings}" Width="510" Height="760" ResizeMode="NoResize"
  Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
  Background="Transparent" Foreground="{StaticResource Text}"
  WindowStartupLocation="CenterOwner" FontFamily="Segoe UI Variable, Segoe UI" FontSize="13">
@@ -52,6 +52,15 @@
     <TextBlock Text="{loc:Tr Language}" VerticalAlignment="Center"/>
     <ComboBox x:Name="LanguageBox" Grid.Column="1" Height="32" DisplayMemberPath="NativeName" SelectedValuePath="Code" SelectionChanged="Language_Changed" AutomationProperties.Name="{loc:Tr Language}"/>
    </Grid>
+   <CheckBox x:Name="AutoUpdatesBox"><TextBlock Text="{loc:Tr AutoUpdates}" TextWrapping="Wrap"/></CheckBox>
+   <StackPanel x:Name="UpdatesPanel" Margin="0,0,0,18">
+    <TextBlock Text="{loc:Tr Updates}" FontWeight="SemiBold" Margin="0,0,0,6"/>
+    <TextBlock x:Name="UpdateStatus" Text="{Binding Status}" Foreground="{StaticResource Muted}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,10"/>
+    <WrapPanel>
+     <Button x:Name="CheckUpdatesButton" Content="{loc:Tr CheckUpdates}" Style="{StaticResource ActionButton}" Height="30" FontSize="11" IsEnabled="{Binding CanCheck}" Click="CheckUpdates_Click" Margin="0,0,8,6"/>
+     <Button x:Name="InstallUpdateButton" Content="{loc:Tr InstallUpdate}" Style="{StaticResource ActionButton}" Height="30" FontSize="11" IsEnabled="{Binding CanInstall}" Click="InstallUpdate_Click" ToolTip="{loc:Tr InstallUpdateHint}" Margin="0,0,0,6"/>
+    </WrapPanel>
+   </StackPanel>
    <TextBlock Text="Codex CLI" FontWeight="SemiBold" Margin="0,0,0,7"/>
    <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="42"/></Grid.ColumnDefinitions>
     <TextBox x:Name="CodexPathBox" ToolTip="{loc:Tr CliAutoHint}" AutomationProperties.Name="{loc:Tr CliPath}"/>
@@ -83,6 +92,7 @@
    </Grid><TextBlock x:Name="ColorError" Foreground="#F1B859" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,14"/>
    <CheckBox x:Name="TopmostBox" Content="{loc:Tr AboveWindows}"/>
    <CheckBox x:Name="StartupBox" Content="{loc:Tr StartWindows}"/>
+
    <TextBlock Text="{loc:Tr LoginHint}" Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap"/>
    <TextBlock x:Name="ErrorText" Foreground="#F1B859" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0"/>
   </StackPanel></ScrollViewer>

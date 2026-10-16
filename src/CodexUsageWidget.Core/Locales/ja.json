@@ -154,5 +154,21 @@
   "ActivityHelp": "履歴トークンは使用枠の割合とは別です。日付はサービスの報告値で、欠けた日はゼロではありません。",
   "CreditsHelp": "クレジットと支出枠はプラン内の使用枠とは別で、利用可否はサーバーの報告に従います。",
   "ThreadHelp": "費用は推定値です。コンテキストと推論はこの接続で報告された場合のみ表示され、他のクライアントから通知されない場合があります。",
-  "AlertsHelp": "Windows通知は既存の使用枠取得を使い、各期間またはリセットにつき起動中に一度だけ通知します。既定では無効です。"
+  "AlertsHelp": "Windows通知は既存の使用枠取得を使い、各期間またはリセットにつき起動中に一度だけ通知します。既定では無効です。",
+  "AutoUpdates": "GitHub Releasesから自動更新",
+  "Updates": "アプリの更新",
+  "CheckUpdates": "更新を確認",
+  "InstallUpdate": "今すぐ更新",
+  "InstallUpdateHint": "設定を保存し、検証済みのリリースをインストールしてアプリを再起動します。",
+  "UpdateInstalledVersion": "バージョン {0} · {1}",
+  "UpdateIdle": "自動更新が有効な場合、起動時と6時間ごとに確認します。",
+  "UpdateChecking": "GitHub Releasesを確認中…",
+  "UpdateCurrent": "新しい安定版はありません。",
+  "UpdateAvailable": "バージョン{0}が利用可能です。",
+  "UpdateDownloading": "更新をダウンロードして検証中…",
+  "UpdateReady": "検証済みの更新をインストールできます。",
+  "UpdateInstalling": "更新をインストールして再起動中…",
+  "UpdateFailed": "更新できませんでした。接続、リリースファイル、フォルダーの権限を確認して再試行してください。",
+  "UpdateDevelopment": "自動インストールにはPortableまたはLite版が必要です。開発用コピーでも更新の確認はできます。",
+  "UpdateInProgress": "アプリを更新中です。完了後に自動で開きます。"
 }

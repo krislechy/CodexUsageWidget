@@ -12,7 +12,7 @@
     <TextBlock Text="Codex Usage" FontSize="21" FontWeight="SemiBold" VerticalAlignment="Center"/>
     <Button Style="{StaticResource IconButton}" HorizontalAlignment="Right" Click="DialogClose_Click" ToolTip="{loc:Tr Cancel}" AutomationProperties.Name="{loc:Tr Cancel}"><Path Data="M 3,3 L 15,15 M 15,3 L 3,15" Stroke="{StaticResource Muted}" StrokeThickness="1.6" Width="15" Height="15" Stretch="Uniform"/></Button>
    </Grid>
-   <TextBlock Text="{loc:Tr AlreadyRunning}" TextWrapping="Wrap" Foreground="{StaticResource Muted}" Margin="0,0,0,22"/>
+   <TextBlock x:Name="NoticeText" Text="{loc:Tr AlreadyRunning}" TextWrapping="Wrap" Foreground="{StaticResource Muted}" Margin="0,0,0,22"/>
    <Button Content="OK" HorizontalAlignment="Right" Style="{StaticResource ActionButton}" IsDefault="True" IsCancel="True" Click="DialogClose_Click"/>
   </StackPanel>
  </Border>

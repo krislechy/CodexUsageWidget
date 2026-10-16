@@ -26,3 +26,12 @@ function Get-ProjectVersion([string]$Root) {
  if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Directory.Build.props must contain a numeric major.minor.patch version.' }
  return $version
 }
+
+function Invoke-UpdateHelperSmoke([string]$Executable, [string]$Destination) {
+ $missingPlan = Join-Path $Destination ('missing-plan-' + [guid]::NewGuid().ToString('N') + '.json')
+ $process = Start-Process -FilePath $Executable -ArgumentList @('--apply-update', ('"' + $missingPlan + '"')) -WindowStyle Hidden -PassThru
+ try {
+  if (!$process.WaitForExit(10000)) { $process.Kill($true); throw 'Updater helper verification timed out.' }
+  if ($process.ExitCode -ne 1) { throw 'Updater helper did not safely reject a missing plan.' }
+ } finally { $process.Dispose() }
+}

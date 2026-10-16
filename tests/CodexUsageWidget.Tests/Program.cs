@@ -267,6 +267,7 @@ var tests = new List<(string Name, Func<Task> Run)>
     })
 };
 
+tests.AddRange(UpdateTests.All);
 var failures = 0;
 if (!args.Contains("--check-locales")) tests.RemoveAll(test => test.Name.StartsWith("every locale", StringComparison.Ordinal));
 foreach (var test in tests)

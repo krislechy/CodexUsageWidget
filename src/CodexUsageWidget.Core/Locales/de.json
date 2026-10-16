@@ -154,5 +154,21 @@
   "ActivityHelp": "Historische Tokens sind getrennt vom Kontingent. Daten stammen vom Dienst; fehlende Tage sind nicht null.",
   "CreditsHelp": "Credits und Ausgabenlimit sind getrennt vom Kontingent. Verfügbarkeit bestimmt die Serverfreigabe.",
   "ThreadHelp": "Kosten sind Schätzungen. Kontext und Reasoning erscheinen nur bei Meldungen dieser Verbindung; andere Clients senden möglicherweise keine Ereignisse hierher.",
-  "AlertsHelp": "Windows-Meldungen nutzen die Kontingentabfragen, einmal je Fenster oder Reset pro Sitzung. Standardmäßig deaktiviert."
+  "AlertsHelp": "Windows-Meldungen nutzen die Kontingentabfragen, einmal je Fenster oder Reset pro Sitzung. Standardmäßig deaktiviert.",
+  "AutoUpdates": "Automatisch über GitHub Releases aktualisieren",
+  "Updates": "App-Updates",
+  "CheckUpdates": "Nach Updates suchen",
+  "InstallUpdate": "Jetzt aktualisieren",
+  "InstallUpdateHint": "Speichert Einstellungen, installiert das geprüfte Release und startet die App neu.",
+  "UpdateInstalledVersion": "Version {0} · {1}",
+  "UpdateIdle": "Prüfung beim Start und alle 6 Stunden, wenn aktiviert.",
+  "UpdateChecking": "GitHub Releases wird geprüft…",
+  "UpdateCurrent": "Keine neuere stabile Version verfügbar.",
+  "UpdateAvailable": "Version {0} ist verfügbar.",
+  "UpdateDownloading": "Update wird geladen und geprüft…",
+  "UpdateReady": "Update geprüft und bereit zur Installation.",
+  "UpdateInstalling": "Update wird installiert; Neustart folgt…",
+  "UpdateFailed": "Update fehlgeschlagen. Verbindung, Release-Dateien und Ordnerrechte prüfen und erneut versuchen.",
+  "UpdateDevelopment": "Automatische Installation benötigt ein Portable- oder Lite-Paket. Diese Entwicklungskopie kann Releases prüfen.",
+  "UpdateInProgress": "Die App wird aktualisiert und automatisch wieder geöffnet."
 }

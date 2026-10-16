@@ -15,9 +15,12 @@ public partial class SettingsWindow : WidgetDialogWindow
     private readonly string _originalLanguage;
     private bool _initialized;
     private readonly WidgetSettings _originalColors;
+    private readonly UpdateController? _updates;
+    public bool UpdateRequested { get; private set; }
 
-    public SettingsWindow(WidgetSettings settings)
+    public SettingsWindow(WidgetSettings settings, UpdateController? updates = null)
     {
+        _updates = updates;
         _originalLanguage = Localization.Current.Language;
         _originalColors = new WidgetSettings { FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor };
         InitializeComponent();
@@ -27,7 +30,8 @@ public partial class SettingsWindow : WidgetDialogWindow
             Compact = settings.Compact, Left = settings.Left, Top = settings.Top, Language = settings.Language,
             FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor,
             LowQuotaAlerts = settings.LowQuotaAlerts, LowQuotaThreshold = settings.LowQuotaThreshold,
-            ResetExpiryAlerts = settings.ResetExpiryAlerts, ResetExpiryHours = settings.ResetExpiryHours
+            ResetExpiryAlerts = settings.ResetExpiryAlerts, ResetExpiryHours = settings.ResetExpiryHours,
+            AutoUpdates = settings.AutoUpdates
         };
         CodexPathBox.Text = settings.CodexPath ?? "";
         TopmostBox.IsChecked = settings.Topmost;
@@ -40,6 +44,13 @@ public partial class SettingsWindow : WidgetDialogWindow
         FiveHourColorBox.Text = settings.FiveHourColor;
         WeeklyColorBox.Text = settings.WeeklyColor;
         BackgroundColorBox.Text = settings.BackgroundColor;
+        AutoUpdatesBox.IsChecked = settings.AutoUpdates;
+        if (updates is not null) UpdatesPanel.DataContext = updates;
+        else
+        {
+            CheckUpdatesButton.IsEnabled = false; InstallUpdateButton.IsEnabled = false;
+            UpdateStatus.Text = Localization.Current.Format("UpdateInstalledVersion", UpdateController.CurrentVersion.ToString(3), "Preview");
+        }
         _initialized = true;
         Colors_Changed(this, null!);
         Loaded += (_, _) => WindowPlacement.KeepInside(this, Owner is null ? null : WindowPlacement.ScreenFor(Owner));
@@ -112,6 +123,7 @@ public partial class SettingsWindow : WidgetDialogWindow
             Result.Topmost = TopmostBox.IsChecked == true;
             Result.RefreshSeconds = int.Parse((string)((ComboBoxItem)IntervalBox.SelectedItem).Tag);
             Result.Language = Localization.Current.Language;
+            Result.AutoUpdates = AutoUpdatesBox.IsChecked == true;
             if ((StartupBox.IsChecked == true) != _originalStartup)
                 WidgetSettings.SetStartWithWindows(StartupBox.IsChecked == true);
             Result.Save();
@@ -120,6 +132,22 @@ public partial class SettingsWindow : WidgetDialogWindow
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or UsageUnavailableException or ArgumentException)
         {
             ErrorText.Text = Localization.Current["SettingsSaveError"];
+        }
+    }
+
+    private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+    {
+        if (_updates is not null) await _updates.CheckNowAsync();
+    }
+
+    private async void InstallUpdate_Click(object sender, RoutedEventArgs e)
+    {
+        if (!SaveButton.IsEnabled || _updates is null) return;
+        if (await _updates.PrepareManualAsync())
+        {
+            if (!IsLoaded || !IsVisible) return;
+            UpdateRequested = true;
+            Save_Click(sender, e);
         }
     }
 }

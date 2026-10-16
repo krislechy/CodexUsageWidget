@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.0 — 2026-10-16 (local build)
+
+- Added GitHub Releases automatic updates for packaged Windows x64 Portable and Lite builds. Stable releases are checked after startup and every six hours; drafts, prereleases, same versions and downgrades are ignored. The package variant is preserved and no GitHub token is needed.
+- Settings includes an automatic-update preference, **Check for updates** and **Update now**. Manual checks and installation work when automatic updates are off. Settings are saved before a requested restart; automatic installation waits for dialogs, active quota work and pending reset recovery.
+- ZIP assets require their matching SHA-256 sidecar and an internal owned-file manifest. Downloads, extraction sizes, paths, duplicate entries, package identity and per-file hashes are validated. Development checkouts cannot be replaced in place.
+- A copy of the existing single-file executable acts as the hidden updater. It waits for the exact parent process to exit, backs up package-owned files, preserves unrelated local files, replaces the package and checks the restarted app's startup acknowledgement. Installation or startup failure rolls back changed files and restarts the previous build. The latest successful backup is retained under LocalAppData.
+- Added updater regression coverage for variant/version selection, public GitHub requests, checksum identity, traversal/corruption rejection, local-file preservation and actual rollback after a sharing violation. Both packaged helpers are smoke-checked with a rejected invalid plan; routine UI verification remains English-only.
+
 ## 0.8.0 — 2026-10-13 (local build)
 
 - Added the experimental Extra info window, opened from the expanded widget footer. Its collapsible sections cover account/auth plan and backend usage permission; token activity, lifetime/peak/streak/longest-turn metrics and 7/30-day charts; all returned quota buckets, credits and spend controls; earned-reset grant/title/description metadata; workspace notices; selected-chat usage and estimated credit/USD costs.

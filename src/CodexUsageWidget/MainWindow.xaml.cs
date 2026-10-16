@@ -30,9 +30,11 @@ public partial class MainWindow : Window
     private WidgetSettings _settings;
     private ExtraInfoWindow? _extraInfo;
     private readonly QuotaAlerts _alerts = new();
+    private readonly UpdateController _updates;
 
     private void ExtraInfo_Click(object sender, RoutedEventArgs e)
     {
+        if (_updates.IsInstalling || _exiting) return;
         if (_extraInfo is not null) { _extraInfo.Show(); _extraInfo.Activate(); return; }
         if (!_preview && _monitor is null) return;
         var window = new ExtraInfoWindow(_settings, _preview ? null : _monitor!.Client, _preview ? null : () => _settings.Save()) { Owner = this, Topmost = Topmost };
@@ -73,6 +75,9 @@ public partial class MainWindow : Window
         Localization.Current.SetLanguage(languageIndex >= 0 && languageIndex + 1 < arguments.Length
             ? arguments[languageIndex + 1] : _settings.Language);
         InitializeComponent();
+        _updates = new UpdateController(() => _settings.AutoUpdates,
+            () => !_exiting && !_changingSettings && !_resetAction && !_viewModel.PendingReset && _viewModel.CanRefresh && !OwnedWindows.Cast<Window>().Any(window => window.IsVisible),
+            ExitAsync, preview);
         DataContext = _viewModel;
         _viewModel.IsCompact = arguments.Contains("--compact") || _settings.Compact;
         ApplyLayout();
@@ -147,6 +152,19 @@ public partial class MainWindow : Window
         }
         CreateTray();
         StartMonitor();
+        var updatedIndex = Array.IndexOf(_arguments, "--updated");
+        if (updatedIndex >= 0 && updatedIndex + 1 < _arguments.Length)
+        {
+            try
+            {
+                var plan = UpdateInstallation.ReadPlan(Path.Combine(_arguments[updatedIndex + 1], "plan.json"));
+                if (string.Equals(plan.InstallDirectory.TrimEnd(Path.DirectorySeparatorChar), AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase) &&
+                    UpdatePackages.ParseVersion(plan.Version) == UpdateController.CurrentVersion)
+                    File.WriteAllText(Path.Combine(plan.JobDirectory, "app-ready"), "ready");
+            }
+            catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException or ArgumentException) { }
+        }
+        _updates.Start();
     }
 
     private void StartMonitor()
@@ -237,7 +255,7 @@ public partial class MainWindow : Window
 
     private async void Reset_Click(object sender, RoutedEventArgs e)
     {
-        if (_resetAction || !_viewModel.CanReset) return;
+        if (_resetAction || !_viewModel.CanReset || _updates.IsInstalling) return;
         var selected = sender is Button { Tag: ResetEntry entry } ? entry : null;
         if (selected is not null && _viewModel.FindSelectableCredit(selected.Credit.Id) is null) return;
         _resetAction = true;
@@ -296,22 +314,28 @@ public partial class MainWindow : Window
 
     private async void Settings_Click(object sender, RoutedEventArgs e)
     {
-        if (_changingSettings || _resetAction) return;
+        if (_changingSettings || _resetAction || _exiting || _updates.IsInstalling) return;
         _changingSettings = true;
+        var requestedUpdate = false;
         try
         {
             _extraInfo?.Close();
-            var settings = new SettingsWindow(_settings) { Owner = this, Topmost = Topmost };
+            var settings = new SettingsWindow(_settings, _updates) { Owner = this, Topmost = Topmost };
             if (settings.ShowDialog() != true) return;
             var oldMonitor = _monitor;
             _monitor = null;
             if (oldMonitor is not null) await oldMonitor.DisposeAsync();
+            _viewModel.SetBusy(false);
             _settings = settings.Result;
+            requestedUpdate = settings.UpdateRequested;
             Topmost = _settings.Topmost;
             UpdatePin();
-            if (!_preview && !_exiting) StartMonitor();
+            if (!_preview && !_exiting && !requestedUpdate) StartMonitor();
         }
         finally { _changingSettings = false; }
+        if (requestedUpdate) _updates.RequestManualInstall();
+        await _updates.TryInstallAsync();
+        if (requestedUpdate && !_exiting && !_preview && _monitor is null) StartMonitor();
     }
 
     private void Hide_Click(object sender, RoutedEventArgs e)
@@ -435,6 +459,7 @@ public partial class MainWindow : Window
         _exiting = true;
         SaveSettings();
         _clock.Stop();
+        _updates.Dispose();
         _extraInfo?.Close();
         Hide();
         if (_tray is not null)

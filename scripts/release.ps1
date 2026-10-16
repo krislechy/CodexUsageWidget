@@ -56,7 +56,10 @@ try {
  foreach ($name in 'CodexUsageWidget-win-x64','CodexUsageWidget-win-x64-lite') {
   $folder = Join-Path $output $name
   $exe = Join-Path $folder 'CodexUsageWidget.exe'
-  if (!$Resume) { Invoke-UiCapture $exe (Join-Path $output "smoke/$name") }
+  if (!$Resume) {
+   Invoke-UiCapture $exe (Join-Path $output "smoke/$name")
+   Invoke-UpdateHelperSmoke $exe (Join-Path $output "smoke/$name")
+  }
   $zip = Join-Path $output ($name + '.zip')
   $hash = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
   $recorded = (Get-Content -LiteralPath ($zip + '.sha256') -Raw).Split(' ')[0]

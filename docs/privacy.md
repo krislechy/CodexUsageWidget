@@ -11,3 +11,7 @@
 - Enabling startup creates only `HKCU\Software\Microsoft\Windows\CurrentVersion\Run\CodexUsageWidget`. Disable it before moving or deleting the executable.
 
 The app-server is a full-capability upstream process. Normal monitoring sends only initialization and quota-read requests. The explicit reset action additionally sends one earned-reset consume request after in-app confirmation. It does not start conversations, send messages or spend model tokens to refresh limits. Tests use a fake server for consume operations; live smoke tests only read data.
+
+## GitHub update traffic
+
+When enabled, the app contacts `api.github.com/repos/krislechy/CodexUsageWidget/releases/latest` after startup and at most once per six hours in the background. Manual checks use the same endpoint. It sends the app name/version and normal HTTPS connection metadata, with no GitHub token, Codex credentials, account metrics or conversation information. Update assets come from the matching release on `github.com` and GitHub's download redirects. Settings can disable automatic updates; manual checking remains available. Local update jobs contain package files, paths, process identity and verification/result metadata, not account data.
