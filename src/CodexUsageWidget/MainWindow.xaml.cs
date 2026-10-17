@@ -621,6 +621,12 @@ public partial class MainWindow : Window
             throw new InvalidOperationException("Notification duration must survive settings serialization and cloning.");
         durationSettings.Close();
         Capture((FrameworkElement)settings.Content, Path.Combine(directory, "settings.png"));
+        duration.IsDropDownOpen = true;
+        await Task.Delay(100);
+        var durationPopup = (System.Windows.Controls.Primitives.Popup)duration.Template.FindName("PART_Popup", duration);
+        if (((FrameworkElement)durationPopup.Child).ActualHeight > 224)
+            throw new InvalidOperationException("Notification duration choices must stay within a scrollable dropdown.");
+        duration.IsDropDownOpen = false;
         var selector = (System.Windows.Controls.ComboBox)settings.FindName("IntervalBox");
         selector.Focus();
         Keyboard.Focus(selector);
