@@ -8,7 +8,7 @@
  WindowStartupLocation="Manual" FontFamily="Segoe UI Variable, Segoe UI" FontSize="13"
  Language="{Binding CultureName, Source={x:Static core:Localization.Current}, ConverterCulture=en-US}"
  MouseEnter="PauseDismissal" MouseLeave="ResumeDismissal">
- <Border x:Name="NotificationSurface" Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="18" Margin="8" Padding="18,13,16,16">
+ <Border x:Name="NotificationSurface" Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="18" Margin="8" Padding="18,13,16,16" MouseUp="Notification_MouseUp" Cursor="Hand" AutomationProperties.Name="{loc:Tr OpenWidget}">
   <StackPanel>
    <Grid Margin="0,0,0,10">
     <Grid.ColumnDefinitions><ColumnDefinition Width="25"/><ColumnDefinition/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>
@@ -25,7 +25,6 @@
    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="180">
     <TextBlock x:Name="NotificationBody" FontSize="13" Foreground="{StaticResource Muted}" TextWrapping="Wrap" LineHeight="20" AutomationProperties.LiveSetting="Polite"/>
    </ScrollViewer>
-   <Button x:Name="OpenWidgetButton" Focusable="False" Content="{loc:Tr OpenWidget}" Style="{StaticResource ActionButton}" Height="30" FontSize="12" HorizontalAlignment="Right" Margin="0,16,0,0" Click="OpenWidget_Click"/>
   </StackPanel>
  </Border>
 </Window>

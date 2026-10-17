@@ -174,5 +174,6 @@
   "QuotaNotificationTitle": "Сповіщення про квоти",
   "LowQuotaNotificationTitle": "Квота закінчується",
   "ResetExpiryNotificationTitle": "Скидання скоро згорять",
-  "OpenWidget": "Відкрити віджет"
+  "OpenWidget": "Відкрити віджет",
+  "NotificationDuration": "Час показу сповіщення (секунди)"
 }

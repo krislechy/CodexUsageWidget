@@ -174,5 +174,6 @@
   "QuotaNotificationTitle": "Quota notification",
   "LowQuotaNotificationTitle": "Quota is running low",
   "ResetExpiryNotificationTitle": "Resets expire soon",
-  "OpenWidget": "Open widget"
+  "OpenWidget": "Open widget",
+  "NotificationDuration": "Notification duration (seconds)"
 }

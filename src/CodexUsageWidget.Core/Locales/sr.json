@@ -174,5 +174,6 @@
   "QuotaNotificationTitle": "Обавештење о квотама",
   "LowQuotaNotificationTitle": "Квота је при крају",
   "ResetExpiryNotificationTitle": "Ресетовања ускоро истичу",
-  "OpenWidget": "Отвори виџет"
+  "OpenWidget": "Отвори виџет",
+  "NotificationDuration": "Трајање обавештења (секунде)"
 }

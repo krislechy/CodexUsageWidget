@@ -58,7 +58,7 @@ public partial class MainWindow : Window
             resets.Min(alert => alert.Expiry)!.Value.ToLocalTime().ToString("g", text.Culture)));
         if (_notification is null)
         {
-            var popup = new QuotaNotificationWindow(ShowWidget);
+            var popup = new QuotaNotificationWindow(ShowWidget, TimeSpan.FromSeconds(_settings.NotificationSeconds));
             _notification = popup;
             popup.Closed += (_, _) => { if (ReferenceEquals(_notification, popup)) _notification = null; };
         }
@@ -612,6 +612,14 @@ public partial class MainWindow : Window
         settings.Show();
         await Task.Delay(150);
         VerifyDialogCenter(settings);
+        var duration = (ComboBox)settings.FindName("NotificationDuration");
+        if ((int)duration.SelectedItem != 5 || duration.Items.Count != 60 || settings.Result.NotificationSeconds != 5)
+            throw new InvalidOperationException("Notification duration must default to five seconds and allow 1–60 seconds.");
+        var savedDuration = System.Text.Json.JsonSerializer.Deserialize<WidgetSettings>("{\"NotificationSeconds\":17}")!;
+        var durationSettings = new SettingsWindow(savedDuration);
+        if ((int)durationSettings.NotificationDuration.SelectedItem != 17 || durationSettings.Result.NotificationSeconds != 17)
+            throw new InvalidOperationException("Notification duration must survive settings serialization and cloning.");
+        durationSettings.Close();
         Capture((FrameworkElement)settings.Content, Path.Combine(directory, "settings.png"));
         var selector = (System.Windows.Controls.ComboBox)settings.FindName("IntervalBox");
         selector.Focus();
@@ -751,7 +759,7 @@ public partial class MainWindow : Window
                 throw new InvalidOperationException("Notification must fit the selected monitor's working area.");
         }
         Capture(notification.NotificationSurface, Path.Combine(directory, "notification-combined.png"));
-        notification.OpenWidgetButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        notification.NotificationBody.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, MouseButton.Left) { RoutedEvent = Mouse.MouseUpEvent });
         if (!openedFromNotification || notification.IsVisible) throw new InvalidOperationException("Open widget must dismiss the notification and invoke its action.");
         var autoDismissed = false;
         var briefNotification = new QuotaNotificationWindow(() => { }, TimeSpan.FromMilliseconds(150));
@@ -760,10 +768,11 @@ public partial class MainWindow : Window
         await Task.Delay(350);
         if (!briefNotification.IsMouseOver && !autoDismissed) throw new InvalidOperationException("An untouched notification must dismiss automatically.");
         if (briefNotification.IsVisible) briefNotification.Close();
-        var dismissible = new QuotaNotificationWindow(() => { });
+        var openedOnDismiss = false;
+        var dismissible = new QuotaNotificationWindow(() => openedOnDismiss = true);
         dismissible.ShowMessages("ResetExpiryNotificationTitle", ["One reset expires soon."]);
         dismissible.DismissButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-        if (dismissible.IsVisible || dismissible.DismissalScheduled) throw new InvalidOperationException("Manual dismissal must stop the notification timer.");
+        if (dismissible.IsVisible || dismissible.DismissalScheduled || openedOnDismiss) throw new InvalidOperationException("Manual dismissal must stop the timer without opening the widget.");
     }
 
     private void VerifyDialogCenter(Window dialog)

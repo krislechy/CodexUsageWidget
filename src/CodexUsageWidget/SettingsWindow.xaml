@@ -61,6 +61,10 @@
      <Button x:Name="InstallUpdateButton" Content="{loc:Tr InstallUpdate}" Style="{StaticResource ActionButton}" Height="30" FontSize="11" IsEnabled="{Binding CanInstall}" Click="InstallUpdate_Click" ToolTip="{loc:Tr InstallUpdateHint}" Margin="0,0,0,6"/>
     </WrapPanel>
    </StackPanel>
+   <Grid Margin="0,0,0,20"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="90"/></Grid.ColumnDefinitions>
+    <TextBlock Text="{loc:Tr NotificationDuration}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0"/>
+    <ComboBox x:Name="NotificationDuration" Grid.Column="1" Height="32" MaxDropDownHeight="220" AutomationProperties.Name="{loc:Tr NotificationDuration}"/>
+   </Grid>
    <TextBlock Text="Codex CLI" FontWeight="SemiBold" Margin="0,0,0,7"/>
    <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="42"/></Grid.ColumnDefinitions>
     <TextBox x:Name="CodexPathBox" ToolTip="{loc:Tr CliAutoHint}" AutomationProperties.Name="{loc:Tr CliPath}"/>

@@ -174,5 +174,6 @@
   "QuotaNotificationTitle": "使用枠の通知",
   "LowQuotaNotificationTitle": "残り使用枠が少なくなっています",
   "ResetExpiryNotificationTitle": "リセットがまもなく失効します",
-  "OpenWidget": "ウィジェットを開く"
+  "OpenWidget": "ウィジェットを開く",
+  "NotificationDuration": "通知の表示時間（秒）"
 }

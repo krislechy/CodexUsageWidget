@@ -174,5 +174,6 @@
   "QuotaNotificationTitle": "配额通知",
   "LowQuotaNotificationTitle": "配额即将耗尽",
   "ResetExpiryNotificationTitle": "重置即将到期",
-  "OpenWidget": "打开小组件"
+  "OpenWidget": "打开小组件",
+  "NotificationDuration": "通知显示时间（秒）"
 }

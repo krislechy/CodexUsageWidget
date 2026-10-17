@@ -174,5 +174,6 @@
   "QuotaNotificationTitle": "Notification de quota",
   "LowQuotaNotificationTitle": "Le quota est bientôt épuisé",
   "ResetExpiryNotificationTitle": "Les resets expirent bientôt",
-  "OpenWidget": "Ouvrir le widget"
+  "OpenWidget": "Ouvrir le widget",
+  "NotificationDuration": "Durée des notifications (secondes)"
 }

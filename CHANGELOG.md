@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.2 — 2026-10-17 (local build)
+
+- Removed the Open widget button: clicking the notification card restores the widget; the cross only dismisses it.
+- Added a saved notification duration in Settings, from 1 to 60 seconds, defaulting to 5. Hover pauses dismissal; leaving restarts it.
+- Updated localized labels, English native interaction checks and both local Portable/Lite packages. No GitHub operations performed.
+
 ## 0.10.1 — 2026-10-17 (local build)
 
 - Replaced Windows balloon notifications with a custom non-activating popup using the app's dark surface, rounded outline, ring colors and shared typography/buttons.

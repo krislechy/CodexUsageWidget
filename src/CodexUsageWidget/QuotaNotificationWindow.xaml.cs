@@ -30,7 +30,7 @@ public partial class QuotaNotificationWindow : Window
     {
         _openWidget = openWidget;
         InitializeComponent();
-        _dismiss = new DispatcherTimer { Interval = displayDuration ?? TimeSpan.FromSeconds(10) };
+        _dismiss = new DispatcherTimer { Interval = displayDuration ?? TimeSpan.FromSeconds(5) };
         _dismiss.Tick += (_, _) => { if (!IsMouseOver && !IsKeyboardFocusWithin) Close(); };
         SourceInitialized += (_, _) =>
         {
@@ -79,8 +79,20 @@ public partial class QuotaNotificationWindow : Window
     private void RestartDismissal() { _dismiss.Stop(); if (!IsMouseOver && !IsKeyboardFocusWithin) _dismiss.Start(); }
     private void PauseDismissal(object sender, MouseEventArgs e) => _dismiss.Stop();
     private void ResumeDismissal(object sender, MouseEventArgs e) => RestartDismissal();
-    private void Dismiss_Click(object sender, RoutedEventArgs e) => Close();
-    private void OpenWidget_Click(object sender, RoutedEventArgs e) { Close(); _openWidget(); }
+    private void Dismiss_Click(object sender, RoutedEventArgs e) { e.Handled = true; Close(); }
+    private void Notification_MouseUp(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != MouseButton.Left) return;
+        var source = e.OriginalSource as DependencyObject;
+        while (source is not null && source != NotificationSurface)
+        {
+            if (source is System.Windows.Controls.Primitives.ButtonBase or System.Windows.Controls.Primitives.ScrollBar or System.Windows.Controls.Primitives.Thumb) return;
+            source = source is FrameworkContentElement content ? content.Parent : System.Windows.Media.VisualTreeHelper.GetParent(source);
+        }
+        e.Handled = true;
+        Close();
+        _openWidget();
+    }
 
     private IntPtr WindowMessage(IntPtr hwnd, int message, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
