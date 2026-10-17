@@ -175,5 +175,8 @@
   "LowQuotaNotificationTitle": "Wenig Kontingent übrig",
   "ResetExpiryNotificationTitle": "Resets laufen bald ab",
   "OpenWidget": "Widget öffnen",
-  "NotificationDuration": "Nach Aktivität ausblenden (Sekunden)"
+  "NotificationDuration": "Anzeigedauer der Benachrichtigung",
+  "NotificationSeconds2": "2 Sek.",
+  "NotificationSeconds3": "3 Sek.",
+  "NotificationSeconds5": "5 Sek."
 }

@@ -63,7 +63,11 @@
    </StackPanel>
    <Grid Margin="0,0,0,20"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="90"/></Grid.ColumnDefinitions>
     <TextBlock Text="{loc:Tr NotificationDuration}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0"/>
-    <ComboBox x:Name="NotificationDuration" Grid.Column="1" Height="32" MaxDropDownHeight="220" AutomationProperties.Name="{loc:Tr NotificationDuration}"/>
+    <ComboBox x:Name="NotificationDuration" Grid.Column="1" Height="32" AutomationProperties.Name="{loc:Tr NotificationDuration}">
+     <ComboBoxItem Content="{loc:Tr NotificationSeconds2}" Tag="2"/>
+     <ComboBoxItem Content="{loc:Tr NotificationSeconds3}" Tag="3"/>
+     <ComboBoxItem Content="{loc:Tr NotificationSeconds5}" Tag="5"/>
+    </ComboBox>
    </Grid>
    <TextBlock Text="Codex CLI" FontWeight="SemiBold" Margin="0,0,0,7"/>
    <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="42"/></Grid.ColumnDefinitions>

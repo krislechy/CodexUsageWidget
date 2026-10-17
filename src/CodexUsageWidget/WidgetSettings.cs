@@ -41,7 +41,7 @@ public sealed class WidgetSettings
             if (!WidgetTheme.TryColor(settings.BackgroundColor, out _)) settings.BackgroundColor = "#141619";
             if (settings.LowQuotaThreshold is < 1 or > 99) settings.LowQuotaThreshold = 10;
             if (settings.ResetExpiryHours is < 1 or > 168) settings.ResetExpiryHours = 24;
-            if (settings.NotificationSeconds is < 1 or > 60) settings.NotificationSeconds = 2;
+            if (settings.NotificationSeconds is not (2 or 3 or 5)) settings.NotificationSeconds = 2;
             return settings;
         }
         catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException) { return new(); }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.3 — 2026-10-17 (local build)
+
+- Renamed the notification setting to Notification display time and limited choices to 2 sec, 3 sec and 5 sec, with localized units and no explanatory text.
+- Previous unsupported duration values fall back to 2 seconds. Activity detection and hover behavior remain unchanged.
+- Built Portable and Lite locally and verified the English interface. No GitHub publication performed.
+
 ## 0.10.2 — 2026-10-17 (local build)
 
 - Removed the Open widget button: clicking the notification card restores the widget; the cross only dismisses it.

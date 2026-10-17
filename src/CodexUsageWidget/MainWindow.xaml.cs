@@ -613,11 +613,11 @@ public partial class MainWindow : Window
         await Task.Delay(150);
         VerifyDialogCenter(settings);
         var duration = (ComboBox)settings.FindName("NotificationDuration");
-        if ((int)duration.SelectedItem != 2 || duration.Items.Count != 60 || settings.Result.NotificationSeconds != 2)
-            throw new InvalidOperationException("Notification duration must default to two seconds and allow 1–60 seconds.");
-        var savedDuration = System.Text.Json.JsonSerializer.Deserialize<WidgetSettings>("{\"NotificationSeconds\":17}")!;
+        if ((string)((ComboBoxItem)duration.SelectedItem).Tag != "2" || duration.Items.Count != 3 || settings.Result.NotificationSeconds != 2)
+            throw new InvalidOperationException("Notification duration must default to two seconds with only 2, 3 and 5 second choices.");
+        var savedDuration = System.Text.Json.JsonSerializer.Deserialize<WidgetSettings>("{\"NotificationSeconds\":3}")!;
         var durationSettings = new SettingsWindow(savedDuration);
-        if ((int)durationSettings.NotificationDuration.SelectedItem != 17 || durationSettings.Result.NotificationSeconds != 17)
+        if ((string)((ComboBoxItem)durationSettings.NotificationDuration.SelectedItem).Tag != "3" || durationSettings.Result.NotificationSeconds != 3)
             throw new InvalidOperationException("Notification duration must survive settings serialization and cloning.");
         durationSettings.Close();
         Capture((FrameworkElement)settings.Content, Path.Combine(directory, "settings.png"));

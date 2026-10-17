@@ -31,7 +31,7 @@ public partial class SettingsWindow : WidgetDialogWindow
             FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor,
             LowQuotaAlerts = settings.LowQuotaAlerts, LowQuotaThreshold = settings.LowQuotaThreshold,
             ResetExpiryAlerts = settings.ResetExpiryAlerts, ResetExpiryHours = settings.ResetExpiryHours,
-            NotificationSeconds = settings.NotificationSeconds,
+            NotificationSeconds = settings.NotificationSeconds is 2 or 3 or 5 ? settings.NotificationSeconds : 2,
             AutoUpdates = settings.AutoUpdates
         };
         CodexPathBox.Text = settings.CodexPath ?? "";
@@ -46,8 +46,8 @@ public partial class SettingsWindow : WidgetDialogWindow
         WeeklyColorBox.Text = settings.WeeklyColor;
         BackgroundColorBox.Text = settings.BackgroundColor;
         AutoUpdatesBox.IsChecked = settings.AutoUpdates;
-        NotificationDuration.ItemsSource = System.Linq.Enumerable.Range(1, 60);
-        NotificationDuration.SelectedItem = settings.NotificationSeconds;
+        foreach (ComboBoxItem item in NotificationDuration.Items)
+            if (int.Parse((string)item.Tag) == Result.NotificationSeconds) NotificationDuration.SelectedItem = item;
         if (updates is not null) UpdatesPanel.DataContext = updates;
         else
         {
@@ -124,7 +124,7 @@ public partial class SettingsWindow : WidgetDialogWindow
             if (path.Length > 0) _ = CodexLocator.Find(path);
             Result.CodexPath = path.Length == 0 ? null : path;
             Result.Topmost = TopmostBox.IsChecked == true;
-            Result.NotificationSeconds = (int)NotificationDuration.SelectedItem;
+            Result.NotificationSeconds = int.Parse((string)((ComboBoxItem)NotificationDuration.SelectedItem).Tag);
             Result.RefreshSeconds = int.Parse((string)((ComboBoxItem)IntervalBox.SelectedItem).Tag);
             Result.Language = Localization.Current.Language;
             Result.AutoUpdates = AutoUpdatesBox.IsChecked == true;

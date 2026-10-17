@@ -1,6 +1,7 @@
 # Project instructions
 
 - Keep project documentation in English.
+- Keep UI labels concise and self-explanatory, with units in selectable values. Do not add obvious explanatory helper text unless requested.
 - Build and verify locally unless the user requests another action.
 - Do not perform GitHub operations automatically. Remote reads, pushes, releases, pull requests, issues and repository changes require an explicit user command.
 - A request to implement a feature or produce a local build does not authorize GitHub activity.

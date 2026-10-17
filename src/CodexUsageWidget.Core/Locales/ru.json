@@ -175,5 +175,8 @@
   "LowQuotaNotificationTitle": "Заканчивается квота",
   "ResetExpiryNotificationTitle": "Сбросы скоро сгорят",
   "OpenWidget": "Открыть виджет",
-  "NotificationDuration": "Скрыть после активности (секунды)"
+  "NotificationDuration": "Время показа уведомления",
+  "NotificationSeconds2": "2 сек",
+  "NotificationSeconds3": "3 сек",
+  "NotificationSeconds5": "5 сек"
 }
