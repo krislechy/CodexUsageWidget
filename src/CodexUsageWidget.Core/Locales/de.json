@@ -154,7 +154,7 @@
   "ActivityHelp": "Historische Tokens sind getrennt vom Kontingent. Daten stammen vom Dienst; fehlende Tage sind nicht null.",
   "CreditsHelp": "Credits und Ausgabenlimit sind getrennt vom Kontingent. Verfügbarkeit bestimmt die Serverfreigabe.",
   "ThreadHelp": "Kosten sind Schätzungen. Kontext und Reasoning erscheinen nur bei Meldungen dieser Verbindung; andere Clients senden möglicherweise keine Ereignisse hierher.",
-  "AlertsHelp": "Windows-Meldungen nutzen die Kontingentabfragen, einmal je Fenster oder Reset pro Sitzung. Standardmäßig deaktiviert.",
+  "AlertsHelp": "Eigene App-Meldungen nutzen die Kontingentabfragen, einmal je Fenster oder Reset pro Sitzung. Standardmäßig deaktiviert.",
   "AutoUpdates": "Automatisch über GitHub Releases aktualisieren",
   "Updates": "App-Updates",
   "CheckUpdates": "Nach Updates suchen",
@@ -170,5 +170,9 @@
   "UpdateInstalling": "Update wird installiert; Neustart folgt…",
   "UpdateFailed": "Update fehlgeschlagen. Verbindung, Release-Dateien und Ordnerrechte prüfen und erneut versuchen.",
   "UpdateDevelopment": "Automatische Installation benötigt ein Portable- oder Lite-Paket. Diese Entwicklungskopie kann Releases prüfen.",
-  "UpdateInProgress": "Die App wird aktualisiert und automatisch wieder geöffnet."
+  "UpdateInProgress": "Die App wird aktualisiert und automatisch wieder geöffnet.",
+  "QuotaNotificationTitle": "Kontingentmeldung",
+  "LowQuotaNotificationTitle": "Wenig Kontingent übrig",
+  "ResetExpiryNotificationTitle": "Resets laufen bald ab",
+  "OpenWidget": "Widget öffnen"
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.1 — 2026-10-17 (local build)
+
+- Replaced Windows balloon notifications with a custom non-activating popup using the app's dark surface, rounded outline, ring colors and shared typography/buttons.
+- Notifications anchor above the taskbar at the bottom-right of the primary monitor's working area, respecting DPI and display changes. The unowned window remains visible while the widget is hidden in the tray.
+- A close control dismisses the popup and Open widget restores the main view. Notifications hide after 10 seconds; hovering pauses dismissal. Incoming alerts coalesce into the visible popup instead of opening a stack of windows.
+- Existing opt-in thresholds, quota/reset polling and session deduplication are unchanged. Popups do not enter Windows Notification Center and are not governed by Windows notification settings.
+- English native verification covers non-activation, tray-hidden visibility, coalescing, hover timing, monitor placement, manual dismissal and Open widget behavior. Portable and Lite packages are built locally; no GitHub publication is performed.
+
 ## 0.10.0 — 2026-10-16
 
 - Published the accumulated changes since 0.4.0 in both Windows x64 Portable and Lite variants.

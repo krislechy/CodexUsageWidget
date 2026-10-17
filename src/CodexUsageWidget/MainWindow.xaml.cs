@@ -30,6 +30,7 @@ public partial class MainWindow : Window
     private WidgetSettings _settings;
     private ExtraInfoWindow? _extraInfo;
     private readonly QuotaAlerts _alerts = new();
+    private QuotaNotificationWindow? _notification;
     private readonly UpdateController _updates;
 
     private void ExtraInfo_Click(object sender, RoutedEventArgs e)
@@ -45,7 +46,7 @@ public partial class MainWindow : Window
 
     private void ShowQuotaAlerts(UsageSnapshot snapshot)
     {
-        if (_tray is null || _preview) return;
+        if (_preview || _exiting) return;
         var alerts = _alerts.Evaluate(snapshot, _settings.LowQuotaAlerts, _settings.LowQuotaThreshold,
             _settings.ResetExpiryAlerts, _settings.ResetExpiryHours, DateTimeOffset.UtcNow);
         if (alerts.Count == 0) return;
@@ -55,7 +56,14 @@ public partial class MainWindow : Window
         var resets = alerts.Where(alert => alert.Kind == "expiry").ToArray();
         if (resets.Length > 0) messages.Add(text.Format("ResetExpiryAlertBody", resets.Length,
             resets.Min(alert => alert.Expiry)!.Value.ToLocalTime().ToString("g", text.Culture)));
-        _tray.ShowBalloonTip(5000, "Codex Usage Widget", string.Join("\n", messages), Forms.ToolTipIcon.Info);
+        if (_notification is null)
+        {
+            var popup = new QuotaNotificationWindow(ShowWidget);
+            _notification = popup;
+            popup.Closed += (_, _) => { if (ReferenceEquals(_notification, popup)) _notification = null; };
+        }
+        var heading = resets.Length == alerts.Count ? "ResetExpiryNotificationTitle" : resets.Length == 0 ? "LowQuotaNotificationTitle" : "QuotaNotificationTitle";
+        _notification.ShowMessages(heading, messages);
     }
     private UsageMonitor? _monitor;
     private Forms.NotifyIcon? _tray;
@@ -462,6 +470,7 @@ public partial class MainWindow : Window
         _updates.Dispose();
         _extraInfo?.Close();
         Hide();
+        _notification?.Close();
         if (_tray is not null)
         {
             _tray.Visible = false;
@@ -718,6 +727,43 @@ public partial class MainWindow : Window
             if (!WindowPlacement.IsInside(this) || WindowPlacement.ScreenFor(this)?.DeviceName != screen.DeviceName)
                 throw new InvalidOperationException("Expanded widget must fit on the selected monitor.");
         }
+        var openedFromNotification = false;
+        var notification = new QuotaNotificationWindow(() => openedFromNotification = true);
+        notification.ShowMessages("LowQuotaNotificationTitle", ["5 hours: 8% remaining."]);
+        await Task.Delay(100);
+        if (notification.IsActive || !notification.PreventsActivation || notification.ShowInTaskbar || notification.Owner is not null)
+            throw new InvalidOperationException("Custom notification must be independent and non-activating.");
+        Hide();
+        if (!notification.IsVisible) throw new InvalidOperationException("Notifications must remain visible while the widget is in the tray.");
+        Capture(notification.NotificationSurface, Path.Combine(directory, "notification.png"));
+        notification.ShowMessages("ResetExpiryNotificationTitle", ["1 reset expires soon. First expiry: Oct 18, 09:00."]);
+        if (!notification.NotificationBody.Text.Contains("8%", StringComparison.Ordinal) || !notification.NotificationBody.Text.Contains("expires soon", StringComparison.Ordinal))
+            throw new InvalidOperationException("New notifications must coalesce without losing visible messages.");
+        notification.RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, Environment.TickCount) { RoutedEvent = Mouse.MouseEnterEvent });
+        if (notification.DismissalScheduled) throw new InvalidOperationException("Hover must pause automatic dismissal.");
+        notification.RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, Environment.TickCount) { RoutedEvent = Mouse.MouseLeaveEvent });
+        if (!notification.IsMouseOver && !notification.DismissalScheduled) throw new InvalidOperationException("Dismissal must resume after hover.");
+        foreach (var screen in Forms.Screen.AllScreens)
+        {
+            notification.PlaceForPreview(screen);
+            await Task.Delay(100);
+            if (!WindowPlacement.IsInside(notification) || WindowPlacement.ScreenFor(notification)?.DeviceName != screen.DeviceName)
+                throw new InvalidOperationException("Notification must fit the selected monitor's working area.");
+        }
+        Capture(notification.NotificationSurface, Path.Combine(directory, "notification-combined.png"));
+        notification.OpenWidgetButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        if (!openedFromNotification || notification.IsVisible) throw new InvalidOperationException("Open widget must dismiss the notification and invoke its action.");
+        var autoDismissed = false;
+        var briefNotification = new QuotaNotificationWindow(() => { }, TimeSpan.FromMilliseconds(150));
+        briefNotification.Closed += (_, _) => autoDismissed = true;
+        briefNotification.ShowMessages("LowQuotaNotificationTitle", ["5 hours: 8% remaining."]);
+        await Task.Delay(350);
+        if (!briefNotification.IsMouseOver && !autoDismissed) throw new InvalidOperationException("An untouched notification must dismiss automatically.");
+        if (briefNotification.IsVisible) briefNotification.Close();
+        var dismissible = new QuotaNotificationWindow(() => { });
+        dismissible.ShowMessages("ResetExpiryNotificationTitle", ["One reset expires soon."]);
+        dismissible.DismissButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        if (dismissible.IsVisible || dismissible.DismissalScheduled) throw new InvalidOperationException("Manual dismissal must stop the notification timer.");
     }
 
     private void VerifyDialogCenter(Window dialog)

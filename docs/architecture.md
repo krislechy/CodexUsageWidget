@@ -89,7 +89,7 @@ IsVisibleChanged and StateChanged stop the local countdown clock while hidden/mi
 
 `ExtraInfoWindow` owns a cancellable lifetime and a five-minute timer active only for visible data refreshes. Closing unsubscribes events and cancels pending work. `UsageChart` renders 7/30-day reported values without creating zero-value records for missing dates. Public projections exclude account email and raw response bodies. Demo captures use synthetic values only.
 
-`QuotaAlerts` evaluates already-polled fresh snapshots and deduplicates notifications per quota window/threshold or expiring reset for the process lifetime. MainWindow uses the Windows tray notification API, governed by saved opt-in preferences. This introduces no endpoint, model-token or reset-consumption calls. Settings cloning preserves all notification preferences.
+`QuotaAlerts` evaluates already-polled fresh snapshots and deduplicates notifications per quota window/threshold or expiring reset for the process lifetime. MainWindow uses a custom unowned QuotaNotificationWindow, governed by saved opt-in preferences. This introduces no endpoint, model-token or reset-consumption calls. Settings cloning preserves all notification preferences.
 
 ## GitHub release updates
 
@@ -100,3 +100,11 @@ IsVisibleChanged and StateChanged stop the local countdown clock while hidden/mi
 `UpdateInstallation` creates a GUID-scoped LocalAppData job. A copy of the current bundled executable starts with `--apply-update` before ordinary app initialization and the single-instance gate. It validates the job and exact parent PID/start-time/executable, obtains a named installation semaphore, acknowledges readiness, and waits for the parent to exit. Package-owned files are backed up and atomically replaced per file, obsolete owned files are removed, and a journal enables rollback of only touched files. New-version files cannot overwrite unrelated local files. The restarted build must acknowledge startup within 20 seconds; otherwise the helper restores the previous files and restarts the old build. The most recent successful backup is retained, while completed staging/helper files and older successful backups are cleaned up. A crash/power loss during the transaction can require manual backup recovery; this is not a whole-directory atomic installer.
 
 No GitHub publication or Codex/account endpoint is performed by the updater. All metadata and result files exclude account information. Both published variants are checked in preview mode and in invalid-plan helper mode by the release script.
+
+## Custom quota notifications
+
+QuotaNotificationWindow is a WPF tool window with ShowActivated=false, WS_EX_NOACTIVATE and a WM_MOUSEACTIVATE response of MA_NOACTIVATE. It has no owner, so hiding/minimizing the main window does not hide an active notification. It remains out of the taskbar and closes explicitly during app exit. Source hooks, display-change subscriptions and the dismissal timer are released on close.
+
+WindowPlacement anchors the native rectangle inside the primary monitor's physical working area with DPI-scaled margins, and responds to display, size and DPI changes. Native preview also exercises placement on each attached monitor. A single visible popup coalesces incoming messages and exposes a deliberate Open widget action; its 10-second timer pauses while hovered. Existing QuotaAlerts selection and session deduplication remain unchanged. This is independent of the Windows notification broker and has no Notification Center history.
+
+The non-activation hook follows [Microsoft's WM_MOUSEACTIVATE contract](https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mouseactivate): accept the click without activating the popup. English native captures exercise the real window styles, timer, hover, dismissal, hidden-owner independence and action callback without sending account notifications or spending resets.

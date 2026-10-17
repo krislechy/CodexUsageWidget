@@ -154,7 +154,7 @@
   "ActivityHelp": "Les tokens historiques sont distincts des quotas. Dates fournies par le service ; un jour absent ne vaut pas zéro.",
   "CreditsHelp": "Crédits et budget sont distincts du quota inclus. La disponibilité dépend de l’autorisation du service.",
   "ThreadHelp": "Les coûts sont estimatifs. Contexte et raisonnement apparaissent seulement si cette connexion les reçoit ; les autres clients peuvent ne pas les transmettre.",
-  "AlertsHelp": "Les notifications Windows réutilisent le suivi des quotas, une fois par fenêtre ou reset dans la session. Désactivées par défaut.",
+  "AlertsHelp": "Les fenêtres de notification utilisent le suivi des quotas, une fois par fenêtre ou reset dans la session. Désactivées par défaut.",
   "AutoUpdates": "Mettre à jour automatiquement via GitHub Releases",
   "Updates": "Mises à jour de l’application",
   "CheckUpdates": "Vérifier les mises à jour",
@@ -170,5 +170,9 @@
   "UpdateInstalling": "Installation et redémarrage…",
   "UpdateFailed": "Échec de la mise à jour. Vérifiez la connexion, les fichiers du release et les autorisations, puis réessayez.",
   "UpdateDevelopment": "L’installation automatique nécessite une version Portable ou Lite. Cette copie de développement peut vérifier les releases.",
-  "UpdateInProgress": "L’application se met à jour et se rouvrira automatiquement."
+  "UpdateInProgress": "L’application se met à jour et se rouvrira automatiquement.",
+  "QuotaNotificationTitle": "Notification de quota",
+  "LowQuotaNotificationTitle": "Le quota est bientôt épuisé",
+  "ResetExpiryNotificationTitle": "Les resets expirent bientôt",
+  "OpenWidget": "Ouvrir le widget"
 }

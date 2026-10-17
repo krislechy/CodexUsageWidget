@@ -38,6 +38,23 @@ internal static class WindowPlacement
         return rect.Left >= area.Left && rect.Top >= area.Top && rect.Right <= area.Right && rect.Bottom <= area.Bottom;
     }
 
+    internal static void AnchorNotification(Window window, Forms.Screen? selected = null)
+    {
+        var handle = new WindowInteropHelper(window).Handle;
+        if (handle == IntPtr.Zero) return;
+        if (!GetWindowRect(handle, out var rect)) throw new Win32Exception();
+        var area = (selected ?? Forms.Screen.PrimaryScreen ?? Forms.Screen.FromHandle(handle)).WorkingArea;
+        var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(window);
+        var marginX = (int)Math.Round(16 * dpi.DpiScaleX);
+        var marginY = (int)Math.Round(16 * dpi.DpiScaleY);
+        var width = Math.Min(rect.Right - rect.Left, Math.Max(1, area.Width - marginX * 2));
+        var height = Math.Min(rect.Bottom - rect.Top, Math.Max(1, area.Height - marginY * 2));
+        var left = Math.Max(area.Left, area.Right - marginX - width);
+        var top = Math.Max(area.Top, area.Bottom - marginY - height);
+        if (left == rect.Left && top == rect.Top && width == rect.Right - rect.Left && height == rect.Bottom - rect.Top) return;
+        if (!SetWindowPos(handle, IntPtr.Zero, left, top, width, height, 0x0004 | 0x0010)) throw new Win32Exception();
+    }
+
     internal static void MoveToCornerForPreview(Window window, Forms.Screen screen)
     {
         var handle = new WindowInteropHelper(window).Handle;

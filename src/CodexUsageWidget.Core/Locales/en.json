@@ -154,7 +154,7 @@
   "ActivityHelp": "Historical tokens are separate from quota percentages. Dates are reported by the service; a missing day is not zero.",
   "CreditsHelp": "Credits and spend allowance are separate from included quota. Only backend-reported permission determines availability.",
   "ThreadHelp": "Costs are estimates, not final billing. Context and reasoning data appear only when reported on this connection; other clients may not stream here.",
-  "AlertsHelp": "Windows notifications use existing quota polling. Each quota window or expiring reset is notified once per app session. Disabled by default.",
+  "AlertsHelp": "Custom app popups use existing quota polling. Each quota window or expiring reset is notified once per app session. Disabled by default.",
   "AutoUpdates": "Automatically update from GitHub Releases",
   "Updates": "Application updates",
   "CheckUpdates": "Check for updates",
@@ -170,5 +170,9 @@
   "UpdateInstalling": "Installing update and restarting…",
   "UpdateFailed": "Could not complete the update. Check connection, release assets and folder permissions, then retry.",
   "UpdateDevelopment": "Automatic installation requires a packaged Portable or Lite build. This development copy can check releases.",
-  "UpdateInProgress": "The application is being updated. It will reopen automatically."
+  "UpdateInProgress": "The application is being updated. It will reopen automatically.",
+  "QuotaNotificationTitle": "Quota notification",
+  "LowQuotaNotificationTitle": "Quota is running low",
+  "ResetExpiryNotificationTitle": "Resets expire soon",
+  "OpenWidget": "Open widget"
 }

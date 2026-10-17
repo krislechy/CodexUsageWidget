@@ -154,7 +154,7 @@
   "ActivityHelp": "历史令牌与配额百分比不同。日期由服务提供，缺失日期不代表零。",
   "CreditsHelp": "额度和支出配额与套餐配额不同。可用状态以服务器权限为准。",
   "ThreadHelp": "费用为估计值，不是最终账单。上下文和推理数据仅在此连接报告时显示，其他客户端可能不会推送。",
-  "AlertsHelp": "Windows通知复用已有配额查询。每次运行中，每个周期或到期重置仅通知一次。默认关闭。",
+  "AlertsHelp": "应用自定义弹窗复用已有配额查询。每次运行中，每个周期或到期重置仅通知一次。默认关闭。",
   "AutoUpdates": "自动从 GitHub Releases 更新",
   "Updates": "应用更新",
   "CheckUpdates": "检查更新",
@@ -170,5 +170,9 @@
   "UpdateInstalling": "正在安装更新并重启…",
   "UpdateFailed": "更新未完成。请检查网络、发布文件及文件夹权限后重试。",
   "UpdateDevelopment": "自动安装需要 Portable 或 Lite 发行包。开发副本可以检查发布版本。",
-  "UpdateInProgress": "应用正在更新，将自动重新打开。"
+  "UpdateInProgress": "应用正在更新，将自动重新打开。",
+  "QuotaNotificationTitle": "配额通知",
+  "LowQuotaNotificationTitle": "配额即将耗尽",
+  "ResetExpiryNotificationTitle": "重置即将到期",
+  "OpenWidget": "打开小组件"
 }
