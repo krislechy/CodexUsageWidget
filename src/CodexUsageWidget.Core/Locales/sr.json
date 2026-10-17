@@ -175,5 +175,5 @@
   "LowQuotaNotificationTitle": "Квота је при крају",
   "ResetExpiryNotificationTitle": "Ресетовања ускоро истичу",
   "OpenWidget": "Отвори виџет",
-  "NotificationDuration": "Трајање обавештења (секунде)"
+  "NotificationDuration": "Сакриј после активности (секунде)"
 }

@@ -19,7 +19,7 @@ public sealed class WidgetSettings
     public int LowQuotaThreshold { get; set; } = 10;
     public bool ResetExpiryAlerts { get; set; }
     public int ResetExpiryHours { get; set; } = 24;
-    public int NotificationSeconds { get; set; } = 5;
+    public int NotificationSeconds { get; set; } = 2;
     public bool AutoUpdates { get; set; } = true;
     public double? Left { get; set; }
     public double? Top { get; set; }
@@ -41,7 +41,7 @@ public sealed class WidgetSettings
             if (!WidgetTheme.TryColor(settings.BackgroundColor, out _)) settings.BackgroundColor = "#141619";
             if (settings.LowQuotaThreshold is < 1 or > 99) settings.LowQuotaThreshold = 10;
             if (settings.ResetExpiryHours is < 1 or > 168) settings.ResetExpiryHours = 24;
-            if (settings.NotificationSeconds is < 1 or > 60) settings.NotificationSeconds = 5;
+            if (settings.NotificationSeconds is < 1 or > 60) settings.NotificationSeconds = 2;
             return settings;
         }
         catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException) { return new(); }

@@ -613,8 +613,8 @@ public partial class MainWindow : Window
         await Task.Delay(150);
         VerifyDialogCenter(settings);
         var duration = (ComboBox)settings.FindName("NotificationDuration");
-        if ((int)duration.SelectedItem != 5 || duration.Items.Count != 60 || settings.Result.NotificationSeconds != 5)
-            throw new InvalidOperationException("Notification duration must default to five seconds and allow 1–60 seconds.");
+        if ((int)duration.SelectedItem != 2 || duration.Items.Count != 60 || settings.Result.NotificationSeconds != 2)
+            throw new InvalidOperationException("Notification duration must default to two seconds and allow 1–60 seconds.");
         var savedDuration = System.Text.Json.JsonSerializer.Deserialize<WidgetSettings>("{\"NotificationSeconds\":17}")!;
         var durationSettings = new SettingsWindow(savedDuration);
         if ((int)durationSettings.NotificationDuration.SelectedItem != 17 || durationSettings.Result.NotificationSeconds != 17)
@@ -742,7 +742,8 @@ public partial class MainWindow : Window
                 throw new InvalidOperationException("Expanded widget must fit on the selected monitor.");
         }
         var openedFromNotification = false;
-        var notification = new QuotaNotificationWindow(() => openedFromNotification = true);
+        uint inputTimestamp = 1;
+        var notification = new QuotaNotificationWindow(() => openedFromNotification = true) { InputTimestamp = () => inputTimestamp };
         notification.ShowMessages("LowQuotaNotificationTitle", ["5 hours: 8% remaining."]);
         await Task.Delay(100);
         if (notification.IsActive || !notification.PreventsActivation || notification.ShowInTaskbar || notification.Owner is not null)
@@ -755,6 +756,8 @@ public partial class MainWindow : Window
             throw new InvalidOperationException("New notifications must coalesce without losing visible messages.");
         notification.RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, Environment.TickCount) { RoutedEvent = Mouse.MouseEnterEvent });
         if (notification.DismissalScheduled) throw new InvalidOperationException("Hover must pause automatic dismissal.");
+        inputTimestamp++;
+        await Task.Delay(350);
         notification.RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, Environment.TickCount) { RoutedEvent = Mouse.MouseLeaveEvent });
         if (!notification.IsMouseOver && !notification.DismissalScheduled) throw new InvalidOperationException("Dismissal must resume after hover.");
         foreach (var screen in Forms.Screen.AllScreens)
@@ -768,11 +771,15 @@ public partial class MainWindow : Window
         notification.NotificationBody.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, MouseButton.Left) { RoutedEvent = Mouse.MouseUpEvent });
         if (!openedFromNotification || notification.IsVisible) throw new InvalidOperationException("Open widget must dismiss the notification and invoke its action.");
         var autoDismissed = false;
-        var briefNotification = new QuotaNotificationWindow(() => { }, TimeSpan.FromMilliseconds(150));
+        var briefNotification = new QuotaNotificationWindow(() => { }, TimeSpan.FromMilliseconds(150)) { InputTimestamp = () => inputTimestamp };
         briefNotification.Closed += (_, _) => autoDismissed = true;
         briefNotification.ShowMessages("LowQuotaNotificationTitle", ["5 hours: 8% remaining."]);
         await Task.Delay(350);
-        if (!briefNotification.IsMouseOver && !autoDismissed) throw new InvalidOperationException("An untouched notification must dismiss automatically.");
+        if (!briefNotification.IsVisible || briefNotification.DismissalScheduled)
+            throw new InvalidOperationException("An unattended notification must wait for user activity.");
+        inputTimestamp++;
+        for (var activity = 0; activity < 6; activity++) { inputTimestamp++; await Task.Delay(100); }
+        if (!briefNotification.IsMouseOver && !autoDismissed) throw new InvalidOperationException("A notification must dismiss after activity and its configured duration.");
         if (briefNotification.IsVisible) briefNotification.Close();
         var openedOnDismiss = false;
         var dismissible = new QuotaNotificationWindow(() => openedOnDismiss = true);

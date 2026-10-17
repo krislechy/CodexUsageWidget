@@ -19,6 +19,9 @@ public partial class QuotaNotificationWindow : Window
 {
     private readonly Action _openWidget;
     private readonly DispatcherTimer _dismiss;
+    private readonly DispatcherTimer _activity;
+    private uint? _inputAtArrival;
+    internal Func<uint?> InputTimestamp { private get; set; } = ReadLastInput;
     private readonly List<string> _messages = [];
     private HwndSource? _source;
     private Forms.Screen? _previewScreen;
@@ -30,8 +33,16 @@ public partial class QuotaNotificationWindow : Window
     {
         _openWidget = openWidget;
         InitializeComponent();
-        _dismiss = new DispatcherTimer { Interval = displayDuration ?? TimeSpan.FromSeconds(5) };
+        _dismiss = new DispatcherTimer { Interval = displayDuration ?? TimeSpan.FromSeconds(2) };
         _dismiss.Tick += (_, _) => { if (!IsMouseOver && !IsKeyboardFocusWithin) Close(); };
+        _activity = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+        _activity.Tick += (_, _) =>
+        {
+            var input = InputTimestamp();
+            if (input.HasValue && input == _inputAtArrival) return;
+            _activity.Stop();
+            RestartDismissal();
+        };
         SourceInitialized += (_, _) =>
         {
             var handle = new WindowInteropHelper(this).Handle;
@@ -48,6 +59,7 @@ public partial class QuotaNotificationWindow : Window
         Closed += (_, _) =>
         {
             _dismiss.Stop();
+            _activity.Stop();
             _source?.RemoveHook(WindowMessage);
             Localization.Current.PropertyChanged -= LanguageChanged;
             SystemEvents.DisplaySettingsChanged -= DisplaysChanged;
@@ -65,7 +77,10 @@ public partial class QuotaNotificationWindow : Window
         NotificationBody.Text = string.Join("\n\n", _messages);
         if (!IsVisible) Show();
         UpdateLayout(); Place();
-        RestartDismissal();
+        _dismiss.Stop();
+        _inputAtArrival = InputTimestamp();
+        if (_inputAtArrival.HasValue) _activity.Start();
+        else { _activity.Stop(); RestartDismissal(); }
         UIElementAutomationPeer.CreatePeerForElement(NotificationBody)?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
     }
 
@@ -76,7 +91,7 @@ public partial class QuotaNotificationWindow : Window
     }
     private void Place() => WindowPlacement.AnchorNotification(this, _previewScreen);
     internal void PlaceForPreview(Forms.Screen screen) { _previewScreen = screen; Place(); }
-    private void RestartDismissal() { _dismiss.Stop(); if (!IsMouseOver && !IsKeyboardFocusWithin) _dismiss.Start(); }
+    private void RestartDismissal() { _dismiss.Stop(); if (!_activity.IsEnabled && !IsMouseOver && !IsKeyboardFocusWithin) _dismiss.Start(); }
     private void PauseDismissal(object sender, MouseEventArgs e) => _dismiss.Stop();
     private void ResumeDismissal(object sender, MouseEventArgs e) => RestartDismissal();
     private void Dismiss_Click(object sender, RoutedEventArgs e) { e.Handled = true; Close(); }
@@ -104,4 +119,17 @@ public partial class QuotaNotificationWindow : Window
     private static extern IntPtr GetWindowLongPtr(IntPtr handle, int index);
     [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
     private static extern IntPtr SetWindowLongPtr(IntPtr handle, int index, IntPtr value);
+
+    private static uint? ReadLastInput()
+    {
+        var info = new LastInputInfo { Size = (uint)Marshal.SizeOf<LastInputInfo>() };
+        return GetLastInputInfo(ref info) ? info.Tick : null;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct LastInputInfo { public uint Size; public uint Tick; }
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetLastInputInfo(ref LastInputInfo info);
 }

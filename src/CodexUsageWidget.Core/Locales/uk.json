@@ -175,5 +175,5 @@
   "LowQuotaNotificationTitle": "Квота закінчується",
   "ResetExpiryNotificationTitle": "Скидання скоро згорять",
   "OpenWidget": "Відкрити віджет",
-  "NotificationDuration": "Час показу сповіщення (секунди)"
+  "NotificationDuration": "Приховати після активності (секунди)"
 }
