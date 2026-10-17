@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fixed native UI verification to accept owner-centered dialogs constrained by the monitor's working area, including DPI scaling. Added an oversized-dialog regression and coordinate diagnostics for CI failures.
+
 ## 0.10.3 — 2026-10-17 (local build)
 
 - Renamed the notification setting to Notification display time and limited choices to 2 sec, 3 sec and 5 sec, with localized units and no explanatory text.

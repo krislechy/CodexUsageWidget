@@ -620,6 +620,17 @@ public partial class MainWindow : Window
         if ((string)((ComboBoxItem)durationSettings.NotificationDuration.SelectedItem).Tag != "3" || durationSettings.Result.NotificationSeconds != 3)
             throw new InvalidOperationException("Notification duration must survive settings serialization and cloning.");
         durationSettings.Close();
+        var constrainedSettings = new SettingsWindow(new WidgetSettings())
+        {
+            Owner = this,
+            Height = WindowPlacement.ScreenFor(this)!.WorkingArea.Height / VisualTreeHelper.GetDpi(this).DpiScaleY + 100
+        };
+        constrainedSettings.Show();
+        await Task.Delay(150);
+        VerifyDialogCenter(constrainedSettings);
+        if (!WindowPlacement.IsInside(constrainedSettings))
+            throw new InvalidOperationException("An oversized settings dialog must fit the monitor's working area.");
+        constrainedSettings.Close();
         Capture((FrameworkElement)settings.Content, Path.Combine(directory, "settings.png"));
         duration.IsDropDownOpen = true;
         await Task.Delay(100);
@@ -790,9 +801,21 @@ public partial class MainWindow : Window
 
     private void VerifyDialogCenter(Window dialog)
     {
-        if (Math.Abs(dialog.Left + dialog.ActualWidth / 2 - Left - ActualWidth / 2) > 1 ||
-            Math.Abs(dialog.Top + dialog.ActualHeight / 2 - Top - ActualHeight / 2) > 1)
-            throw new InvalidOperationException("Dialog is not centered on its owner.");
+        if (dialog.WindowStartupLocation != WindowStartupLocation.CenterOwner)
+            throw new InvalidOperationException("Dialogs must declare CenterOwner startup placement.");
+        var area = WindowPlacement.ScreenFor(this)!.WorkingArea;
+        var ownerOrigin = PointToScreen(new Point());
+        var origin = dialog.PointToScreen(new Point());
+        var ownerDpi = VisualTreeHelper.GetDpi(this);
+        var dialogDpi = VisualTreeHelper.GetDpi(dialog);
+        var width = dialog.ActualWidth * dialogDpi.DpiScaleX;
+        var height = dialog.ActualHeight * dialogDpi.DpiScaleY;
+        var left = Math.Clamp(ownerOrigin.X + (ActualWidth * ownerDpi.DpiScaleX - width) / 2,
+            area.Left, Math.Max(area.Left, area.Right - width));
+        var top = Math.Clamp(ownerOrigin.Y + (ActualHeight * ownerDpi.DpiScaleY - height) / 2,
+            area.Top, Math.Max(area.Top, area.Bottom - height));
+        if (Math.Abs(origin.X - left) > 2 || Math.Abs(origin.Y - top) > 2)
+            throw new InvalidOperationException($"Dialog must be centered or clamped to its owner's working area. Expected ({left:0.##}, {top:0.##}), got ({origin.X:0.##}, {origin.Y:0.##}); size {width:0.##} × {height:0.##}, work area {area}.");
     }
 
     private void VerifyRefillInProgress()
