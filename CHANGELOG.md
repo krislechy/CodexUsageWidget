@@ -2,6 +2,7 @@
 
 ## 0.12.2 — 2026-10-23 (local build)
 
+- Compact context now shows only the mouse icon and horizontal scale, with no label or percentage.
 - Fixed stale context percentages after a thread resumes into a continuation journal named with a window-ID suffix. The monitor now discovers the latest matching journal instead of permanently reading the original file.
 - Added file-change hints and periodic rediscovery, invalidated cached usage on path changes and equal-length rewrites, and released watchers on selection changes and exit.
 - A completed compaction clears older usage until a fresh token count is available.

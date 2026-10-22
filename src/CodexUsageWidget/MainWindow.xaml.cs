@@ -228,7 +228,7 @@ public partial class MainWindow : Window
         Width = _viewModel.IsCompact ? 128 : 386;
         var showResets = ResetDisclosure.IsChecked == true;
         ResetSectionRow.Height = new GridLength(showResets ? 292 : 44);
-        Height = _viewModel.IsCompact ? 156 : showResets ? 830 : 582;
+        Height = _viewModel.IsCompact ? 148 : showResets ? 830 : 582;
         Surface.CornerRadius = new CornerRadius(_viewModel.IsCompact ? 22 : 26);
     }
 
@@ -559,6 +559,9 @@ public partial class MainWindow : Window
         ApplyLayout();
         await Task.Delay(100);
         Capture(Surface, Path.Combine(directory, "context-compact.png"));
+        if (FindVisualChildren<TextBlock>(CompactContextArea).Any() ||
+            FindVisualChildren<ProgressBar>(CompactContextArea).Single().Value != 72)
+            throw new InvalidOperationException("Compact context must show only the mouse icon and scale, with no text or percentage.");
         _viewModel.SetContext(null);
         if (_viewModel.ContextPercent != 0 || !_viewModel.ContextLabel.Contains('—'))
             throw new InvalidOperationException("Switching to unknown context must clear the previous value.");
