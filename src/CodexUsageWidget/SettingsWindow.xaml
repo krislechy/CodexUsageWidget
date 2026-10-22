@@ -98,6 +98,11 @@
     <Button x:Name="BackgroundSwatch" Grid.Column="1" Tag="BackgroundColorBox" Style="{StaticResource ActionButton}" BorderBrush="#626A76" Width="28" Height="28" Padding="0" Click="ColorPalette_Click" ToolTip="{loc:Tr Background}" AutomationProperties.Name="{loc:Tr Background}"/>
     <TextBox x:Name="BackgroundColorBox" Grid.Column="2" TextChanged="Colors_Changed" MaxLength="7" Padding="8,5" AutomationProperties.Name="{loc:Tr Background}"/>
    </Grid><TextBlock x:Name="ColorError" Foreground="#F1B859" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,14"/>
+   <Grid Margin="0,0,0,14"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="36"/><ColumnDefinition Width="110"/></Grid.ColumnDefinitions>
+    <TextBlock Text="{loc:Tr ContextBar}" VerticalAlignment="Center"/>
+    <Button x:Name="ContextSwatch" Grid.Column="1" Tag="ContextColorBox" Style="{StaticResource ActionButton}" Width="28" Height="28" Padding="0" Click="ColorPalette_Click" AutomationProperties.Name="{loc:Tr ContextBar}"/>
+    <TextBox x:Name="ContextColorBox" Grid.Column="2" TextChanged="Colors_Changed" MaxLength="7" Padding="8,5" AutomationProperties.Name="{loc:Tr ContextBar}"/>
+   </Grid>
    <CheckBox x:Name="TopmostBox" Content="{loc:Tr AboveWindows}"/>
    <CheckBox x:Name="StartupBox" Content="{loc:Tr StartWindows}"/>
 

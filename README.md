@@ -149,3 +149,9 @@ Release ZIPs require a matching `.zip.sha256` asset plus `update-manifest.json`.
 GitHub checks send no Codex/account data or authentication token. A failed network check leaves the current application running. Releases missing update metadata cannot be installed automatically. Adding the updater does not publish a release: publication still requires an explicit command.
 
 Quota alerts appear as the app’s own dark popup above the taskbar at the bottom-right of the primary monitor. They do not take focus and remain available while the widget is hidden. Click the notification to restore the widget; its cross only dismisses it. In **Settings**, choose the notification duration from 2, 3 or 5 seconds (default: 2); the popup waits for mouse or keyboard activity before starting its timeout. Hovering pauses the timeout, and leaving restarts the timeout. New messages merge into the visible popup. No additional API requests or reset actions are triggered.
+
+## Context bar
+
+Select a conversation in **Extra info**. Its estimated context usage appears below the rings in both views. Settings → Colors → Context changes the bar color (default orange). The selected conversation ID is saved. This follows the manually selected conversation, not the foreground Codex tab.
+
+The widget reads the last 256 KiB of that conversation's local journal under CODEX_HOME/sessions (default ~/.codex/sessions), extracting the latest token_count event's last_token_usage.total_tokens and model_context_window. Updates are checked every two seconds while the widget is visible; unchanged files are not reread. Missing metadata shows an em dash. Values are estimates at the latest reported turn, not live token streaming or a guaranteed auto-compaction threshold.

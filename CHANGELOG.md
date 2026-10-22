@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.0 — 2026-10-22 (local build)
+
+- Added an orange context usage bar below the rings in expanded and compact views. Select its conversation in Extra info; switching immediately clears the previous reading.
+- Context estimates use the latest turn's token usage and reported window from a bounded local session journal tail, never cumulative conversation usage. Missing metadata stays unavailable.
+- Added a context color setting with live preview, cancellation and persistence.
+- Added context-only native verification and packaging mode. Only the new functionality is tested for this local Portable/Lite build.
+
 ## Unreleased
 
 - Fixed native UI verification to accept owner-centered dialogs constrained by the monitor's working area, including DPI scaling. Added an oversized-dialog regression and coordinate diagnostics for CI failures.

@@ -22,6 +22,7 @@ internal static class WidgetTheme
         if (!TryColor(settings.FiveHourColor, out var pink) || !TryColor(settings.WeeklyColor, out var lime) ||
             !TryColor(settings.BackgroundColor, out var background)) return;
         var resources = Application.Current.Resources;
+        if (TryColor(settings.ContextColor, out var context)) resources["ContextAccent"] = new SolidColorBrush(context);
         void Set(string key, Color color) => resources[key] = new SolidColorBrush(color);
         Set("Pink", pink); Set("Lime", lime); Set("WidgetSurface", background);
         double Luminance(Color color)

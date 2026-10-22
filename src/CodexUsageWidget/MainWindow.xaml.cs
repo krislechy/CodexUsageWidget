@@ -27,6 +27,17 @@ public partial class MainWindow : Window
     private readonly bool _preview;
     private readonly string[] _arguments;
     private readonly DispatcherTimer _clock = new() { Interval = TimeSpan.FromSeconds(1) };
+    private readonly ContextMonitor _contextMonitor = new();
+    private readonly DispatcherTimer _contextClock = new() { Interval = TimeSpan.FromSeconds(2) };
+    private bool _readingContext;
+    private async Task RefreshContextAsync()
+    {
+        if (_readingContext || _preview || _exiting || !IsVisible) return;
+        _readingContext = true;
+        var id = _settings.ContextThreadId;
+        try { var value = await _contextMonitor.ReadAsync(id); if (id == _settings.ContextThreadId && !_exiting) _viewModel.SetContext(value); }
+        finally { _readingContext = false; }
+    }
     private WidgetSettings _settings;
     private ExtraInfoWindow? _extraInfo;
     private readonly QuotaAlerts _alerts = new();
@@ -39,6 +50,7 @@ public partial class MainWindow : Window
         if (_extraInfo is not null) { _extraInfo.Show(); _extraInfo.Activate(); return; }
         if (!_preview && _monitor is null) return;
         var window = new ExtraInfoWindow(_settings, _preview ? null : _monitor!.Client, _preview ? null : () => _settings.Save()) { Owner = this, Topmost = Topmost };
+        window.ContextThreadSelected += id => { _settings.ContextThreadId = id; _viewModel.SetContext(null); if (!_preview) _settings.Save(); _ = RefreshContextAsync(); };
         _extraInfo = window;
         window.Closed += (_, _) => _extraInfo = null;
         window.Show();
@@ -87,6 +99,8 @@ public partial class MainWindow : Window
             () => !_exiting && !_changingSettings && !_resetAction && !_viewModel.PendingReset && _viewModel.CanRefresh && !OwnedWindows.Cast<Window>().Any(window => window.IsVisible),
             ExitAsync, preview);
         DataContext = _viewModel;
+        _contextClock.Tick += async (_, _) => await RefreshContextAsync();
+        if (!preview) _contextClock.Start();
         _viewModel.IsCompact = arguments.Contains("--compact") || _settings.Compact;
         ApplyLayout();
         Topmost = _settings.Topmost;
@@ -141,7 +155,8 @@ public partial class MainWindow : Window
                     if (captureIndex + 1 >= _arguments.Length) throw new ArgumentException("--capture requires an output directory.");
                     var output = Path.GetFullPath(_arguments[captureIndex + 1]);
                     Localization.Current.SetLanguage(_settings.Language);
-                    await CapturePreviewsAsync(output);
+                    if (_arguments.Contains("--context-only")) await CaptureContextAsync(output);
+                    else await CapturePreviewsAsync(output);
                     Application.Current.Shutdown(0);
                 }
                 catch (Exception exception)
@@ -196,7 +211,7 @@ public partial class MainWindow : Window
         Width = _viewModel.IsCompact ? 128 : 386;
         var showResets = ResetDisclosure.IsChecked == true;
         ResetSectionRow.Height = new GridLength(showResets ? 292 : 44);
-        Height = _viewModel.IsCompact ? 128 : showResets ? 796 : 548;
+        Height = _viewModel.IsCompact ? 156 : showResets ? 830 : 582;
         Surface.CornerRadius = new CornerRadius(_viewModel.IsCompact ? 22 : 26);
     }
 
@@ -463,6 +478,7 @@ public partial class MainWindow : Window
 
     private async void ExitAsync()
     {
+        _contextClock.Stop();
         if (_exiting) return;
         _exiting = true;
         SaveSettings();
@@ -497,6 +513,62 @@ public partial class MainWindow : Window
         var now = DateTimeOffset.UtcNow;
         _viewModel.SetSnapshot(new UsageSnapshot(new QuotaWindow(73, 300, now.AddHours(3)), new QuotaWindow(11, 10080, now.AddDays(6)), now,
             new ResetCredits(3, [new("demo-first", now.AddDays(2)), new("demo-second", now.AddDays(8)), new("demo-third", now.AddDays(14))]), true));
+    }
+
+    private async Task CaptureContextAsync(string directory)
+    {
+        Directory.CreateDirectory(directory);
+        _viewModel.IsCompact = false;
+        ApplyLayout();
+        _viewModel.SetContext(new ContextUsage(72000, 100000));
+        await Task.Delay(100);
+        if (_viewModel.ContextPercent != 72) throw new InvalidOperationException("Context percentage mismatch.");
+        Capture(Surface, Path.Combine(directory, "context-expanded.png"));
+        _viewModel.IsCompact = true;
+        ApplyLayout();
+        await Task.Delay(100);
+        Capture(Surface, Path.Combine(directory, "context-compact.png"));
+        _viewModel.SetContext(null);
+        if (_viewModel.ContextPercent != 0 || !_viewModel.ContextLabel.Contains('—'))
+            throw new InvalidOperationException("Switching to unknown context must clear the previous value.");
+        var settings = new SettingsWindow(new WidgetSettings()) { Owner = this };
+        settings.Show();
+        settings.ContextColorBox.Text = "#38BDF8";
+        if (!settings.SaveButton.IsEnabled || settings.Result.ContextColor != "#38BDF8" ||
+            ((SolidColorBrush)FindResource("ContextAccent")).Color != Color.FromRgb(56, 189, 248))
+            throw new InvalidOperationException("Context color preview failed.");
+        settings.ContextColorBox.Text = "invalid";
+        if (settings.SaveButton.IsEnabled) throw new InvalidOperationException("Invalid context color must block saving.");
+        settings.ContextColorBox.Text = "#38BDF8";
+        var copy = JsonSerializer.Deserialize<WidgetSettings>(JsonSerializer.Serialize(settings.Result))!;
+        if (copy.ContextColor != "#38BDF8") throw new InvalidOperationException("Context color must persist.");
+        settings.Close();
+        if (((SolidColorBrush)FindResource("ContextAccent")).Color != Color.FromRgb(255, 159, 10))
+            throw new InvalidOperationException("Cancelling color changes must restore orange.");
+        var home = Path.Combine(directory, "fixture");
+        var sessionId = Guid.NewGuid().ToString();
+        Directory.CreateDirectory(Path.Combine(home, "sessions"));
+        var fixture = Path.Combine(home, "sessions", $"rollout-{sessionId}.jsonl");
+        var log = "{\"type\":\"event_msg\",\"payload\":{\"type\":\"token_count\",\"info\":{\"model_context_window\":100000,\"last_token_usage\":{\"total_tokens\":72000},\"total_token_usage\":{\"total_tokens\":999999}}}}";
+        File.WriteAllText(fixture, log + "\n");
+        var previousHome = Environment.GetEnvironmentVariable("CODEX_HOME");
+        try
+        {
+            Environment.SetEnvironmentVariable("CODEX_HOME", home);
+            var monitor = new ContextMonitor();
+            if ((await monitor.ReadAsync(sessionId))?.Percent != 72)
+                throw new InvalidOperationException("Context must use the latest turn, not cumulative tokens.");
+            if (await monitor.ReadAsync(Guid.NewGuid().ToString()) is not null)
+                throw new InvalidOperationException("Session changes must clear context.");
+            File.AppendAllText(fixture, log.Replace("72000", "12000") + "\n{partial");
+            if ((await monitor.ReadAsync(sessionId))?.Percent != 12)
+                throw new InvalidOperationException("Context must decrease after compaction and tolerate partial journal writes.");
+            if (ContextUsage.ParseLogLine(log.Replace("100000", "0")) is not null ||
+                ContextUsage.ParseLogLine("{}") is not null || ContextUsage.ParseLogLine("null") is not null)
+                throw new InvalidOperationException("Invalid context metadata must remain unavailable.");
+        }
+        finally { Environment.SetEnvironmentVariable("CODEX_HOME", previousHome); }
+        File.WriteAllText(Path.Combine(directory, "context-verification.txt"), "PASS: current context, missing metadata, session switching, compaction, partial writes, expanded/compact UI, color preview, persistence, validation and cancellation.");
     }
 
     private async Task CapturePreviewsAsync(string directory)

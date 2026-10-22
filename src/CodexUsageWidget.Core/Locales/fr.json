@@ -178,5 +178,6 @@
   "NotificationDuration": "Durée des notifications",
   "NotificationSeconds2": "2 s",
   "NotificationSeconds3": "3 s",
-  "NotificationSeconds5": "5 s"
+  "NotificationSeconds5": "5 s",
+  "ContextBar": "Contexte"
 }

@@ -22,13 +22,13 @@ public partial class SettingsWindow : WidgetDialogWindow
     {
         _updates = updates;
         _originalLanguage = Localization.Current.Language;
-        _originalColors = new WidgetSettings { FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor };
+        _originalColors = new WidgetSettings { FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor, ContextColor = settings.ContextColor, ContextThreadId = settings.ContextThreadId };
         InitializeComponent();
         Result = new WidgetSettings
         {
             CodexPath = settings.CodexPath, RefreshSeconds = settings.RefreshSeconds, Topmost = settings.Topmost,
             Compact = settings.Compact, Left = settings.Left, Top = settings.Top, Language = settings.Language,
-            FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor,
+            FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor, ContextColor = settings.ContextColor, ContextThreadId = settings.ContextThreadId,
             LowQuotaAlerts = settings.LowQuotaAlerts, LowQuotaThreshold = settings.LowQuotaThreshold,
             ResetExpiryAlerts = settings.ResetExpiryAlerts, ResetExpiryHours = settings.ResetExpiryHours,
             NotificationSeconds = settings.NotificationSeconds is 2 or 3 or 5 ? settings.NotificationSeconds : 2,
@@ -45,6 +45,7 @@ public partial class SettingsWindow : WidgetDialogWindow
         FiveHourColorBox.Text = settings.FiveHourColor;
         WeeklyColorBox.Text = settings.WeeklyColor;
         BackgroundColorBox.Text = settings.BackgroundColor;
+        ContextColorBox.Text = settings.ContextColor;
         AutoUpdatesBox.IsChecked = settings.AutoUpdates;
         foreach (ComboBoxItem item in NotificationDuration.Items)
             if (int.Parse((string)item.Tag) == Result.NotificationSeconds) NotificationDuration.SelectedItem = item;
@@ -65,13 +66,16 @@ public partial class SettingsWindow : WidgetDialogWindow
         if (!_initialized) return;
         var valid = WidgetTheme.TryColor(FiveHourColorBox.Text.Trim(), out var five) &
             WidgetTheme.TryColor(WeeklyColorBox.Text.Trim(), out var weekly) &
-            WidgetTheme.TryColor(BackgroundColorBox.Text.Trim(), out var background);
+            WidgetTheme.TryColor(BackgroundColorBox.Text.Trim(), out var background) &
+            WidgetTheme.TryColor(ContextColorBox.Text.Trim(), out var context);
         SaveButton.IsEnabled = valid;
         ColorError.Text = valid ? "" : Localization.Current["ColorInvalid"];
         if (!valid) return;
         FiveHourSwatch.Background = new SolidColorBrush(five);
         WeeklySwatch.Background = new SolidColorBrush(weekly);
         BackgroundSwatch.Background = new SolidColorBrush(background);
+        ContextSwatch.Background = new SolidColorBrush(context);
+        Result.ContextColor = ContextColorBox.Text.Trim().ToUpperInvariant();
         Result.FiveHourColor = FiveHourColorBox.Text.Trim().ToUpperInvariant();
         Result.WeeklyColor = WeeklyColorBox.Text.Trim().ToUpperInvariant();
         Result.BackgroundColor = BackgroundColorBox.Text.Trim().ToUpperInvariant();
@@ -101,6 +105,7 @@ public partial class SettingsWindow : WidgetDialogWindow
         FiveHourColorBox.Text = "#FF397E";
         WeeklyColorBox.Text = "#9BEF29";
         BackgroundColorBox.Text = "#141619";
+        ContextColorBox.Text = "#FF9F0A";
     }
 
     private void Language_Changed(object sender, SelectionChangedEventArgs e)

@@ -22,6 +22,10 @@ public sealed class WidgetViewModel : INotifyPropertyChanged, IDisposable
 
     public WidgetViewModel() => _text.PropertyChanged += OnLanguageChanged;
     private void OnLanguageChanged(object? sender, PropertyChangedEventArgs e) => NotifyAll();
+    private ContextUsage? _context;
+    public double ContextPercent => _context?.Percent ?? 0;
+    public string ContextLabel => _context is null ? _text["ContextBar"] + " —" : _text["ContextBar"] + " ≈" + _context.Percent.ToString("0", _text.Culture) + "%";
+    public void SetContext(ContextUsage? value) { _context = value; NotifyAll(); }
     public UsageSnapshot? Snapshot => _snapshot;
     public double FiveHourAvailable => _snapshot?.FiveHour?.RemainingPercent ?? 0;
     public double WeeklyAvailable => _snapshot?.Weekly?.RemainingPercent ?? 0;

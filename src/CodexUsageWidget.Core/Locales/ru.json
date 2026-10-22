@@ -178,5 +178,6 @@
   "NotificationDuration": "Время показа уведомления",
   "NotificationSeconds2": "2 сек",
   "NotificationSeconds3": "3 сек",
-  "NotificationSeconds5": "5 сек"
+  "NotificationSeconds5": "5 сек",
+  "ContextBar": "Контекст"
 }

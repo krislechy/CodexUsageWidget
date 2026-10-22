@@ -10,6 +10,15 @@
  ShowInTaskbar="False" Topmost="True" FontFamily="Segoe UI Variable, Segoe UI"
  KeyDown="Window_KeyDown" Loaded="Window_Loaded" Closing="Window_Closing">
  <Window.Resources>
+  <Style x:Key="ContextBarStyle" TargetType="ProgressBar">
+   <Setter Property="Background" Value="#353940"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ProgressBar">
+    <Grid ClipToBounds="True"><Border Background="{TemplateBinding Background}" CornerRadius="2"/>
+     <Border x:Name="PART_Track" Background="Transparent"/>
+     <Border x:Name="PART_Indicator" HorizontalAlignment="Left" Background="{TemplateBinding Foreground}" CornerRadius="2"/>
+    </Grid>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
   <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}"><Setter Property="Foreground" Value="{DynamicResource WidgetText}"/></Style>
   <Style x:Key="WidgetIconButton" TargetType="Button" BasedOn="{StaticResource IconButton}"><Setter Property="Foreground" Value="{DynamicResource WidgetMuted}"/></Style>
   <Geometry x:Key="PinIcon">M 6,1 L 12,1 M 7,1 L 7,6 L 4,10 L 14,10 L 11,6 L 11,1 M 9,10 L 9,17</Geometry>
@@ -24,7 +33,7 @@
    <ScrollViewer x:Name="ExpandedScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Visibility="{Binding IsExpanded, Converter={StaticResource BoolVisibility}}">
    <Grid x:Name="ExpandedPanel" Margin="19,14,19,12">
     <Grid.RowDefinitions>
-     <RowDefinition Height="34"/><RowDefinition Height="244"/><RowDefinition Height="74"/><RowDefinition Height="74"/><RowDefinition x:Name="ResetSectionRow" Height="44"/><RowDefinition Height="32"/>
+     <RowDefinition Height="34"/><RowDefinition Height="278"/><RowDefinition Height="74"/><RowDefinition Height="74"/><RowDefinition x:Name="ResetSectionRow" Height="44"/><RowDefinition Height="32"/>
     </Grid.RowDefinitions>
     <Grid>
      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="90"/></Grid.ColumnDefinitions>
@@ -41,7 +50,7 @@
       </Button>
      </StackPanel>
     </Grid>
-    <Grid x:Name="FullRingArea" Background="Transparent" Grid.Row="1" Width="232" Height="232" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0">
+    <Grid x:Name="FullRingArea" Background="Transparent" Grid.Row="1" Width="232" Height="232" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,8,0,0">
      <controls:RingGauge Value="{Binding FiveHourAvailable}" RingBrush="{DynamicResource Pink}" TrackBrush="{DynamicResource PinkTrack}" StrokeWidth="18" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
      <controls:RingGauge Width="184" Height="184" Value="{Binding WeeklyAvailable}" RingBrush="{DynamicResource Lime}" TrackBrush="{DynamicResource LimeTrack}" StrokeWidth="18" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -51,6 +60,10 @@
       <TextBlock x:Name="FullCountdown" Text="{Binding FiveHourCountdown}" Foreground="{DynamicResource WidgetMuted}" FontSize="16" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" HorizontalAlignment="Center" Margin="0,8,0,0" ToolTip="{Binding FiveHourReset}" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
      </StackPanel>
     </Grid>
+    <StackPanel Grid.Row="1" VerticalAlignment="Bottom" Margin="12,0,12,2">
+     <TextBlock Text="{Binding ContextLabel}" FontSize="10" Foreground="{DynamicResource WidgetMuted}" Margin="0,0,0,5"/>
+     <ProgressBar Height="5" Value="{Binding ContextPercent, Mode=OneWay}" Foreground="{DynamicResource ContextAccent}" AutomationProperties.Name="{Binding ContextLabel}" Style="{StaticResource ContextBarStyle}"/>
+    </StackPanel>
     <Grid Grid.Row="2" Margin="0,6,0,0" AutomationProperties.Name="{Binding FiveHourAccessible}">
      <Grid.ColumnDefinitions><ColumnDefinition Width="21"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
      <Grid.RowDefinitions><RowDefinition Height="35"/><RowDefinition/><RowDefinition Height="1"/></Grid.RowDefinitions>
@@ -147,11 +160,15 @@
     </Grid>
    </Grid></ScrollViewer>
    <Grid x:Name="CompactPanel" Background="Transparent" Margin="9" Visibility="{Binding IsCompact, Converter={StaticResource BoolVisibility}}" ToolTip="{Binding CompactTooltip}" AutomationProperties.Name="{loc:Tr ExpandView}">
-    <Grid Width="92" Height="92" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid Width="92" Height="92" HorizontalAlignment="Center" VerticalAlignment="Top">
      <controls:RingGauge Value="{Binding FiveHourAvailable}" StrokeWidth="6" RingBrush="{DynamicResource Pink}" TrackBrush="{DynamicResource PinkTrack}" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
      <controls:RingGauge Width="70" Height="70" Value="{Binding WeeklyAvailable}" StrokeWidth="6" RingBrush="{DynamicResource Lime}" TrackBrush="{DynamicResource LimeTrack}" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
      <TextBlock x:Name="CompactCountdown" Text="{Binding FiveHourCountdown}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource WidgetText}" HorizontalAlignment="Center" VerticalAlignment="Center" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
     </Grid>
+    <StackPanel VerticalAlignment="Bottom" Margin="6,0,6,0">
+     <TextBlock Text="{Binding ContextLabel}" FontSize="9" HorizontalAlignment="Center" Foreground="{DynamicResource WidgetMuted}" Margin="0,0,0,4"/>
+     <ProgressBar Height="4" Value="{Binding ContextPercent, Mode=OneWay}" Foreground="{DynamicResource ContextAccent}" AutomationProperties.Name="{Binding ContextLabel}" Style="{StaticResource ContextBarStyle}"/>
+    </StackPanel>
    </Grid>
   </Grid>
  </Border>

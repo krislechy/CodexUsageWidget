@@ -7,9 +7,11 @@ function Invoke-Checked([string]$Command, [string[]]$Arguments) {
  if ($LASTEXITCODE -ne 0) { throw "$Command failed (exit $LASTEXITCODE)." }
 }
 
-function Invoke-UiCapture([string]$Executable, [string]$Destination) {
+function Invoke-UiCapture([string]$Executable, [string]$Destination, [switch]$ContextOnly) {
  New-Item -ItemType Directory -Path $Destination -Force | Out-Null
- $process = Start-Process -FilePath $Executable -ArgumentList @('--capture', ('"' + $Destination + '"'), '--language', 'en') -WindowStyle Hidden -PassThru
+ $captureArguments = @('--capture', ('"' + $Destination + '"'), '--language', 'en')
+ if ($ContextOnly) { $captureArguments += '--context-only' }
+ $process = Start-Process -FilePath $Executable -ArgumentList $captureArguments -WindowStyle Hidden -PassThru
  try {
   if (!$process.WaitForExit(30000)) { $process.Kill($true); throw 'English UI verification timed out.' }
   if ($process.ExitCode -ne 0) {

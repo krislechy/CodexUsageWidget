@@ -233,3 +233,7 @@ The Settings update section sits near the top, after language selection. It uses
 ### Custom quota notification
 
 The notification is a 380-pixel-wide unowned popup with an 18-pixel rounded outline, the shared dark surface, muted body copy and the pink/lime two-ring mark. The compact brand row carries a close control; the 17-pixel heading and wrapping 13-pixel body describe quota or expiry. The card opens the widget on click; the cross only dismisses it. Settings provide a choice of 2, 3 or 5 seconds, defaulting to 2 seconds. It anchors inside the primary work area near the tray, never takes focus on arrival, and remains visible when the widget is hidden. Incoming alerts share one window. Unattended alerts wait for mouse or keyboard activity before the dismissal countdown begins; hover preserves reading time. Typography and controls use the active language, while English native captures provide the routine visual check.
+
+### Context bar
+
+A slim orange horizontal bar sits immediately beneath the rings in both views, with a concise localized context percentage above it. Expanded view uses a 5-DIP track; compact view uses 4 DIP and a 9-DIP label. Unknown context uses an empty track and an em dash. The context color follows the existing swatch/hex settings controls with preview and cancel semantics. The existing ring diameters remain unchanged.

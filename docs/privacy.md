@@ -15,3 +15,7 @@ The app-server is a full-capability upstream process. Normal monitoring sends on
 ## GitHub update traffic
 
 When enabled, the app contacts `api.github.com/repos/krislechy/CodexUsageWidget/releases/latest` after startup and at most once per six hours in the background. Manual checks use the same endpoint. It sends the app name/version and normal HTTPS connection metadata, with no GitHub token, Codex credentials, account metrics or conversation information. Update assets come from the matching release on `github.com` and GitHub's download redirects. Settings can disable automatic updates; manual checking remains available. Local update jobs contain package files, paths, process identity and verification/result metadata, not account data.
+
+## Context usage data
+
+The optional context bar reads a bounded tail of the manually selected local Codex session journal. Journal tails may contain conversation text, but only token-count metadata is extracted; no journal text is logged, persisted, uploaded or included in screenshots. The saved preference contains the selected conversation ID and context color. No model calls or additional authenticated network requests are made for context tracking.

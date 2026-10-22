@@ -33,6 +33,7 @@ public partial class ExtraInfoWindow : WidgetDialogWindow
     private int _accountRevision;
     private bool _reloadAgain;
     private int _days = 7;
+    internal event Action<string>? ContextThreadSelected;
     internal bool IsLoading => _busy;
 
     public ExtraInfoWindow(WidgetSettings settings, CodexClient? client, Action? save = null)
@@ -224,6 +225,7 @@ public partial class ExtraInfoWindow : WidgetDialogWindow
         if (_threadBusy || _lifetime.IsCancellationRequested) return;
         _threadBusy = true; ChooseThread.IsEnabled = false;
         _selectedThread = choice;
+        ContextThreadSelected?.Invoke(choice.Id);
         var revision = _accountRevision;
         ChooseThread.Content = new TextBlock { Text = choice.Name, TextTrimming = TextTrimming.CharacterEllipsis };
         ChooseThread.ToolTip = choice.Name;

@@ -14,6 +14,8 @@ public sealed class WidgetSettings
     public string Language { get; set; } = "en";
     public string FiveHourColor { get; set; } = "#FF397E";
     public string WeeklyColor { get; set; } = "#9BEF29";
+    public string ContextColor { get; set; } = "#FF9F0A";
+    public string? ContextThreadId { get; set; }
     public string BackgroundColor { get; set; } = "#141619";
     public bool LowQuotaAlerts { get; set; }
     public int LowQuotaThreshold { get; set; } = 10;
@@ -39,6 +41,7 @@ public sealed class WidgetSettings
             if (!WidgetTheme.TryColor(settings.FiveHourColor, out _)) settings.FiveHourColor = "#FF397E";
             if (!WidgetTheme.TryColor(settings.WeeklyColor, out _)) settings.WeeklyColor = "#9BEF29";
             if (!WidgetTheme.TryColor(settings.BackgroundColor, out _)) settings.BackgroundColor = "#141619";
+            if (!WidgetTheme.TryColor(settings.ContextColor, out _)) settings.ContextColor = "#FF9F0A";
             if (settings.LowQuotaThreshold is < 1 or > 99) settings.LowQuotaThreshold = 10;
             if (settings.ResetExpiryHours is < 1 or > 168) settings.ResetExpiryHours = 24;
             if (settings.NotificationSeconds is not (2 or 3 or 5)) settings.NotificationSeconds = 2;

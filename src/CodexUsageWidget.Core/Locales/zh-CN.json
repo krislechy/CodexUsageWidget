@@ -178,5 +178,6 @@
   "NotificationDuration": "通知显示时间",
   "NotificationSeconds2": "2 秒",
   "NotificationSeconds3": "3 秒",
-  "NotificationSeconds5": "5 秒"
+  "NotificationSeconds5": "5 秒",
+  "ContextBar": "上下文"
 }

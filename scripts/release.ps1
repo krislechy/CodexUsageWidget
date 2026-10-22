@@ -1,6 +1,7 @@
 param(
  [switch]$Publish,
  [switch]$Commit,
+ [switch]$ContextOnly,
  [switch]$Resume,
  [string]$Version,
  [string]$CommitMessage,
@@ -43,7 +44,7 @@ try {
  $reportPath = Join-Path $output 'release-report.json'
  if ($Resume -and (!$Publish -or $Commit)) { throw '-Resume requires -Publish and cannot be combined with -Commit.' }
  if (!$Resume) {
-  & (Join-Path $PSScriptRoot 'verify.ps1') -OutputDirectory (Join-Path $output 'ui') -UpdateScreenshots
+  & (Join-Path $PSScriptRoot 'verify.ps1') -OutputDirectory (Join-Path $output 'ui') -UpdateScreenshots -ContextOnly:$ContextOnly
   & (Join-Path $PSScriptRoot 'publish.ps1') -OutputDirectory $output -Package Both
  } else {
   if (!(Test-Path -LiteralPath $reportPath)) { throw 'No prepared release report; run preparation first.' }
@@ -57,8 +58,8 @@ try {
   $folder = Join-Path $output $name
   $exe = Join-Path $folder 'CodexUsageWidget.exe'
   if (!$Resume) {
-   Invoke-UiCapture $exe (Join-Path $output "smoke/$name")
-   Invoke-UpdateHelperSmoke $exe (Join-Path $output "smoke/$name")
+   Invoke-UiCapture $exe (Join-Path $output "smoke/$name") -ContextOnly:$ContextOnly
+   if (!$ContextOnly) { Invoke-UpdateHelperSmoke $exe (Join-Path $output "smoke/$name") }
   }
   $zip = Join-Path $output ($name + '.zip')
   $hash = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -78,7 +79,7 @@ try {
   } elseif ($LASTEXITCODE -ne 0) { throw 'Could not inspect staged changes.' }
  }
  $head = (& git rev-parse HEAD).Trim()
- $report = [ordered]@{ version=$version; commit=$head; verifiedLanguage='en'; packages=$packages; published=$false }
+ $report = [ordered]@{ version=$version; commit=$head; verifiedLanguage='en'; verificationScope=$(if ($ContextOnly) { 'context-only' } else { 'full' }); packages=$packages; published=$false }
  $report | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $reportPath -Encoding utf8
  if ($Publish) {
   if (& git status --porcelain) { throw 'Working tree must be clean before publication. Use -Commit to commit prepared changes.' }
