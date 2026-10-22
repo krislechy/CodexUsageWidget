@@ -181,6 +181,11 @@ public sealed class CodexClient : IAsyncDisposable
             _updated = updated;
             _disconnected = disconnected;
             _extraNotification = extraNotification;
+            // App-server JSONL is UTF-8, independently of the Windows console code page.
+            var utf8 = new System.Text.UTF8Encoding(false);
+            info.StandardInputEncoding = utf8;
+            info.StandardOutputEncoding = utf8;
+            info.StandardErrorEncoding = utf8;
             _process = Process.Start(info) ?? throw new UsageUnavailableException("Could not start Codex CLI.");
             _process.StandardInput.AutoFlush = true;
             _errorDrainer = DrainErrorsAsync();

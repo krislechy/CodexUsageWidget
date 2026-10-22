@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.2 — 2026-10-22 (local build)
+
+- Fixed garbled Cyrillic in conversation titles by explicitly decoding app-server JSONL as UTF-8 instead of the Windows code page. All redirected protocol streams use UTF-8 without a BOM.
+- Added a byte-level subprocess regression using raw Cyrillic output and a forced Windows-1251 decoder. It reproduces the corruption before the fix and verifies title/preview text plus Cyrillic search afterward.
+- Verified only encoding and context functionality; packaged Portable and Lite locally.
+
 ## 0.11.1 — 2026-10-22 (local build)
 
 - Fixed conversation labels to fall back from missing or blank names to preview text before the ID, preserving Cyrillic with any interface language.

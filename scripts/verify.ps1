@@ -5,6 +5,7 @@ Push-Location $projectRoot
 try {
  Invoke-Checked 'dotnet' @('build','CodexUsageWidget.sln','-c','Release')
  if (!$ContextOnly) { Invoke-Checked 'dotnet' @('run','--project','tests/CodexUsageWidget.Tests','-c','Release','--no-build') }
+ else { Invoke-Checked 'dotnet' @('run','--project','tests/CodexUsageWidget.Tests','-c','Release','--no-build','--','--encoding-only') }
  $output = [IO.Path]::GetFullPath($OutputDirectory)
  Invoke-UiCapture (Join-Path $projectRoot 'src/CodexUsageWidget/bin/Release/net10.0-windows/CodexUsageWidget.exe') $output -ContextOnly:$ContextOnly
  if ($UpdateScreenshots) {

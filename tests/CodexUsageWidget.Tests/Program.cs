@@ -31,6 +31,19 @@ if (args.Contains("--live"))
 
 var tests = new List<(string Name, Func<Task> Run)>
 {
+    ("UTF-8 transport preserves Cyrillic regardless of Windows code page", async () =>
+    {
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        await using var client = new CodexClient(() =>
+        {
+            var info = StartInfo("utf8");
+            info.StandardOutputEncoding = System.Text.Encoding.GetEncoding(1251);
+            return info;
+        }, TimeSpan.FromSeconds(5));
+        var page = await client.ReadThreadsAsync(search: "Русский");
+        Equal("Русский чат — Jedi Outcast", page.Threads[0].Name);
+        Equal("Ещё один сеанс", page.Threads[1].Name);
+    }),
     ("remaining percentage and timestamp", () => Check(() =>
     {
         var snapshot = Parse(Limits(73, 11));
@@ -269,6 +282,7 @@ var tests = new List<(string Name, Func<Task> Run)>
 
 tests.AddRange(UpdateTests.All);
 var failures = 0;
+if (args.Contains("--encoding-only")) tests.RemoveAll(test => !test.Name.StartsWith("UTF-8 transport", StringComparison.Ordinal));
 if (!args.Contains("--check-locales")) tests.RemoveAll(test => test.Name.StartsWith("every locale", StringComparison.Ordinal));
 foreach (var test in tests)
 {
@@ -307,6 +321,11 @@ static ProcessStartInfo StartInfo(string mode)
 
 static async Task FakeServerAsync(string mode)
 {
+    if (mode == "utf8")
+    {
+        Console.OutputEncoding = new System.Text.UTF8Encoding(false);
+        Console.InputEncoding = new System.Text.UTF8Encoding(false);
+    }
     var initialized = false;
     var acknowledged = false;
     var requests = 0;
@@ -337,6 +356,13 @@ static async Task FakeServerAsync(string mode)
             }
             if (mode == "reset-lost") continue;
             Console.WriteLine(JsonSerializer.Serialize(new { id, result = new { outcome } }));
+            continue;
+        }
+        if (mode == "utf8" && method.GetString() == "thread/list")
+        {
+            if (request.GetProperty("params").GetProperty("searchTerm").GetString() != "Русский")
+                throw new InvalidOperationException("Cyrillic search term was corrupted.");
+            Console.WriteLine("{\"id\":" + id.GetRawText() + ",\"result\":{\"data\":[{\"id\":\"a\",\"name\":\"Русский чат — Jedi Outcast\"},{\"id\":\"b\",\"preview\":\"Ещё один сеанс\"}]}}");
             continue;
         }
         if (mode == "extra")
