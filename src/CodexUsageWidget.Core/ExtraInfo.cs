@@ -82,7 +82,9 @@ public sealed record ThreadPage(IReadOnlyList<ThreadChoice> Threads, string? Cur
 {
     public static ThreadPage Parse(JsonElement payload) => new(ExtraJson.Array(payload, "data")?
         .Where(row => !string.IsNullOrWhiteSpace(ExtraJson.Text(row, "id")))
-        .Select(row => new ThreadChoice(ExtraJson.Text(row, "id")!, ExtraJson.Text(row, "name") ?? ExtraJson.Text(row, "id")!)).ToArray() ?? [],
+        .Select(row => new ThreadChoice(ExtraJson.Text(row, "id")!,
+            new[] { ExtraJson.Text(row, "name"), ExtraJson.Text(row, "preview"), ExtraJson.Text(row, "id") }
+                .First(value => !string.IsNullOrWhiteSpace(value))!)).ToArray() ?? [],
         ExtraJson.Text(payload, "nextCursor"));
 }
 

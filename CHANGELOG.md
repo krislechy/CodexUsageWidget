@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.1 — 2026-10-22 (local build)
+
+- Fixed conversation labels to fall back from missing or blank names to preview text before the ID, preserving Cyrillic with any interface language.
+- Verified Cyrillic conversation selection and the context feature only. Built both Portable and Lite locally.
+
 ## 0.11.0 — 2026-10-22 (local build)
 
 - Added an orange context usage bar below the rings in expanded and compact views. Select its conversation in Extra info; switching immediately clears the previous reading.

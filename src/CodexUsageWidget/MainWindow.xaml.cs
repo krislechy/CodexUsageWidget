@@ -518,6 +518,18 @@ public partial class MainWindow : Window
     private async Task CaptureContextAsync(string directory)
     {
         Directory.CreateDirectory(directory);
+        using (var titles = JsonDocument.Parse("{\"data\":[{\"id\":\"a\",\"name\":\"Русский чат\"},{\"id\":\"b\",\"name\":null,\"preview\":\"Кириллица без названия\"},{\"id\":\"c\",\"name\":\" \",\"preview\":\"Ещё один чат\"}]}"))
+        {
+            var page = ThreadPage.Parse(titles.RootElement);
+            if (page.Threads[0].Name != "Русский чат" || page.Threads[1].Name != "Кириллица без названия" ||
+                page.Threads[2].Name != "Ещё один чат")
+                throw new InvalidOperationException("Cyrillic names and preview fallbacks must remain readable in the English UI.");
+            var picker = new ExtraInfoWindow(new WidgetSettings(), null) { Owner = this };
+            await picker.SelectThreadAsync(page.Threads[1]);
+            if (((TextBlock)picker.ChooseThread.Content).Text != "Кириллица без названия")
+                throw new InvalidOperationException("The conversation picker must display Cyrillic without transliteration.");
+            picker.Close();
+        }
         _viewModel.IsCompact = false;
         ApplyLayout();
         _viewModel.SetContext(new ContextUsage(72000, 100000));
