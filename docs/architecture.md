@@ -117,3 +117,5 @@ Run scripts/release.ps1 -ContextOnly for feature-only English verification and b
 ### Project session selection
 
 SessionPicker provides a common asynchronous menu for the context area, Settings and Extra info. Each opening fetches fresh paginated thread summaries and local desktop project metadata. Groups use project IDs, avoiding accidental merges of projects with identical display names; explicit unassigned sessions remain in No project even if they have a working directory. Membership metadata is read only and never modified. Reopening while a prior request is pending cannot reopen a dismissed loading menu.
+
+Project headings show a checkmark when they contain the selected session. The shared picker orders projects by createdAt descending and sessions by recencyAt (or updatedAt when unavailable) descending. No project stays last. Undated projects sort after dated projects with a name tie-breaker; undated sessions retain their incoming order. Ordering and selection markers are implemented once in SessionPicker for every entry point.

@@ -213,7 +213,7 @@ public partial class ExtraInfoWindow : WidgetDialogWindow
         await SessionPicker.OpenAsync(ChooseThread,
             () => _client is null ? Task.FromResult<IReadOnlyList<ThreadChoice>>([new("demo-chat", "Example conversation")]) :
                 SessionPicker.ReadAllAsync(_client, ThreadSearch.Text.Trim()),
-            _selectedThread?.Id, async choice => { if (!_lifetime.IsCancellationRequested) await SelectThreadAsync(choice); });
+            _selectedThread?.Id ?? _settings.ContextThreadId, async choice => { if (!_lifetime.IsCancellationRequested) await SelectThreadAsync(choice); });
     }
     internal async Task SelectThreadAsync(ThreadChoice choice)
     {

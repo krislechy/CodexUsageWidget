@@ -617,7 +617,8 @@ public partial class MainWindow : Window
             project.IsSubmenuOpen = true;
             await Task.Delay(100);
             var submenu = (Popup)project.Template.FindName("PART_Popup", project);
-            if (!submenu.IsOpen || !((MenuItem)project.Items[0]).IsChecked)
+            if (!submenu.IsOpen || !project.IsChecked || !((MenuItem)project.Items[0]).IsChecked ||
+                ((MenuItem)first.Items[1]).IsChecked)
                 throw new InvalidOperationException("Project submenu and selected-session marker must be visible.");
             Capture((FrameworkElement)submenu.Child, Path.Combine(directory, "context-session-threads.png"));
             ((MenuItem)project.Items[0]).RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
@@ -638,6 +639,18 @@ public partial class MainWindow : Window
             if (sessionSettings.Result.ContextThreadId != "b")
                 throw new InvalidOperationException("Settings must use the same grouped picker.");
             sessionSettings.Close();
+            var datedProjects = "{\"local-projects\":{\"old\":{\"name\":\"A older project\",\"createdAt\":10},\"new\":{\"name\":\"Z newer project\",\"createdAt\":20}},\"thread-project-assignments\":{\"old-chat\":{\"projectId\":\"old\"},\"recent-chat\":{\"projectId\":\"new\"},\"earlier-chat\":{\"projectId\":\"new\"}}}";
+            using var datedThreads = JsonDocument.Parse("{\"data\":[{\"id\":\"earlier-chat\",\"name\":\"Earlier chat\",\"updatedAt\":100},{\"id\":\"old-chat\",\"name\":\"Older project chat\",\"updatedAt\":9999},{\"id\":\"recent-chat\",\"name\":\"Recent chat\",\"recencyAt\":300,\"updatedAt\":150},{\"id\":\"unassigned\",\"name\":\"No project chat\",\"updatedAt\":99999}]}");
+            var ordered = SessionPicker.GroupThreads(ThreadPage.Parse(datedThreads.RootElement).Threads, datedProjects);
+            if (ordered[0].Key != "new" || ordered[1].Key != "old" || ordered[2].Key != "" ||
+                ordered[0].Threads[0].Id != "recent-chat" || ordered[0].Threads[1].Id != "earlier-chat")
+                throw new InvalidOperationException("Projects must sort by creation and chats by last use, newest first.");
+            var selectedMenu = SessionPicker.Build(ordered, "recent-chat", _ => { });
+            if (!((MenuItem)selectedMenu.Items[0]).IsChecked || ((MenuItem)selectedMenu.Items[1]).IsChecked)
+                throw new InvalidOperationException("Only the selected session's project may have a checkmark.");
+            var unassignedMenu = SessionPicker.Build(ordered, "unassigned", _ => { });
+            if (!((MenuItem)unassignedMenu.Items[2]).IsChecked || ((MenuItem)unassignedMenu.Items[0]).IsChecked)
+                throw new InvalidOperationException("No project must receive the checkmark for an unassigned selection.");
         }
         finally { Environment.SetEnvironmentVariable("CODEX_HOME", previousHome); }
         File.WriteAllText(Path.Combine(directory, "context-verification.txt"), "PASS: current context, missing metadata, session switching, compaction, partial writes, expanded/compact UI, color preview, persistence, validation and cancellation.");

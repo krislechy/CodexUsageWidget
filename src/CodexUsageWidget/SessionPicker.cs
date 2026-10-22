@@ -17,6 +17,7 @@ internal static class SessionPicker
     internal static IReadOnlyList<Group> GroupThreads(IReadOnlyList<ThreadChoice> threads, string? metadata)
     {
         var names = new Dictionary<string, string>(StringComparer.Ordinal);
+        var createdAt = new Dictionary<string, long>(StringComparer.Ordinal);
         var assignments = new Dictionary<string, string>(StringComparer.Ordinal);
         try
         {
@@ -24,8 +25,13 @@ internal static class SessionPicker
             var root = doc.RootElement;
             if (root.TryGetProperty("local-projects", out var projects) && projects.ValueKind == JsonValueKind.Object)
                 foreach (var project in projects.EnumerateObject())
+                {
+                    if (project.Value.ValueKind != JsonValueKind.Object) continue;
                     if (project.Value.TryGetProperty("name", out var name) && name.ValueKind == JsonValueKind.String)
                         names[project.Name] = name.GetString()!;
+                    if (project.Value.TryGetProperty("createdAt", out var date) && date.ValueKind == JsonValueKind.Number &&
+                        date.TryGetInt64(out var timestamp)) createdAt[project.Name] = timestamp;
+                }
             if (root.TryGetProperty("thread-project-assignments", out var map) && map.ValueKind == JsonValueKind.Object)
                 foreach (var item in map.EnumerateObject())
                     if (item.Value.ValueKind == JsonValueKind.Object && item.Value.TryGetProperty("projectId", out var id) && id.ValueKind == JsonValueKind.String)
@@ -35,8 +41,11 @@ internal static class SessionPicker
         return threads.GroupBy(thread => assignments.GetValueOrDefault(thread.Id) ?? "")
             .Select(group => new Group(group.Key, group.Key.Length == 0 ? Localization.Current["NoProject"] :
                 names.GetValueOrDefault(group.Key) ?? group.Select(thread => thread.Cwd?.TrimEnd('\\', '/').Split('\\', '/').LastOrDefault())
-                    .FirstOrDefault(name => !string.IsNullOrWhiteSpace(name)) ?? group.Key, group.ToArray()))
-            .OrderBy(group => group.Key.Length == 0).ThenBy(group => group.Name, StringComparer.CurrentCultureIgnoreCase).ToArray();
+                    .FirstOrDefault(name => !string.IsNullOrWhiteSpace(name)) ?? group.Key,
+                group.OrderByDescending(thread => thread.LastUsedAt).ToArray()))
+            .OrderBy(group => group.Key.Length == 0)
+            .ThenByDescending(group => createdAt.GetValueOrDefault(group.Key, long.MinValue))
+            .ThenBy(group => group.Name, StringComparer.CurrentCultureIgnoreCase).ToArray();
     }
 
     internal static async Task<IReadOnlyList<ThreadChoice>> ReadAllAsync(CodexClient client, string? search = null)
@@ -58,7 +67,11 @@ internal static class SessionPicker
         var menu = new ContextMenu { MaxHeight = 440, MaxWidth = 540 };
         foreach (var group in groups)
         {
-            var heading = new MenuItem { Header = new TextBlock { Text = group.Name, MaxWidth = 420, TextTrimming = TextTrimming.CharacterEllipsis } };
+            var heading = new MenuItem
+            {
+                Header = new TextBlock { Text = group.Name, MaxWidth = 420, TextTrimming = TextTrimming.CharacterEllipsis },
+                IsChecked = group.Threads.Any(thread => thread.Id == selected)
+            };
             foreach (var thread in group.Threads)
             {
                 var item = new MenuItem

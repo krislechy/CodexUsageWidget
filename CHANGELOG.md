@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.1 — 2026-10-22 (local build)
+
+- Added a checkmark to the project containing the selected session, including No project for unassigned sessions.
+- Sorted projects by creation date and sessions by most recent usage, newest first. No project remains last; unknown dates retain a stable fallback order.
+- All entry points use the same SessionPicker implementation and reload their data on every opening.
+- Verified only context/picker ordering, selection markers and UTF-8 functionality; built Portable and Lite locally.
+
 ## 0.12.0 — 2026-10-22 (local build)
 
 - Added right-click session selection on the context bar in expanded and compact views, with a small mouse icon highlighting the right button.

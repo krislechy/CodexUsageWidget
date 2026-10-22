@@ -77,14 +77,15 @@ public sealed record ExtraInfoSnapshot(string? AccountType, string? Plan, bool? 
     }
 }
 
-public sealed record ThreadChoice(string Id, string Name, string? Cwd = null);
+public sealed record ThreadChoice(string Id, string Name, string? Cwd = null, long? LastUsedAt = null);
 public sealed record ThreadPage(IReadOnlyList<ThreadChoice> Threads, string? Cursor)
 {
     public static ThreadPage Parse(JsonElement payload) => new(ExtraJson.Array(payload, "data")?
         .Where(row => !string.IsNullOrWhiteSpace(ExtraJson.Text(row, "id")))
         .Select(row => new ThreadChoice(ExtraJson.Text(row, "id")!,
             new[] { ExtraJson.Text(row, "name"), ExtraJson.Text(row, "preview"), ExtraJson.Text(row, "id") }
-                .First(value => !string.IsNullOrWhiteSpace(value))!, ExtraJson.Text(row, "cwd"))).ToArray() ?? [],
+                .First(value => !string.IsNullOrWhiteSpace(value))!, ExtraJson.Text(row, "cwd"),
+            ExtraJson.Number(row, "recencyAt") ?? ExtraJson.Number(row, "updatedAt"))).ToArray() ?? [],
         ExtraJson.Text(payload, "nextCursor"));
 }
 
