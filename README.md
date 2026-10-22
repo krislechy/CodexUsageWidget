@@ -163,3 +163,5 @@ Right-click the context label or bar to choose a session. The mouse icon marks t
 Every opening refetches all pages of thread/list and rereads CODEX_HOME/.codex-global-state.json for local project names and explicit thread-project assignments. This internal desktop metadata format may change; missing assignments fall back to No project. A thread's working directory alone does not establish project membership. No session-list cache is retained between openings.
 
 Project headings also mark the selected session's project. Projects appear newest-created first; sessions appear most-recently-used first. No project remains at the bottom. This ordering is shared by the context menu, Settings and Extra info.
+
+Resuming a conversation can create a new journal with an additional window ID in its filename. The widget follows these continuations. After a completed compaction, missing fresh counts show an em dash rather than the pre-compaction percentage.

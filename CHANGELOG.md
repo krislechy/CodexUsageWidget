@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.2 — 2026-10-23 (local build)
+
+- Fixed stale context percentages after a thread resumes into a continuation journal named with a window-ID suffix. The monitor now discovers the latest matching journal instead of permanently reading the original file.
+- Added file-change hints and periodic rediscovery, invalidated cached usage on path changes and equal-length rewrites, and released watchers on selection changes and exit.
+- A completed compaction clears older usage until a fresh token count is available.
+- Reproduced the stale 84% case with synthetic journals and confirmed the corrected reader against the reported thread using token metadata only. Only affected context/picker and UTF-8 checks were run; Portable and Lite were built locally.
+
 ## 0.12.1 — 2026-10-22 (local build)
 
 - Added a checkmark to the project containing the selected session, including No project for unassigned sessions.

@@ -497,6 +497,7 @@ public partial class MainWindow : Window
     private async void ExitAsync()
     {
         _contextClock.Stop();
+        _contextMonitor.Dispose();
         if (_exiting) return;
         _exiting = true;
         SaveSettings();
@@ -585,7 +586,7 @@ public partial class MainWindow : Window
         try
         {
             Environment.SetEnvironmentVariable("CODEX_HOME", home);
-            var monitor = new ContextMonitor();
+            using var monitor = new ContextMonitor();
             if ((await monitor.ReadAsync(sessionId))?.Percent != 72)
                 throw new InvalidOperationException("Context must use the latest turn, not cumulative tokens.");
             if (await monitor.ReadAsync(Guid.NewGuid().ToString()) is not null)
@@ -593,6 +594,35 @@ public partial class MainWindow : Window
             File.AppendAllText(fixture, log.Replace("72000", "12000") + "\n{partial");
             if ((await monitor.ReadAsync(sessionId))?.Percent != 12)
                 throw new InvalidOperationException("Context must decrease after compaction and tolerate partial journal writes.");
+            File.WriteAllText(fixture, log.Replace("72000", "84000") + "\n");
+            if ((await monitor.ReadAsync(sessionId))?.Percent != 84)
+                throw new InvalidOperationException("Old journal fixture must reproduce the stale 84% value.");
+            var resumedDirectory = Path.Combine(home, "sessions", "next-day");
+            Directory.CreateDirectory(resumedDirectory);
+            var resumed = Path.Combine(resumedDirectory, $"rollout-{sessionId}_{Guid.NewGuid()}.jsonl");
+            File.WriteAllText(resumed, log.Replace("72000", "12000") + "\n");
+            ContextUsage? resumedUsage = null;
+            for (var attempt = 0; attempt < 40; attempt++)
+            {
+                resumedUsage = await monitor.ReadAsync(sessionId);
+                if (resumedUsage?.Percent == 12) break;
+                await Task.Delay(50);
+            }
+            if (resumedUsage?.Percent != 12)
+                throw new InvalidOperationException("A running monitor must discover continuation journals and discard the old 84% cache even when lengths match.");
+            using (var restarted = new ContextMonitor())
+                if ((await restarted.ReadAsync(sessionId))?.Percent != 12)
+                    throw new InvalidOperationException("A fresh monitor must prefer the latest continuation rather than the original journal.");
+            File.AppendAllText(resumed, "{\"type\":\"compacted\",\"payload\":{}}\n");
+            if (await monitor.ReadAsync(sessionId) is not null)
+                throw new InvalidOperationException("A compaction boundary must clear stale usage until fresh counts arrive.");
+            File.AppendAllText(resumed, log.Replace("72000", "6000") + "\n");
+            if ((await monitor.ReadAsync(sessionId))?.Percent != 6)
+                throw new InvalidOperationException("Fresh post-compaction context must replace the cleared reading.");
+            File.WriteAllText(resumed, log.Replace("72000", "7000") + "\n");
+            File.SetLastWriteTimeUtc(resumed, DateTime.UtcNow.AddSeconds(1));
+            if ((await monitor.ReadAsync(sessionId))?.Percent != 7)
+                throw new InvalidOperationException("Equal-length journal rewrites must invalidate the cached reading.");
             if (ContextUsage.ParseLogLine(log.Replace("100000", "0")) is not null ||
                 ContextUsage.ParseLogLine("{}") is not null || ContextUsage.ParseLogLine("null") is not null)
                 throw new InvalidOperationException("Invalid context metadata must remain unavailable.");
