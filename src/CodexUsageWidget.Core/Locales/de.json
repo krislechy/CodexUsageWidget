@@ -179,5 +179,6 @@
   "NotificationSeconds2": "2 Sek.",
   "NotificationSeconds3": "3 Sek.",
   "NotificationSeconds5": "5 Sek.",
-  "ContextBar": "Kontext"
+  "ContextBar": "Kontext",
+  "NoProject": "Ohne Projekt"
 }

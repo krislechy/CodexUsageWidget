@@ -179,5 +179,6 @@
   "NotificationSeconds2": "2 сек",
   "NotificationSeconds3": "3 сек",
   "NotificationSeconds5": "5 сек",
-  "ContextBar": "Контекст"
+  "ContextBar": "Контекст",
+  "NoProject": "Без пројекта"
 }

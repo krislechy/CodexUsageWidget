@@ -237,3 +237,5 @@ The notification is a 380-pixel-wide unowned popup with an 18-pixel rounded outl
 ### Context bar
 
 A slim orange horizontal bar sits immediately beneath the rings in both views, with a concise localized context percentage above it. Expanded view uses a 5-DIP track; compact view uses 4 DIP and a 9-DIP label. Unknown context uses an empty track and an em dash. The context color follows the existing swatch/hex settings controls with preview and cancel semantics. The existing ring diameters remain unchanged.
+
+The context label has a small outlined mouse with its right button in the context accent. Right-clicking either the label or track opens fresh project submenus. Both levels share the app's matte dark menu surface, rounded row highlights, drawn disclosure arrows and selected-session checkmarks. Settings and Extra info reuse the same menu.

@@ -17,9 +17,12 @@ public partial class SettingsWindow : WidgetDialogWindow
     private readonly WidgetSettings _originalColors;
     private readonly UpdateController? _updates;
     public bool UpdateRequested { get; private set; }
+    private readonly Func<System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<ThreadChoice>>>? _loadSessions;
 
-    public SettingsWindow(WidgetSettings settings, UpdateController? updates = null)
+    public SettingsWindow(WidgetSettings settings, UpdateController? updates = null,
+        Func<System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<ThreadChoice>>>? loadSessions = null)
     {
+        _loadSessions = loadSessions;
         _updates = updates;
         _originalLanguage = Localization.Current.Language;
         _originalColors = new WidgetSettings { FiveHourColor = settings.FiveHourColor, WeeklyColor = settings.WeeklyColor, BackgroundColor = settings.BackgroundColor, ContextColor = settings.ContextColor, ContextThreadId = settings.ContextThreadId };
@@ -56,9 +59,17 @@ public partial class SettingsWindow : WidgetDialogWindow
             UpdateStatus.Text = Localization.Current.Format("UpdateInstalledVersion", UpdateController.CurrentVersion.ToString(3), "Preview");
         }
         _initialized = true;
+        ContextSessionButton.IsEnabled = loadSessions is not null;
         Colors_Changed(this, null!);
         Loaded += (_, _) => WindowPlacement.KeepInside(this, Owner is null ? null : WindowPlacement.ScreenFor(Owner));
         Closed += (_, _) => { if (DialogResult != true) { Localization.Current.SetLanguage(_originalLanguage); WidgetTheme.Apply(_originalColors); } };
+    }
+
+    private async void ContextSession_Click(object sender, RoutedEventArgs e)
+    {
+        if (_loadSessions is null) return;
+        await SessionPicker.OpenAsync(ContextSessionButton, _loadSessions, Result.ContextThreadId,
+            choice => { Result.ContextThreadId = choice.Id; ContextSessionButton.Content = choice.Name; });
     }
 
     private void Colors_Changed(object sender, TextChangedEventArgs e)

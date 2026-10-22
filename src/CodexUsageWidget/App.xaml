@@ -90,19 +90,32 @@
    <Setter Property="FontSize" Value="13"/>
    <Setter Property="OverridesDefaultStyle" Value="True"/>
    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ContextMenu">
-    <Border Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="14" Padding="6"><StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/></Border>
+    <Border Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="14" Padding="6"><ScrollViewer MaxHeight="420" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/></ScrollViewer></Border>
    </ControlTemplate></Setter.Value></Setter>
   </Style>
   <Style TargetType="MenuItem">
    <Setter Property="Foreground" Value="{StaticResource Text}"/>
    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="MenuItem">
-    <Border x:Name="MenuRow" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="1">
-     <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"/>
-    </Border>
+    <Grid>
+     <Border x:Name="MenuRow" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="1">
+      <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+       <Path x:Name="Check" Visibility="Collapsed" Data="M 1,5 L 4,8 L 10,1" Stroke="{StaticResource Lime}" StrokeThickness="1.5" Width="11" Height="9" Margin="0,0,8,0"/>
+       <ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True"/>
+       <Path x:Name="Arrow" Grid.Column="2" Visibility="Collapsed" Data="M 1,1 L 5,5 L 1,9" Stroke="{StaticResource Muted}" StrokeThickness="1.5" Width="5" Height="9" Margin="16,0,0,0"/>
+      </Grid>
+     </Border>
+     <Popup x:Name="PART_Popup" Placement="Right" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" AllowsTransparency="True" Focusable="False">
+      <Border Background="{StaticResource Surface}" BorderBrush="#353940" BorderThickness="1" CornerRadius="14" Padding="6">
+       <ScrollViewer MaxHeight="420" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle"/></ScrollViewer>
+      </Border>
+     </Popup>
+    </Grid>
     <ControlTemplate.Triggers>
      <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="MenuRow" Property="Background" Value="#282B31"/></Trigger>
      <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="MenuRow" Property="BorderBrush" Value="{StaticResource Lime}"/></Trigger>
      <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4"/></Trigger>
+     <Trigger Property="HasItems" Value="True"><Setter TargetName="Arrow" Property="Visibility" Value="Visible"/></Trigger>
+     <Trigger Property="IsChecked" Value="True"><Setter TargetName="Check" Property="Visibility" Value="Visible"/></Trigger>
     </ControlTemplate.Triggers>
    </ControlTemplate></Setter.Value></Setter>
   </Style>

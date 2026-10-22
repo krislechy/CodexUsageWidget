@@ -179,5 +179,6 @@
   "NotificationSeconds2": "2 秒",
   "NotificationSeconds3": "3 秒",
   "NotificationSeconds5": "5 秒",
-  "ContextBar": "上下文"
+  "ContextBar": "上下文",
+  "NoProject": "无项目"
 }

@@ -155,3 +155,9 @@ Quota alerts appear as the app’s own dark popup above the taskbar at the botto
 Select a conversation in **Extra info**. Its estimated context usage appears below the rings in both views. Settings → Colors → Context changes the bar color (default orange). The selected conversation ID is saved. This follows the manually selected conversation, not the foreground Codex tab.
 
 The widget reads the last 256 KiB of that conversation's local journal under CODEX_HOME/sessions (default ~/.codex/sessions), extracting the latest token_count event's last_token_usage.total_tokens and model_context_window. Updates are checked every two seconds while the widget is visible; unchanged files are not reread. Missing metadata shows an em dash. Values are estimates at the latest reported turn, not live token streaming or a guaranteed auto-compaction threshold.
+
+### Session picker
+
+Right-click the context label or bar to choose a session. The mouse icon marks this gesture. Project submenus and the localized No project group use the same shared picker in Settings and Extra info. The selected session has a checkmark. Settings selection takes effect when saved and is discarded on Cancel.
+
+Every opening refetches all pages of thread/list and rereads CODEX_HOME/.codex-global-state.json for local project names and explicit thread-project assignments. This internal desktop metadata format may change; missing assignments fall back to No project. A thread's working directory alone does not establish project membership. No session-list cache is retained between openings.

@@ -204,21 +204,16 @@ public partial class ExtraInfoWindow : WidgetDialogWindow
         { Note(ThreadRows, _text["ConnectionError"]); }
         finally { _threadBusy = false; ChooseThread.IsEnabled = true; MoreThreads.IsEnabled = true; }
     }
-    private async void ChooseThread_Click(object sender, RoutedEventArgs e)
+    private void ChooseThread_Click(object sender, RoutedEventArgs e)
     {
-        if (_threads.Count == 0) await LoadThreadsAsync(null); else ShowThreadMenu();
+        ShowThreadMenu();
     }
-    private void ShowThreadMenu()
+    private async void ShowThreadMenu()
     {
-        var menu = new ContextMenu { PlacementTarget = ChooseThread, MaxHeight = 360, MaxWidth = 550 };
-        if (_threads.Count == 0) menu.Items.Add(new MenuItem { Header = _text["NoThreads"], IsEnabled = false });
-        foreach (var choice in _threads)
-        {
-            var item = new MenuItem { Header = new TextBlock { Text = choice.Name, MaxWidth = 480, TextTrimming = TextTrimming.CharacterEllipsis }, ToolTip = choice.Name };
-            item.Click += async (_, _) => await SelectThreadAsync(choice);
-            menu.Items.Add(item);
-        }
-        menu.IsOpen = true;
+        await SessionPicker.OpenAsync(ChooseThread,
+            () => _client is null ? Task.FromResult<IReadOnlyList<ThreadChoice>>([new("demo-chat", "Example conversation")]) :
+                SessionPicker.ReadAllAsync(_client, ThreadSearch.Text.Trim()),
+            _selectedThread?.Id, async choice => { if (!_lifetime.IsCancellationRequested) await SelectThreadAsync(choice); });
     }
     internal async Task SelectThreadAsync(ThreadChoice choice)
     {

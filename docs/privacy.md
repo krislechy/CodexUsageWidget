@@ -19,3 +19,5 @@ When enabled, the app contacts `api.github.com/repos/krislechy/CodexUsageWidget/
 ## Context usage data
 
 The optional context bar reads a bounded tail of the manually selected local Codex session journal. Journal tails may contain conversation text, but only token-count metadata is extracted; no journal text is logged, persisted, uploaded or included in screenshots. The saved preference contains the selected conversation ID and context color. No model calls or additional authenticated network requests are made for context tracking.
+
+The session picker additionally reads project names and explicit thread-project memberships from the local Codex desktop state file. Only those metadata fields are used; the file is never modified or uploaded. Session titles are held in memory for the visible menu and are not written to widget settings.

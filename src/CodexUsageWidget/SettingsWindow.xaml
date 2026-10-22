@@ -103,6 +103,7 @@
     <Button x:Name="ContextSwatch" Grid.Column="1" Tag="ContextColorBox" Style="{StaticResource ActionButton}" Width="28" Height="28" Padding="0" Click="ColorPalette_Click" AutomationProperties.Name="{loc:Tr ContextBar}"/>
     <TextBox x:Name="ContextColorBox" Grid.Column="2" TextChanged="Colors_Changed" MaxLength="7" Padding="8,5" AutomationProperties.Name="{loc:Tr ContextBar}"/>
    </Grid>
+   <Button x:Name="ContextSessionButton" Content="{loc:Tr SelectThread}" Style="{StaticResource ActionButton}" Height="32" Margin="0,0,0,16" Click="ContextSession_Click"/>
    <CheckBox x:Name="TopmostBox" Content="{loc:Tr AboveWindows}"/>
    <CheckBox x:Name="StartupBox" Content="{loc:Tr StartWindows}"/>
 

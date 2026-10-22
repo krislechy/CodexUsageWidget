@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.0 — 2026-10-22 (local build)
+
+- Added right-click session selection on the context bar in expanded and compact views, with a small mouse icon highlighting the right button.
+- Grouped sessions into project submenus and a localized No project group. The same picker is available in Settings and Extra info.
+- Every menu opening fetches all session pages again and rereads project membership metadata; no list or project-group cache is used.
+- Added shared dark submenu styling, selected-session checkmarks and scrolling for long lists.
+- Verified only the affected context/picker and UTF-8 functionality, then built Portable and Lite locally.
+
 ## 0.11.2 — 2026-10-22 (local build)
 
 - Fixed garbled Cyrillic in conversation titles by explicitly decoding app-server JSONL as UTF-8 instead of the Windows code page. All redirected protocol streams use UTF-8 without a BOM.

@@ -113,3 +113,7 @@ The non-activation hook follows [Microsoft's WM_MOUSEACTIVATE contract](https://
 ContextMonitor caches the selected session journal path and file length. Selection changes invalidate all readings; asynchronous results are applied only if the selection still matches. File reads run off the UI thread, use shared access and bounded tails, and ignore partial or malformed JSON lines. ContextUsage parses only token_count metadata and uses last_token_usage rather than cumulative usage. Context updates can decrease after compaction. The physical window remains clamped through the existing placement behavior; compact height increases to accommodate the horizontal bar.
 
 Run scripts/release.ps1 -ContextOnly for feature-only English verification and both package variants. It exercises synthetic session changes, missing metadata, compaction, partial writes, both widget layouts and color settings without running unrelated regressions. No published release is changed without -Publish.
+
+### Project session selection
+
+SessionPicker provides a common asynchronous menu for the context area, Settings and Extra info. Each opening fetches fresh paginated thread summaries and local desktop project metadata. Groups use project IDs, avoiding accidental merges of projects with identical display names; explicit unassigned sessions remain in No project even if they have a working directory. Membership metadata is read only and never modified. Reopening while a prior request is pending cannot reopen a dismissed loading menu.

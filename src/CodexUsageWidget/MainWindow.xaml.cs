@@ -43,6 +43,23 @@ public partial class MainWindow : Window
     private readonly QuotaAlerts _alerts = new();
     private QuotaNotificationWindow? _notification;
     private readonly UpdateController _updates;
+    private Task<System.Collections.Generic.IReadOnlyList<ThreadChoice>> LoadContextSessionsAsync() =>
+        _preview ? Task.FromResult<System.Collections.Generic.IReadOnlyList<ThreadChoice>>(
+            [new("demo-chat", "Example conversation")]) :
+        _monitor is null ? Task.FromException<System.Collections.Generic.IReadOnlyList<ThreadChoice>>(new IOException()) :
+        SessionPicker.ReadAllAsync(_monitor.Client);
+
+    private async void Context_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
+        await SessionPicker.OpenAsync((FrameworkElement)sender, LoadContextSessionsAsync, _settings.ContextThreadId, choice =>
+        {
+            _settings.ContextThreadId = choice.Id;
+            _viewModel.SetContext(null);
+            if (!_preview) _settings.Save();
+            _ = RefreshContextAsync();
+        });
+    }
 
     private void ExtraInfo_Click(object sender, RoutedEventArgs e)
     {
@@ -343,12 +360,13 @@ public partial class MainWindow : Window
         try
         {
             _extraInfo?.Close();
-            var settings = new SettingsWindow(_settings, _updates) { Owner = this, Topmost = Topmost };
+            var settings = new SettingsWindow(_settings, _updates, LoadContextSessionsAsync) { Owner = this, Topmost = Topmost };
             if (settings.ShowDialog() != true) return;
             var oldMonitor = _monitor;
             _monitor = null;
             if (oldMonitor is not null) await oldMonitor.DisposeAsync();
             _viewModel.SetBusy(false);
+            if (_settings.ContextThreadId != settings.Result.ContextThreadId) _viewModel.SetContext(null);
             _settings = settings.Result;
             requestedUpdate = settings.UpdateRequested;
             Topmost = _settings.Topmost;
@@ -578,6 +596,48 @@ public partial class MainWindow : Window
             if (ContextUsage.ParseLogLine(log.Replace("100000", "0")) is not null ||
                 ContextUsage.ParseLogLine("{}") is not null || ContextUsage.ParseLogLine("null") is not null)
                 throw new InvalidOperationException("Invalid context metadata must remain unavailable.");
+            var projectJson = "{\"local-projects\":{\"p\":{\"name\":\"Example project\"}},\"thread-project-assignments\":{\"a\":{\"projectId\":\"p\"}}}";
+            File.WriteAllText(Path.Combine(home, ".codex-global-state.json"), projectJson);
+            System.Collections.Generic.IReadOnlyList<ThreadChoice> choices = [new("a", "Русский сеанс"), new("b", "Unassigned chat")];
+            var groups = SessionPicker.GroupThreads(choices, projectJson);
+            if (groups.Count != 2 || groups[0].Name != "Example project" || groups[1].Name != "No project")
+                throw new InvalidOperationException("Project grouping must use membership and keep a separate No project group.");
+            var loads = 0;
+            Task<System.Collections.Generic.IReadOnlyList<ThreadChoice>> LoadChoices()
+            {
+                loads++;
+                return Task.FromResult(choices);
+            }
+            string? selected = null;
+            _viewModel.IsCompact = false; ApplyLayout();
+            var first = (await SessionPicker.OpenAsync(FullContextArea, LoadChoices, "a", choice => selected = choice.Id))!;
+            await Task.Delay(100);
+            Capture(first, Path.Combine(directory, "context-session-projects.png"));
+            var project = (MenuItem)first.Items[0];
+            project.IsSubmenuOpen = true;
+            await Task.Delay(100);
+            var submenu = (Popup)project.Template.FindName("PART_Popup", project);
+            if (!submenu.IsOpen || !((MenuItem)project.Items[0]).IsChecked)
+                throw new InvalidOperationException("Project submenu and selected-session marker must be visible.");
+            Capture((FrameworkElement)submenu.Child, Path.Combine(directory, "context-session-threads.png"));
+            ((MenuItem)project.Items[0]).RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+            if (selected != "a") throw new InvalidOperationException("Session selection must invoke the matching conversation.");
+            choices = [new("b", "Freshly updated session")];
+            File.WriteAllText(Path.Combine(home, ".codex-global-state.json"), projectJson.Replace("Example project", "Renamed project").Replace("\"a\"", "\"b\""));
+            var second = (await SessionPicker.OpenAsync(FullContextArea, LoadChoices, null, _ => { }))!;
+            var updated = (TextBlock)((MenuItem)((MenuItem)second.Items[0]).Items[0]).Header;
+            if (loads != 2 || updated.Text != "Freshly updated session" ||
+                ((TextBlock)((MenuItem)second.Items[0]).Header).Text != "Renamed project")
+                throw new InvalidOperationException("Each menu opening must load fresh sessions without caching.");
+            second.IsOpen = false;
+            var sessionSettings = new SettingsWindow(new WidgetSettings { ContextThreadId = "a" }, loadSessions: LoadChoices) { Owner = this };
+            sessionSettings.Show();
+            var settingsMenu = (await SessionPicker.OpenAsync(sessionSettings.ContextSessionButton, LoadChoices,
+                sessionSettings.Result.ContextThreadId, choice => sessionSettings.Result.ContextThreadId = choice.Id))!;
+            ((MenuItem)((MenuItem)settingsMenu.Items[0]).Items[0]).RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+            if (sessionSettings.Result.ContextThreadId != "b")
+                throw new InvalidOperationException("Settings must use the same grouped picker.");
+            sessionSettings.Close();
         }
         finally { Environment.SetEnvironmentVariable("CODEX_HOME", previousHome); }
         File.WriteAllText(Path.Combine(directory, "context-verification.txt"), "PASS: current context, missing metadata, session switching, compaction, partial writes, expanded/compact UI, color preview, persistence, validation and cancellation.");

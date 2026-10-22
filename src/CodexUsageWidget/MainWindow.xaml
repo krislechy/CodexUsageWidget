@@ -10,6 +10,7 @@
  ShowInTaskbar="False" Topmost="True" FontFamily="Segoe UI Variable, Segoe UI"
  KeyDown="Window_KeyDown" Loaded="Window_Loaded" Closing="Window_Closing">
  <Window.Resources>
+  <Geometry x:Key="RightClickIcon">M 5,1 C 2.8,1 1,2.8 1,5 L 1,11 C 1,14 3,16 5,16 C 7,16 9,14 9,11 L 9,5 C 9,2.8 7.2,1 5,1 Z M 5,1 L 5,7 M 1,7 L 9,7</Geometry>
   <Style x:Key="ContextBarStyle" TargetType="ProgressBar">
    <Setter Property="Background" Value="#353940"/>
    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ProgressBar">
@@ -60,8 +61,11 @@
       <TextBlock x:Name="FullCountdown" Text="{Binding FiveHourCountdown}" Foreground="{DynamicResource WidgetMuted}" FontSize="16" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" HorizontalAlignment="Center" Margin="0,8,0,0" ToolTip="{Binding FiveHourReset}" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
      </StackPanel>
     </Grid>
-    <StackPanel Grid.Row="1" VerticalAlignment="Bottom" Margin="12,0,12,2">
-     <TextBlock Text="{Binding ContextLabel}" FontSize="10" Foreground="{DynamicResource WidgetMuted}" Margin="0,0,0,5"/>
+    <StackPanel x:Name="FullContextArea" Grid.Row="1" VerticalAlignment="Bottom" Margin="12,0,12,2" Background="Transparent" MouseRightButtonUp="Context_MouseRightButtonUp" Cursor="Hand">
+     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+      <Grid Width="10" Height="16" Margin="0,0,5,0"><Path Data="{StaticResource RightClickIcon}" Stroke="{DynamicResource WidgetMuted}" StrokeThickness="1"/><Path Data="M 6,2 L 6,6 L 8,6 L 8,5 C 8,3.5 7,2.5 6,2" Fill="{DynamicResource ContextAccent}"/></Grid>
+      <TextBlock Text="{Binding ContextLabel}" FontSize="10" Foreground="{DynamicResource WidgetMuted}" VerticalAlignment="Center"/>
+     </StackPanel>
      <ProgressBar Height="5" Value="{Binding ContextPercent, Mode=OneWay}" Foreground="{DynamicResource ContextAccent}" AutomationProperties.Name="{Binding ContextLabel}" Style="{StaticResource ContextBarStyle}"/>
     </StackPanel>
     <Grid Grid.Row="2" Margin="0,6,0,0" AutomationProperties.Name="{Binding FiveHourAccessible}">
@@ -165,8 +169,11 @@
      <controls:RingGauge Width="70" Height="70" Value="{Binding WeeklyAvailable}" StrokeWidth="6" RingBrush="{DynamicResource Lime}" TrackBrush="{DynamicResource LimeTrack}" AutomationProperties.Name="{Binding WeeklyAccessible}"/>
      <TextBlock x:Name="CompactCountdown" Text="{Binding FiveHourCountdown}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource WidgetText}" HorizontalAlignment="Center" VerticalAlignment="Center" Typography.NumeralStyle="Lining" Typography.NumeralAlignment="Tabular" AutomationProperties.Name="{Binding FiveHourAccessible}"/>
     </Grid>
-    <StackPanel VerticalAlignment="Bottom" Margin="6,0,6,0">
-     <TextBlock Text="{Binding ContextLabel}" FontSize="9" HorizontalAlignment="Center" Foreground="{DynamicResource WidgetMuted}" Margin="0,0,0,4"/>
+    <StackPanel x:Name="CompactContextArea" VerticalAlignment="Bottom" Margin="6,0,6,0" Background="Transparent" MouseRightButtonUp="Context_MouseRightButtonUp" Cursor="Hand">
+     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
+      <Grid Width="8" Height="13" Margin="0,0,4,0"><Path Data="{StaticResource RightClickIcon}" Stroke="{DynamicResource WidgetMuted}" StrokeThickness="1" Stretch="Fill"/><Path Data="M 6,2 L 6,6 L 8,6 L 8,5 C 8,3.5 7,2.5 6,2" Fill="{DynamicResource ContextAccent}" Stretch="Fill" Width="2" Height="4" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,1,1,0"/></Grid>
+      <TextBlock Text="{Binding ContextLabel}" FontSize="9" Foreground="{DynamicResource WidgetMuted}" VerticalAlignment="Center"/>
+     </StackPanel>
      <ProgressBar Height="4" Value="{Binding ContextPercent, Mode=OneWay}" Foreground="{DynamicResource ContextAccent}" AutomationProperties.Name="{Binding ContextLabel}" Style="{StaticResource ContextBarStyle}"/>
     </StackPanel>
    </Grid>
